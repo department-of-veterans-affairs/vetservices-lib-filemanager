@@ -1,0 +1,63 @@
+<project 
+	xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- NO PARENT
+	<parent/>
+	NO PARENT -->
+
+	<groupId>gov.va.vetservices.lib</groupId>
+	<artifactId>vetservices-lib-filemanager</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>vetservices-lib-filemanager</name>
+	<description>A library that provides common file management utilities for 
+		image type detection, character encoding detection, 
+		PDF creation and manipulation, and PDF “stamping”</description>
+
+	<packaging>jar</packaging>
+
+	<properties>
+		<commons-lang3.version>3.5</commons-lang3.version>
+		<junit.version>4.12</junit.version>
+		<spring-test.version>4.3.14.RELEASE</spring-test.version>
+		<mockito-core.version>1.10.19</mockito-core.version>
+		
+		<!-- system properties -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+		<!-- Apache Commons project dependencies -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons-lang3.version}</version>
+		</dependency>
+
+		<!-- Test Dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring-test.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito-core.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+</project>
