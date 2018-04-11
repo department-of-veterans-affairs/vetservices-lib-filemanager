@@ -9,21 +9,13 @@ package gov.va.vetservices.lib.filemanager.api;
 // See the IMPL class for TODO dev notes
 public interface FileManager {
 
-	/*
-	 * DELETE THIS FileDto INNER CLASS
-	 * It is just a placeholder so the initial commits can compile.
-	 */
-	public interface FileDto {
-		// TODO delete me
-	}
-
 	/**
 	 * Evaluate the suitability of a file for conversion to PDF.
 	 * The type of file may be subject to change over time,
 	 * but is currently limited to specific image types, text files, and PDF files.
 	 *
-	 * @param imageDto
-	 * @return
+	 * @param fileDto the {@code FileDto} to validate
+	 * @return boolean {@code true} if validation passes
 	 */
 	public boolean validateFileForPDFConversion(FileDto fileDto);
 

@@ -1,0 +1,17 @@
+filemanager:
+  #########################################################
+  ## Messages should NOT be overridden, for consistency. ##
+  #########################################################
+  messages:
+    file:
+      name:
+        null.or.empty: File name cannot be null, empty or only whitespace.
+        invalid.characters: File name must  ????????????
+      bytes:
+        null.or.empty: File content cannot be null or empty array.
+        size: File size exceeds maximum allowable size ${filemanager.config.file.max.text.megabytes}.
+    vbms:
+      filename:
+        max.length: 245
+      fileextension:
+        max.length: 4

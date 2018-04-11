@@ -1,5 +1,8 @@
 package gov.va.vetservices.lib.filemanager.impl;
 
+import org.springframework.stereotype.Component;
+
+import gov.va.vetservices.lib.filemanager.api.FileDto;
 import gov.va.vetservices.lib.filemanager.api.FileManager;
 
 /**
@@ -12,7 +15,10 @@ import gov.va.vetservices.lib.filemanager.api.FileManager;
  * In WSS there is a disconnect between PDFServiceImpl and PdfGenerator.
  * One objective of this class is to combine the best of both for consistent results.
  */
+@Component(FileManagerImpl.BEAN_NAME)
 public class FileManagerImpl implements FileManager {
+
+	protected static final String BEAN_NAME = "fileManager";
 
 	/*
 	 * (non-Javadoc)
