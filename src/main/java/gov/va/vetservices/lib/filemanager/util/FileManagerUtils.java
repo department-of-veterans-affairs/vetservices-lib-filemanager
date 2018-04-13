@@ -23,31 +23,45 @@ public class FileManagerUtils {
 
 	/**
 	 * Populates the DTO for use by validators, based on the contents of the fileDto parameter.
+	 * If the fileDto paramter is null,
 	 *
 	 * @param fileDto
 	 * @return ValidatorDto
 	 */
 	public static final ValidatorDto makeValidatorDto(FileDto fileDto) {
 		ValidatorDto vdto = new ValidatorDto();
-		vdto.setFileDto(fileDto);
-		vdto.setFileParts(getFileParts(fileDto.getFilename()));
-
+		if (fileDto != null) { // should never happen, but check anyway
+			vdto.setFileDto(fileDto);
+			vdto.setFileParts(getFileParts(fileDto.getFilename()));
+		}
 		return vdto;
 	}
 
+	/**
+	 * If filename is not null or empty, returns a populated {@link FileParts} (though it is possible for the members of FileParts to
+	 * be {@code null}, otherwise returns {@code null}
+	 *
+	 * @param filename
+	 * @return FileParts
+	 */
 	private static final FileParts getFileParts(String filename) {
-		String[] filenames = { null, null };
+		FileParts fileParts = null;
 
-		if (filename.contains(".")) {
-			filenames[0] = StringUtils.truncate(filename, filename.lastIndexOf("."));
-			filenames[1] = StringUtils.substring(filename, filename.lastIndexOf(".") + 1);
-		} else {
-			filenames[0] = filename;
+		if (StringUtils.isNotBlank(filename)) {
+			fileParts = new FileParts();
+
+			String[] filenames = { null, null };
+
+			if (filename.contains(".")) {
+				filenames[0] = StringUtils.truncate(filename, filename.lastIndexOf("."));
+				filenames[1] = StringUtils.substring(filename, filename.lastIndexOf(".") + 1);
+			} else {
+				filenames[0] = filename;
+			}
+
+			fileParts.setName(filenames[0]);
+			fileParts.setExtension(filenames[1]);
 		}
-
-		FileParts fileParts = new FileParts();
-		fileParts.setName(filenames[0]);
-		fileParts.setExtension(filenames[1]);
 
 		return fileParts;
 	}

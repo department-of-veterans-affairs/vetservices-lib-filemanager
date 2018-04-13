@@ -52,11 +52,11 @@ public class FileManagerImpl implements FileManager {
 	public FileManagerResponse validateFileForPDFConversion(FileDto fileDto) {
 		FileManagerResponse response = new FileManagerResponse();
 
-		validateInput(response, fileDto);
+		if (validateInput(response, fileDto)) {
+			ValidatorDto validatorDto = FileManagerUtils.makeValidatorDto(fileDto);
 
-		ValidatorDto validatorDto = FileManagerUtils.makeValidatorDto(fileDto);
-
-		response = interrogateFile.canConvertToPdf(validatorDto);
+			response = interrogateFile.canConvertToPdf(validatorDto);
+		}
 
 		return response;
 	}
@@ -92,15 +92,20 @@ public class FileManagerImpl implements FileManager {
 	}
 
 	/**
-	 * Do null chaeck and add error message.
-	 * FileDto members get validated later, so it is enough to just do null check here
-	 * 
+	 * <p>
+	 * Do null check. If validation fails, {@code false} is returned, and an ERROR message is returned on the response parameter.
+	 * <p>
+	 * FileDto members get validated later, so it is enough to just do null check here.
+	 *
 	 * @param response returned with errors if validation failes
 	 * @param fileDto the DTO to check
 	 */
-	private void validateInput(FileManagerResponse response, FileDto fileDto) {
+	private boolean validateInput(FileManagerResponse response, FileDto fileDto) {
+		boolean isValid = true;
 		if (fileDto == null) {
+			isValid = false;
 			response.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_DTO_NULL, MessageKeys.getMessage(MessageKeys.FILE_DTO_NULL));
 		}
+		return isValid;
 	}
 }

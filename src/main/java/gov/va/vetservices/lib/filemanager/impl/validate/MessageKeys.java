@@ -1,6 +1,5 @@
 package gov.va.vetservices.lib.filemanager.impl.validate;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
@@ -15,8 +14,14 @@ public class MessageKeys {
 	private static String validFileExtensions =
 			StringUtils.arrayToCommaDelimitedString(FileManagerProperties.CONVERTIBLE_FILE_EXTENSIONS);
 
-	@Autowired
-	static FileManagerProperties fileManagerProperties;
+//	@Autowired
+//	static FileManagerProperties fileManagerProperties;
+//
+//	{
+//		if (fileManagerProperties == null) {
+//			throw new IllegalArgumentException("fileManagerProperties cannot be null.");
+//		}
+//	}
 
 	/*
 	 * DEV NOTE:
@@ -96,8 +101,10 @@ public class MessageKeys {
 		FILE_NAME_NULL_OR_EMPTY(MessageKeys.FILE_NAME_NULL_OR_EMPTY, "File name cannot be null, empty or only whitespace."),
 		// FILE_NAME_INVALID_CHARACTERS(MessageKeys.FILE_NAME_INVALID_CHARACTERS, "File name must ????????????"),
 		FILE_BYTES_NULL_OR_EMPTY(MessageKeys.FILE_BYTES_NULL_OR_EMPTY, "File content cannot be null or empty array."),
-		FILE_BYTES_SIZE(MessageKeys.FILE_BYTES_SIZE,
-				"File size exceeds maximum allowable size " + fileManagerProperties.getMaxFileMegaBytes() + "."),
+		FILE_BYTES_SIZE(MessageKeys.FILE_BYTES_SIZE, "File size exceeds maximum allowable size. "), /*
+																									 * + fileManagerProperties.
+																									 * getMaxFileMegaBytes() + "."),
+																									 */
 		FILE_EXTENSION_NOT_CONVERTIBLE(MessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE,
 				"The file extension specified is not supported for conversion to PDF. "
 						+ "The file must be one of the follwoing types: " + validFileExtensions),

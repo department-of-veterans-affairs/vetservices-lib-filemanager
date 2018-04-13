@@ -17,6 +17,7 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import gov.va.vetservices.lib.filemanager.FileManagerConfig;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(inheritListeners = false, listeners = { DependencyInjectionTestExecutionListener.class,
@@ -45,12 +46,10 @@ public class FileManagerImplTest {
 
 	@Test
 	public void validateFileForPDFConversionTest_nullFile() {
-		// TODO make this a real test
-		assertTrue(true);
-//		FileManagerResponse response = fileManagerImpl.validateFileForPDFConversion(null);
-//		assertNotNull("validateFileForPDFConversion returned null", response);
-//		assertNotNull("validateFileForPDFConversion should have reported error messages", response.getMessages());
-//		assertTrue("validateFileForPDFConversion should have reported error messages", !response.getMessages().isEmpty());
+		FileManagerResponse response = fileManagerImpl.validateFileForPDFConversion(null);
+		assertNotNull("validateFileForPDFConversion returned null", response);
+		assertNotNull("validateFileForPDFConversion should have reported error messages", response.getMessages());
+		assertTrue("validateFileForPDFConversion should have reported error messages", !response.getMessages().isEmpty());
 	}
 
 	@Test
