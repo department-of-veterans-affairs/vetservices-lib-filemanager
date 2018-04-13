@@ -21,6 +21,8 @@
 	<packaging>jar</packaging>
 
 	<properties>
+		<!-- XJC -->
+		<jaxb2-basics.version>0.11.1</jaxb2-basics.version>
 		<!-- system properties -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -39,9 +41,15 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>5.0.5.RELEASE</version>
 		</dependency>
-	
+
+		<!-- file introspection and conversion dependencies -->
+		<dependency>
+			<groupId>net.sf.jmimemagic</groupId>
+			<artifactId>jmimemagic</artifactId>
+			<version>0.1.5</version>
+		</dependency>
+
 		<!-- Apache Commons project dependencies -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -78,6 +86,95 @@
 				</configuration>
 			</plugin>
 
+			<!-- Since JARs cannot be referenced directly as a schemaLocation,
+				we have to unpack the framework schema from the ascent-framework JAR.
+				This allows executions in the maven-jaxb2-plugin to function
+				without regenerating the classes declared in the framework XSD.
+				- ascent-framework classes are bound in jaxb-bindings.xjb
+				- ascent-framework classes are referenced in intenttofileApiModel.xsd
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpackXSDs</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>gov.va.ascent</groupId>
+									<artifactId>ascent-framework</artifactId>
+									<outputDirectory>${project.basedir}/src/main/resources/mvn-copied</outputDirectory>
+									<includes>xsd/ascent-framework-types.xsd</includes>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!--
+				JAXB/XJC config to generate resource data model classes,
+				including jsr303 custom validator annotation classes from the modelvalidators project
+			-->
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<version>${maven.jaxb2.plugin.version}</version>
+				<configuration>
+					<schemaIncludes>
+						<schemaInclude>**/*.xsd</schemaInclude>
+					</schemaIncludes>
+					<bindingDirectory>${project.basedir}/src/main/resources</bindingDirectory>
+					<bindingIncludes>
+						<include>model/jaxb-bindings.xjb</include>
+					</bindingIncludes>
+					<strict>false</strict>
+					<extension>true</extension>
+					<args>
+						<!-- maven-jaxb2-plugin args -->
+						<arg>-no-header</arg>
+						<!-- krasa-jaxb-tools args -->
+						<arg>-XReplacePrimitives</arg>
+						<arg>-XJsr303Annotations</arg>
+					</args>
+					<plugins>
+						<!-- Enable JSR303 annotations.
+							Args used:
+							-XReplacePrimitives
+							-XJsr303Annotations
+						-->
+						<plugin>
+							<groupId>com.github.krasa</groupId>
+							<artifactId>krasa-jaxb-tools</artifactId>
+							<version>${krasa.jaxb.tools.version}</version>
+						</plugin>
+					</plugins>
+				</configuration>
+				<executions>
+					<!-- To introduce a new schema/model:
+						1. Copy/paste this entire execution
+						2. Give the new execution a new id, e.g. xjc-v2
+						3. Configure generatePackage for the version, e.g.  xxx.api.v2.transfer
+						4. Configure schemaDirectory for the version, e.g. xxx/model/v2
+					-->
+					<execution>
+						<id>xjc-v1</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<generatePackage>gov.va.vetservices.lib.filemanager.api.v1.transfer</generatePackage>
+							<schemaDirectory>${project.basedir}/src/main/resources/model/v1</schemaDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 

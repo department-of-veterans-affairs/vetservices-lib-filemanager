@@ -1,5 +1,8 @@
 package gov.va.vetservices.lib.filemanager.api;
 
+import gov.va.ascent.framework.service.ServiceResponse;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
+
 /**
  * The public interface for operations contained in this artifact.
  *
@@ -17,7 +20,7 @@ public interface FileManager {
 	 * @param fileDto the {@code FileDto} to validate
 	 * @return boolean {@code true} if validation passes
 	 */
-	public boolean validateFileForPDFConversion(FileDto fileDto);
+	public ServiceResponse validateFileForPDFConversion(FileDto fileDto);
 
 	/**
 	 * Convert a file to PDF. Note that the file should have been previously validated by the

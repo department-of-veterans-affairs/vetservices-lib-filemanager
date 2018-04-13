@@ -1,9 +1,13 @@
 package gov.va.vetservices.lib.filemanager.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.va.vetservices.lib.filemanager.api.FileDto;
 import gov.va.vetservices.lib.filemanager.api.FileManager;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
+import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 /**
  * Implementation of the {@link FileManager} capabilities
@@ -20,6 +24,9 @@ public class FileManagerImpl implements FileManager {
 
 	protected static final String BEAN_NAME = "fileManager";
 
+	@Autowired
+	InterrogateFile interrogateFile;
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -32,9 +39,14 @@ public class FileManagerImpl implements FileManager {
 	 * - As any good validation should do, boolean is now returned.
 	 */
 	@Override
-	public boolean validateFileForPDFConversion(FileDto fileDto) {
-		// TODO Auto-generated method stub
-		return false;
+	public FileManagerResponse validateFileForPDFConversion(FileDto fileDto) {
+		FileManagerResponse response = new FileManagerResponse();
+
+		ValidatorDto validatorDto = FileManagerUtils.makeValidatorDto(fileDto);
+
+		response = interrogateFile.canConvertToPdf(validatorDto);
+
+		return response;
 	}
 
 	/*
