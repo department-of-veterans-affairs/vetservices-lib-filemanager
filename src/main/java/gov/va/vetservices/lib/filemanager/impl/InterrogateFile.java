@@ -2,7 +2,6 @@ package gov.va.vetservices.lib.filemanager.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.va.ascent.framework.messages.Message;
@@ -16,14 +15,11 @@ import gov.va.vetservices.lib.filemanager.impl.validate.validators.FilenameValid
 @Component
 public class InterrogateFile {
 
-	@Autowired
-	FilenameValidator filenameValidator;
+	FilenameValidator filenameValidator = new FilenameValidator();
 
-	@Autowired
-	ByteArrayValidator bytearrayValidator;
+	ByteArrayValidator bytearrayValidator = new ByteArrayValidator();
 
-	@Autowired
-	FileConvertibleMimeTypeValidator filetypeValidator;
+	FileConvertibleMimeTypeValidator filetypeValidator = new FileConvertibleMimeTypeValidator();
 
 	/**
 	 * <p>

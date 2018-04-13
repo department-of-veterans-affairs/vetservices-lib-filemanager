@@ -5,8 +5,6 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import gov.va.ascent.framework.util.Defense;
-
 /**
  * <p>
  * Configuration properties that can be overridden by the application.
@@ -60,8 +58,8 @@ public class FileManagerProperties {
 
 	@PostConstruct
 	public final void postConstruct() {
-		Defense.isTrue(maxFileBytes > 0, "The maxFileBytes value is not defined.");
-		Defense.isNull(maxFileMegaBytes, "The maxFileMegaBytes value cannot be null.");
+//		Defense.isTrue(maxFileBytes > 0, "The maxFileBytes value is not defined.");
+//		Defense.isNull(maxFileMegaBytes, "The maxFileMegaBytes value cannot be null.");
 	}
 
 	/**
