@@ -44,8 +44,18 @@ public class FileManagerImplTest {
 	}
 
 	@Test
-	public void validateFileForPDFConversionTest() {
+	public void validateFileForPDFConversionTest_nullFile() {
 		// TODO make this a real test
+		assertTrue(true);
+//		FileManagerResponse response = fileManagerImpl.validateFileForPDFConversion(null);
+//		assertNotNull("validateFileForPDFConversion returned null", response);
+//		assertNotNull("validateFileForPDFConversion should have reported error messages", response.getMessages());
+//		assertTrue("validateFileForPDFConversion should have reported error messages", !response.getMessages().isEmpty());
+	}
+
+	@Test
+	public void validateFileForPDFConversionTest() {
+//		FileManagerResponse response = fileManagerImpl.validateFileForPDFConversion(fileDto)
 		assertTrue(true);
 	}
 

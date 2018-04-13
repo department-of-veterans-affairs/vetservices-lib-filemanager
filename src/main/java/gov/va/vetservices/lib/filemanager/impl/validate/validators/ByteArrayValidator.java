@@ -31,14 +31,12 @@ public class ByteArrayValidator implements Validator<byte[]> {
 	/**
 	 * <p>
 	 * Validates that the file has bytes, and is no larger than {@link FileManagerProperties#KEY_FILE_MAX_BYTES}.
-	 * </p>
 	 * <p>
 	 * If validation succeeds, {@code null} is returned, otherwise a list of messages is returned.
-	 * </p>
 	 * <p>
 	 * JavaDoc from {@link Validator}:<br/>
 	 * {@inheritDoc AbstractValidator#validate(java.lang.Object)}
-	 * <p/>
+	 * <p>
 	 */
 	@Override
 	public List<Message> validate(ValidatorArg<byte[]> toValidate) {

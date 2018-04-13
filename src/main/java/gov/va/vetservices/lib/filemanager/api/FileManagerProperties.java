@@ -8,11 +8,9 @@ import org.springframework.stereotype.Component;
 /**
  * <p>
  * Configuration properties that can be overridden by the application.
- * </p>
  * <p>
  * Include the property in your application config, as declared in the
  * {@code Value} annotation of each private member in this class.
- * </p>
  *
  * @author aburkholder
  */
@@ -65,11 +63,9 @@ public class FileManagerProperties {
 	/**
 	 * <p>
 	 * The max size that a file can be, expressed in actual bytes.
-	 * </p>
 	 * <p>
 	 * This property can be overridden by including it in the application configuration as:<br/>
 	 * {@value #KEY_FILE_MAX_BYTES} (default is {@value #DEFAULT_FILE_MAX_BYTES}, equivalent to {@value #DEFAULT_FILE_MAX_TEXT_MB}).
-	 * </p>
 	 *
 	 * @return the maxFileBytes
 	 */
@@ -80,12 +76,10 @@ public class FileManagerProperties {
 	/**
 	 * <p>
 	 * The max size that a file can be, expressed in the common vernacular of rounded megabytes.
-	 * </p>
 	 * <p>
 	 * This property can be overridden by including it in the application configuration as:<br/>
 	 * {@value #KEY_FILE_MAX_TEXT_MB} (default is {@value #DEFAULT_FILE_MAX_TEXT_MB}, equivalent to {@value #DEFAULT_FILE_MAX_BYTES}
 	 * bytes).
-	 * </p>
 	 *
 	 * @return the maxFileMegaBytes
 	 */

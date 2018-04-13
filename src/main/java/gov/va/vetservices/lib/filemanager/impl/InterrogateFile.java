@@ -24,10 +24,8 @@ public class InterrogateFile {
 	/**
 	 * <p>
 	 * Determines if a file can be converted to a PDF with the technologies currently being used by this library.
-	 * </p>
 	 * <p>
 	 * Any validation errors that occur are passed in the response messages, otherwise the response messages will be {@code null}.
-	 * </p>
 	 *
 	 * @param fileDto the file to interrogate
 	 * @return ServiceResponse with {@code null} messages if the file can be converted

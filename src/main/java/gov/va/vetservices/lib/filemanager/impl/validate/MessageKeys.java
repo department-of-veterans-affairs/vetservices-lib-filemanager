@@ -16,13 +16,15 @@ public class MessageKeys {
 			StringUtils.arrayToCommaDelimitedString(FileManagerProperties.CONVERTIBLE_FILE_EXTENSIONS);
 
 	@Autowired
-	FileManagerProperties fileManagerProperties;
+	static FileManagerProperties fileManagerProperties;
 
 	/*
 	 * DEV NOTE:
 	 * If you add a constant here, you must also add a message value in the MessageValuesEnum below.
 	 */
 
+	/** Message for a null file data transfer object */
+	public static final String FILE_DTO_NULL = "filemanager.file.dto.null";
 	/** Message for a null or empty file name */
 	public static final String FILE_NAME_NULL_OR_EMPTY = "filemanager.file.name.null.or.empty";
 	/** Message for invalid characters found in file name / extension */
@@ -46,7 +48,6 @@ public class MessageKeys {
 	/**
 	 * <p>
 	 * Get the message for a given constant key name.
-	 * </p>
 	 * <p>
 	 * The {@code messageConstant} parameter can be the name of the constant, or the constant itself.
 	 * For example:
@@ -57,7 +58,6 @@ public class MessageKeys {
 	 * // using the constant itself
 	 * String theMessage = getMessage(MessageKeys.FILE_NAME_NULL_OR_EMPTY);
 	 * </pre>
-	 * </p>
 	 *
 	 * @param messageConstant
 	 * @return
@@ -92,12 +92,12 @@ public class MessageKeys {
 		 * If you add an enumeration here, you should probably add a MessageKeys constant above.
 		 */
 
+		FILE_NAME_DTO_NULL(MessageKeys.FILE_DTO_NULL, "File data transfer object cannot be null."),
 		FILE_NAME_NULL_OR_EMPTY(MessageKeys.FILE_NAME_NULL_OR_EMPTY, "File name cannot be null, empty or only whitespace."),
 		// FILE_NAME_INVALID_CHARACTERS(MessageKeys.FILE_NAME_INVALID_CHARACTERS, "File name must ????????????"),
 		FILE_BYTES_NULL_OR_EMPTY(MessageKeys.FILE_BYTES_NULL_OR_EMPTY, "File content cannot be null or empty array."),
-		FILE_BYTES_SIZE(MessageKeys.FILE_BYTES_SIZE, "File size exceeds maximum allowable size "),// +
-																									// fileManagerProperties.getMaxFileMegaBytes()
-																									// + "."),
+		FILE_BYTES_SIZE(MessageKeys.FILE_BYTES_SIZE,
+				"File size exceeds maximum allowable size " + fileManagerProperties.getMaxFileMegaBytes() + "."),
 		FILE_EXTENSION_NOT_CONVERTIBLE(MessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE,
 				"The file extension specified is not supported for conversion to PDF. "
 						+ "The file must be one of the follwoing types: " + validFileExtensions),

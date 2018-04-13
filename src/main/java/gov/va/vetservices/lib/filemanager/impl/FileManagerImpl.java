@@ -1,12 +1,17 @@
 package gov.va.vetservices.lib.filemanager.impl;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.va.ascent.framework.messages.MessageSeverity;
+import gov.va.ascent.framework.util.Defense;
 import gov.va.vetservices.lib.filemanager.api.FileManager;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 /**
@@ -27,6 +32,11 @@ public class FileManagerImpl implements FileManager {
 	@Autowired
 	InterrogateFile interrogateFile;
 
+	@PostConstruct
+	public final void postConstruct() {
+		Defense.notNull(interrogateFile, "interrogateFile cannot be null");
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -41,6 +51,8 @@ public class FileManagerImpl implements FileManager {
 	@Override
 	public FileManagerResponse validateFileForPDFConversion(FileDto fileDto) {
 		FileManagerResponse response = new FileManagerResponse();
+
+		validateInput(response, fileDto);
 
 		ValidatorDto validatorDto = FileManagerUtils.makeValidatorDto(fileDto);
 
@@ -79,4 +91,16 @@ public class FileManagerImpl implements FileManager {
 		return null;
 	}
 
+	/**
+	 * Do null chaeck and add error message.
+	 * FileDto members get validated later, so it is enough to just do null check here
+	 * 
+	 * @param response returned with errors if validation failes
+	 * @param fileDto the DTO to check
+	 */
+	private void validateInput(FileManagerResponse response, FileDto fileDto) {
+		if (fileDto == null) {
+			response.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_DTO_NULL, MessageKeys.getMessage(MessageKeys.FILE_DTO_NULL));
+		}
+	}
 }

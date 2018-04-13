@@ -33,15 +33,13 @@ public class FileConvertibleMimeTypeValidator implements Validator<ValidatorDto>
 	/**
 	 * <p>
 	 * Validate the file MIME type to ensure the file is a type that can be converted to PDF.
-	 * </p>
 	 * <p>
 	 * If validations succeeds, {@code null} is returned, otherwise the returned list of messages is also returned on the ValidataorDto
 	 * parameter.
-	 * </p>
 	 * <p>
 	 * JavaDoc from {@link Validator}:<br/>
 	 * {@inheritDoc AbstractValidator#validate(java.lang.Object)}
-	 * <p/>
+	 * <p>
 	 */
 	@Override
 	public List<Message> validate(ValidatorArg<ValidatorDto> toValidate) {

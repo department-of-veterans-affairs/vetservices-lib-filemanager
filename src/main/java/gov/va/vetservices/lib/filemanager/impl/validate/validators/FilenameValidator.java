@@ -30,15 +30,13 @@ public class FilenameValidator implements Validator<ValidatorDto> {
 	/**
 	 * <p>
 	 * Validate file names for consistency with common operating system constraints.
-	 * </p>
 	 * <p>
 	 * If validations succeeds, {@code null} is returned, otherwise the returned list of messages is also returned on the ValidataorDto
 	 * parameter.
-	 * </p>
 	 * <p>
 	 * JavaDoc from {@link Validator}:<br/>
 	 * {@inheritDoc AbstractValidator#validate(java.lang.Object)}
-	 * <p/>
+	 * <p>
 	 */
 	@Override
 	public List<Message> validate(ValidatorArg<ValidatorDto> toValidate) {
