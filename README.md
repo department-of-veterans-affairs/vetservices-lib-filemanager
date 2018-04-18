@@ -2,7 +2,7 @@
 
 This repository contains the VetServices Library project for FileManagement
 
-# Overview - VetServices Partner ClaimManagement
+# Overview - VetServices Library FileManagement
 
 This project is a component JAR used to validate and process files (e.g. for conversion to PDF, etc). Include it in your project dependencies.
 
