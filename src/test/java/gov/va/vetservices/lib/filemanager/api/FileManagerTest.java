@@ -4,33 +4,33 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import gov.va.ascent.framework.service.ServiceResponse;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 
 public class FileManagerTest {
 
-	class FileMgrTest implements FileManager {
+	class TestFileManager implements FileManager {
 
 		@Override
-		public ServiceResponse validateFileForPDFConversion(FileDto fileDto) {
-			return new ServiceResponse();
+		public FileManagerResponse validateFileForPDFConversion(FileDto fileDto) {
+			return new FileManagerResponse();
 		}
 
 		@Override
-		public byte[] convertToPdf(byte[] file) {
-			return new byte[] {};
+		public FileManagerResponse convertToPdf(FileDto file) {
+			return new FileManagerResponse();
 		}
 
 		@Override
-		public byte[] stampPdf(String stampContent, byte[] file) {
-			return new byte[] {};
+		public FileManagerResponse stampPdf(String stampContent, FileDto file) {
+			return new FileManagerResponse();
 		}
 
 	}
 
 	@Test
 	public void test() {
-		FileMgrTest test = new FileMgrTest();
+		TestFileManager test = new TestFileManager();
 		assertNotNull(test);
 		assertNotNull(test.validateFileForPDFConversion(null));
 		assertNotNull(test.convertToPdf(null));

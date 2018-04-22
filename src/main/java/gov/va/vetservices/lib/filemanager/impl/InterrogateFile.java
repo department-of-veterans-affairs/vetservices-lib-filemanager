@@ -2,24 +2,21 @@ package gov.va.vetservices.lib.filemanager.impl;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
-
 import gov.va.ascent.framework.messages.Message;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.ValidatorArg;
 import gov.va.vetservices.lib.filemanager.impl.validate.validators.ByteArrayValidator;
-import gov.va.vetservices.lib.filemanager.impl.validate.validators.FileConvertibleMimeTypeValidator;
+import gov.va.vetservices.lib.filemanager.impl.validate.validators.FileConvertibleValidator;
 import gov.va.vetservices.lib.filemanager.impl.validate.validators.FilenameValidator;
 
-@Component
 public class InterrogateFile {
 
 	FilenameValidator filenameValidator = new FilenameValidator();
 
 	ByteArrayValidator bytearrayValidator = new ByteArrayValidator();
 
-	FileConvertibleMimeTypeValidator filetypeValidator = new FileConvertibleMimeTypeValidator();
+	FileConvertibleValidator filetypeValidator = new FileConvertibleValidator();
 
 	/**
 	 * <p>

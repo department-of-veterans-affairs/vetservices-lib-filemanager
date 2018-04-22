@@ -14,11 +14,34 @@ import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
  */
 public class FileManagerUtils {
 
+	/** Characters that are not allowed at the beginning of a file names: {@code . / \ :} */
+	public static final String[] ILLEGAL_FILE_START_CHARS = { "/", "\\", ":", "." };
+
 	/**
 	 * Do not instantiate
 	 */
 	FileManagerUtils() {
 		throw new IllegalAccessError("FileManagerUtils is a static class. Do not instantiate it.");
+	}
+
+	/**
+	 * Returns {@code true} if the filename is valid.
+	 *
+	 * @param filename the filename to check
+	 * @return boolean
+	 */
+	public static boolean hasFilename(String filename) {
+		return !(StringUtils.isBlank(filename) || StringUtils.startsWithAny(filename, ILLEGAL_FILE_START_CHARS));
+	}
+
+	/**
+	 * Returns {@code true} if the byte array is not null and has one or more bytes in the array.
+	 *
+	 * @param bytes the byte array to check
+	 * @return boolean
+	 */
+	public static boolean hasBytes(byte[] bytes) {
+		return (bytes != null) && (bytes.length > 0);
 	}
 
 	/**
@@ -44,7 +67,7 @@ public class FileManagerUtils {
 	 * @param filename
 	 * @return FileParts
 	 */
-	private static final FileParts getFileParts(String filename) {
+	public static final FileParts getFileParts(String filename) {
 		FileParts fileParts = null;
 
 		if (StringUtils.isNotBlank(filename)) {
@@ -56,7 +79,14 @@ public class FileManagerUtils {
 				filenames[0] = StringUtils.truncate(filename, filename.lastIndexOf("."));
 				filenames[1] = StringUtils.substring(filename, filename.lastIndexOf(".") + 1);
 			} else {
-				filenames[0] = filename;
+				filenames[0] = StringUtils.trim(filename);
+			}
+
+			if (StringUtils.isBlank(filenames[0])) {
+				filenames[0] = null;
+			}
+			if (StringUtils.isBlank(filenames[1])) {
+				filenames[1] = null;
 			}
 
 			fileParts.setName(filenames[0]);
@@ -65,4 +95,5 @@ public class FileManagerUtils {
 
 		return fileParts;
 	}
+
 }

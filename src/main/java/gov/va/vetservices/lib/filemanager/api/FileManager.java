@@ -1,7 +1,7 @@
 package gov.va.vetservices.lib.filemanager.api;
 
-import gov.va.ascent.framework.service.ServiceResponse;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 
 /**
  * The public interface for operations contained in this artifact.
@@ -20,16 +20,16 @@ public interface FileManager {
 	 * @param fileDto the {@code FileDto} to validate
 	 * @return boolean {@code true} if validation passes
 	 */
-	public ServiceResponse validateFileForPDFConversion(FileDto fileDto);
+	public FileManagerResponse validateFileForPDFConversion(FileDto fileDto);
 
 	/**
 	 * Convert a file to PDF. Note that the file should have been previously validated by the
 	 * {@link #validateFileForPDFConversion(FileDto)} method.
 	 *
 	 * @param file the file in form of byte array to be converted
-	 * @return byte[] the PDF
+	 * @return FileManagerResponse the response with messages and PDF if successful
 	 */
-	public byte[] convertToPdf(byte[] file);
+	public FileManagerResponse convertToPdf(FileDto fileDto);
 
 	/**
 	 * Put a VA approved banner stamp on the provided PDF byte array.
@@ -37,5 +37,5 @@ public interface FileManager {
 	 * @param file the PDF file as a byte array
 	 * @return byte[] the stamped PDF
 	 */
-	public byte[] stampPdf(String stampContent, byte[] file);
+	public FileManagerResponse stampPdf(String stampContent, FileDto fileDto);
 }

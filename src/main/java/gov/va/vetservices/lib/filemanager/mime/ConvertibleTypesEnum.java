@@ -3,6 +3,7 @@ package gov.va.vetservices.lib.filemanager.mime;
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,9 @@ public enum ConvertibleTypesEnum {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConvertibleTypesEnum.class);
 
+	/** The filename extension */
 	protected String extension;
+	/** The raw mimetype "type/subtype" */
 	protected String mimetype;
 
 	/**
@@ -45,6 +48,7 @@ public enum ConvertibleTypesEnum {
 	 */
 	ConvertibleTypesEnum(String extension, String mimetype) {
 		this.extension = extension;
+		this.mimetype = mimetype;
 	}
 
 	/**
@@ -68,7 +72,7 @@ public enum ConvertibleTypesEnum {
 	/**
 	 * Get the mime type as a {@link MimeType} object.
 	 *
-	 * @return
+	 * @return MimeType
 	 */
 	public MimeType getMimeType() {
 		MimeType mt = null;
@@ -90,13 +94,57 @@ public enum ConvertibleTypesEnum {
 	public static MimeType getMimeTypeForExtension(String extension) {
 		MimeType mt = null;
 
-		for (ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
-			if (enumeration.getExtension().equals(extension)) {
-				mt = enumeration.getMimeType();
-				break;
+		if (!StringUtils.isBlank(extension)) {
+			for (ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
+				if (StringUtils.equalsIgnoreCase(enumeration.getExtension(), extension)) {
+					mt = enumeration.getMimeType();
+					break;
+				}
 			}
 		}
 
 		return mt;
+	}
+
+	/**
+	 * Check to see if a MimeType is supported.
+	 *
+	 * @param mimetype the MimeType to look for
+	 * @return boolean has the MimeType ({@code true}) or not ({@code false})
+	 */
+	public static boolean hasMimeType(String mimetype) {
+		try {
+			MimeType mt = new MimeType(mimetype);
+			return hasMimeType(mt);
+		} catch (MimeTypeParseException e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Check to see if a MimeType is supported.
+	 *
+	 * @param mimetype the MimeType to look for
+	 * @return boolean has the MimeType ({@code true}) or not ({@code false})
+	 */
+	public static boolean hasMimeType(MimeType mimetype) {
+		boolean matched = false;
+
+		if (mimetype != null) {
+			for (ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
+				try {
+					if (mimetype.match(enumeration.getMimeString())) {
+						matched = true;
+						break;
+					}
+					// CHECKSTYLE:OFF
+				} catch (MimeTypeParseException e) {
+					// INTENTIONALLY do nothing, just return false
+				}
+				// CHECKSTYLE:ON
+			}
+		}
+
+		return matched;
 	}
 }

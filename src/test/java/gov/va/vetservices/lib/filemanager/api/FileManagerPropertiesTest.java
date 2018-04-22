@@ -1,6 +1,5 @@
 package gov.va.vetservices.lib.filemanager.api;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -30,8 +29,7 @@ public class FileManagerPropertiesTest {
 	private static final String TEST_KEY_FILE_MAX_TEXT_MB = "filemanager.config.file.max.text.megabytes";
 	private static final String TEST_DEFAULT_FILE_MAX_BYTES = "26214400";
 	private static final String TEST_DEFAULT_FILE_MAX_TEXT_MB = "25 MB";
-	private static final String[] TEST_CONVERTIBLE_FILE_EXTENSIONS =
-			{ "BMP", "GIF", "JPEG", "JPG", "PDF", "PNG", "TIF", "TIFF", "TXT" };
+	private static final String TEST_CONVERTIBLE_FILE_EXTENSIONS = "[BMP, GIF, JPEG, JPG, PDF, PNG, TIF, TIFF, TXT]";
 
 	int maxFileBytes = new Integer(TEST_DEFAULT_FILE_MAX_BYTES);
 	String maxFileMegaBytes = TEST_DEFAULT_FILE_MAX_TEXT_MB;
@@ -63,7 +61,7 @@ public class FileManagerPropertiesTest {
 		assertEquals(FileManagerProperties.KEY_FILE_MAX_TEXT_MB, TEST_KEY_FILE_MAX_TEXT_MB);
 		assertEquals(FileManagerProperties.DEFAULT_FILE_MAX_BYTES, TEST_DEFAULT_FILE_MAX_BYTES);
 		assertEquals(FileManagerProperties.DEFAULT_FILE_MAX_TEXT_MB, TEST_DEFAULT_FILE_MAX_TEXT_MB);
-		assertArrayEquals(FileManagerProperties.CONVERTIBLE_FILE_EXTENSIONS, TEST_CONVERTIBLE_FILE_EXTENSIONS);
+		assertEquals(FileManagerProperties.CONVERTIBLE_FILE_EXTENSIONS_STRING, TEST_CONVERTIBLE_FILE_EXTENSIONS);
 	}
 
 	@Test

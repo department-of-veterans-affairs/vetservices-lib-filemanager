@@ -1,73 +1,64 @@
 package gov.va.vetservices.lib.filemanager.impl;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-import gov.va.vetservices.lib.filemanager.FileManagerConfig;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners(inheritListeners = false, listeners = { DependencyInjectionTestExecutionListener.class,
-		DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class })
-@ContextConfiguration(inheritLocations = false, classes = { FileManagerConfig.class })
 public class FileManagerImplTest {
 
-	@Autowired
-	@Qualifier(FileManagerImpl.BEAN_NAME)
-	FileManagerImpl fileManagerImpl;
+	private final static byte[] STRING_BYTES = "This is a test.".getBytes();
+	private final static String STRING_FILENAME = "test.txt";
 
-	/**
-	 * @throws java.lang.Exception
-	 */
+	private FileManagerImpl fileManagerImpl = new FileManagerImpl();
+	private FileDto fileDto;
+	FileManagerResponse response;
+
 	@Before
-	public void setUp() throws Exception {
-		assertNotNull("fileManagerImpl cannot be null.", fileManagerImpl);
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
+	public void setUp() {
+		assertNotNull(fileManagerImpl);
 	}
 
 	@Test
-	public void validateFileForPDFConversionTest_nullFile() {
-		FileManagerResponse response = fileManagerImpl.validateFileForPDFConversion(null);
-		assertNotNull("validateFileForPDFConversion returned null", response);
-		assertNotNull("validateFileForPDFConversion should have reported error messages", response.getMessages());
-		assertTrue("validateFileForPDFConversion should have reported error messages", !response.getMessages().isEmpty());
+	public void testValidateFileForPDFConversionTest() {
+
+		// happy
+		fileDto = new FileDto();
+		fileDto.setFilebytes(STRING_BYTES);
+		fileDto.setFilename(STRING_FILENAME);
+
+		response = fileManagerImpl.validateFileForPDFConversion(fileDto);
+		assertNotNull(response);
+		assertNotNull(response.getMessages());
+		assertTrue(response.getMessages().isEmpty());
+		assertNull(response.getFileDto());
+
+		// sad
+
+		response = fileManagerImpl.validateFileForPDFConversion(null);
+		assertNotNull(response);
+		assertNotNull(response.getMessages());
+		assertTrue(!response.getMessages().isEmpty());
+		assertNull(response.getFileDto());
 	}
 
 	@Test
-	public void validateFileForPDFConversionTest() {
-//		FileManagerResponse response = fileManagerImpl.validateFileForPDFConversion(fileDto)
-		assertTrue(true);
-	}
-
-	@Test
-	public void convertToPdfTest() {
+	public void testConvertToPdfTest() {
 		// TODO make this a real test
-		assertTrue(true);
+		FileManagerResponse response = fileManagerImpl.convertToPdf(null);
+		assertNull(response);
 	}
 
 	@Test
-	public void stampPdfTest() {
+	public void testStampPdfTest() {
 		// TODO make this a real test
-		assertTrue(true);
+		FileManagerResponse response = fileManagerImpl.stampPdf(null, null);
+		assertNull(response);
 	}
 
 }

@@ -1,144 +1,76 @@
 package gov.va.vetservices.lib.filemanager.impl.validate;
 
-import org.springframework.util.StringUtils;
-
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 
-/**
- * FileManager message property keys and values.
- *
- * @author aburkholder
- */
-public class MessageKeys {
+public enum MessageKeys {
 
-	private static String validFileExtensions =
-			StringUtils.arrayToCommaDelimitedString(FileManagerProperties.CONVERTIBLE_FILE_EXTENSIONS);
-
-//	@Autowired
-//	static FileManagerProperties fileManagerProperties;
-//
-//	{
-//		if (fileManagerProperties == null) {
-//			throw new IllegalArgumentException("fileManagerProperties cannot be null.");
-//		}
-//	}
-
-	/*
-	 * DEV NOTE:
-	 * If you add a constant here, you must also add a message value in the MessageValuesEnum below.
-	 */
-
-	/** Message for a null file data transfer object */
-	public static final String FILE_DTO_NULL = "filemanager.file.dto.null";
-	/** Message for a null or empty file name */
-	public static final String FILE_NAME_NULL_OR_EMPTY = "filemanager.file.name.null.or.empty";
-	/** Message for invalid characters found in file name / extension */
-	// public static final String FILE_NAME_INVALID_CHARACTERS = "filemanager.messages.file.name.invalid.characters";
-	/** Message for a null or empty byte array */
-	public static final String FILE_BYTES_NULL_OR_EMPTY = "filemanager.file.bytes.null.or.empty";
-	/** Message for a byte array that is too large */
-	public static final String FILE_BYTES_SIZE = "filemanager.file.bytes.size";
-	/** Message for a given file extension that is not convertible to PDF */
-	public static final String FILE_EXTENSION_NOT_CONVERTIBLE = "filemanager.file.extension.not.convertible";
-	/** Message for situation where MimeType derived from file extension and MimeType detected from bytes do not match */
-	public static final String FILE_EXTENSION_CONTENT_MISMATCH = "filemanager.file.extension.content.mismatch";
+	/** FileDto was null */
+	FILE_DTO_NULL("filemanager.file.dto.null", "File data transfer object cannot be null."),
+	/** Filename was null or empty */
+	FILE_NAME_NULL_OR_EMPTY("filemanager.file.name.null.or.empty", "File name cannot be null or empty."),
+	/** Filename was too long */
+	FILE_NAME_TOO_LONG("filemanager.file.name.length", "File name must be less than " + maxFilenameLength() + " characters."),
+	/** Byte array was null or empty */
+	FILE_BYTES_NULL_OR_EMPTY("filemanager.file.bytes.null.or.empty", "File content cannot be null or empty array."),
+	/** Byte array is too large. <b>Args:</b> {@code maxSizeMB} */
+	FILE_BYTES_SIZE("filemanager.file.bytes.size", "File size exceeds maximum allowable size of {0}."),
+	/** Filename extension is not convertible to PDF. <b>Args:</b> {@code filename} */
+	FILE_EXTENSION_NOT_CONVERTIBLE("filemanager.file.extension.not.convertible",
+			"File {0} connot be converted to PDF. Supported types are: " + convertibleTypes()),
+	/** File byte content is not convertible to PDF. <b>Args:</b> {@code filename} */
+	FILE_CONTENT_NOT_CONVERTIBLE("filemanager.file.content.not.convertible",
+			"Content of file {0} connot be converted to PDF. Supported types are: " + convertibleTypes()),
+	/** File extension doesn't match detected type. <b>Args:</b> {@code filename, detectedSubtype, fileExtension} */
+	FILE_EXTENSION_CONTENT_MISMATCH("filemanager.file.extension.content.mismatch",
+			"Filename {0} type does not match file content, or the file is corrupt. The file content is {1}, not {2}."),
+	/** File extension doesn't match detected type. <b>Args:</b> {@code filename, fileExtension} */
+	FILE_TYPE_UNVERIFIABLE("filemanager.file.type.unverifiable",
+			"Filename {0} cannot be verified to have {1} content. Ensure your file has a valid file extension, or try a different format.Supported types are: "
+					+ convertibleTypes()),
+	/** PDF content is invalid. <b>Args:</b> {@code filename} */
+	PDF_CONTENT_INVALID("filemanager.pdf.content.invalid", "The content of {0} is corrput or otherwise invalid."),
+	/** The PDF is locked with Adobe encryption. <b>Args:</b> {@code filename} */
+	PDF_LOCKED("filemanager.pdf.locked", "The file {0} is locked with Adobe encryption. Unlock the PDF file."),
+	/** The PDF is locked with Adobe encryption. <b>Args:</b> {@code filename} */
+	PDF_TAMPERED("filemanager.pdf.tampered", "The file {0} is signed and has been tampered with."),
+	/** The image is not convertible for PDF. <b>Args:</b> {@code filename, itextErrorMessage} */
+	IMAGE_ITEXT_NOT_CONVERTIBLE("filemanager.pdf.image.not.consumable", "The file {0} cannot be used in a PDF. Error: {1}"),
+	/** Internal FileManager issues that cannot be resolved at runtime */
+	FILEMANAGER_ISSUE("filemanager.internal.issue", "Internal issue occurred. Please check the application logs.");
 
 	/**
-	 * Do not instantiate
+	 * Make supported (convertible) types available to the enumerations.
+	 *
+	 * @return String[] the convertible types
 	 */
-	MessageKeys() {
-		throw new IllegalAccessError("MessageKeys is a static class. Do not instantiate it.");
+	private static String convertibleTypes() {
+		return FileManagerProperties.CONVERTIBLE_FILE_EXTENSIONS_STRING;
+	}
+
+	private static String maxFilenameLength() {
+		return FileManagerProperties.DEFAULT_FILENAME_MAX_LENGTH;
+	}
+
+	private String key;
+	private String message;
+
+	MessageKeys(String key, String message) {
+		this.key = key;
+		this.message = message;
 	}
 
 	/**
-	 * <p>
-	 * Get the message for a given constant key name.
-	 * <p>
-	 * The {@code messageConstant} parameter can be the name of the constant, or the constant itself.
-	 * For example:
-	 *
-	 * <pre>
-	 * // using the name of the constant
-	 * String theMessage = getMessage("FILE_NAME_NULL_OR_EMPTY");
-	 * // using the constant itself
-	 * String theMessage = getMessage(MessageKeys.FILE_NAME_NULL_OR_EMPTY);
-	 * </pre>
-	 *
-	 * @param messageConstant
-	 * @return
+	 * @return the key
 	 */
-	public static String getMessage(final String messageConstant) {
-		String message = null;
+	public String getKey() {
+		return key;
+	}
 
-		for (MessageValuesEnum enumeration : MessageValuesEnum.values()) {
-			// see if they send a key value
-			if (enumeration.propKey.equals(messageConstant)) {
-				message = enumeration.propValue;
-				break;
-			}
-			// see if they sent the actual name of the MessageKeys constant instead of the property key
-			if (enumeration.name().equals(messageConstant)) {
-				message = enumeration.propValue;
-				break;
-			}
-		}
-
+	/**
+	 * @return the message
+	 */
+	public String getMessage() {
 		return message;
-	}
-
-	/**
-	 * Local enumeration to match keys to their message values.
-	 *
-	 * @author aburkholder
-	 */
-	protected enum MessageValuesEnum {
-		/*
-		 * DEV NOTE:
-		 * If you add an enumeration here, you should probably add a MessageKeys constant above.
-		 */
-
-		FILE_NAME_DTO_NULL(MessageKeys.FILE_DTO_NULL, "File data transfer object cannot be null."),
-		FILE_NAME_NULL_OR_EMPTY(MessageKeys.FILE_NAME_NULL_OR_EMPTY, "File name cannot be null, empty or only whitespace."),
-		// FILE_NAME_INVALID_CHARACTERS(MessageKeys.FILE_NAME_INVALID_CHARACTERS, "File name must ????????????"),
-		FILE_BYTES_NULL_OR_EMPTY(MessageKeys.FILE_BYTES_NULL_OR_EMPTY, "File content cannot be null or empty array."),
-		FILE_BYTES_SIZE(MessageKeys.FILE_BYTES_SIZE, "File size exceeds maximum allowable size. "), /*
-																									 * + fileManagerProperties.
-																									 * getMaxFileMegaBytes() + "."),
-																									 */
-		FILE_EXTENSION_NOT_CONVERTIBLE(MessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE,
-				"The file extension specified is not supported for conversion to PDF. "
-						+ "The file must be one of the follwoing types: " + validFileExtensions),
-		FILE_EXTENSION_CONTENT_MISMATCH(MessageKeys.FILE_EXTENSION_CONTENT_MISMATCH,
-				"The provided file extension does not match the content of the file.");
-
-		/* ENUM MEMBERS, CONSTRUCTOR AND METHODS */
-
-		/** property key for the given message */
-		protected String propKey;
-		/** property value for the given message */
-		protected String propValue;
-
-		/**
-		 * Sets the associated key for the enumeration
-		 *
-		 * @param key
-		 * @param value
-		 */
-		MessageValuesEnum(String key, String value) {
-			this.propKey = key;
-			this.propValue = value;
-		}
-
-		/**
-		 * Get the property value for a given enumeration.
-		 *
-		 * @param key
-		 * @return String
-		 */
-		protected final String getPropertyValue() {
-			return this.propValue;
-		}
-
 	}
 
 }

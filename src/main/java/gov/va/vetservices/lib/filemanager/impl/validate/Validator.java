@@ -12,10 +12,10 @@ import gov.va.ascent.framework.messages.Message;
 public interface Validator<T> {
 
 	/**
-	 * Validate an object. Paramaeters must implement the {@link ValidatorParameter} marker interface.
+	 * Validate an object. Paramaeters must implement the {@link ValidatorArg} marker interface.
 	 *
 	 * @param toValidate the object to validate
-	 * @return Message or {@code null} if validation passes
+	 * @return List&lt;Message&gt; or {@code null} if validation passes
 	 */
 	public List<Message> validate(ValidatorArg<T> toValidate);
 

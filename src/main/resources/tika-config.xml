@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+  <detectors>
+    <!-- All detectors except built-in container ones -->
+    <detector class="org.apache.tika.detect.DefaultDetector">
+      <!-- detector-exclude class="org.apache.tika.parser.pkg.ZipContainerDetector"/ -->
+      <!-- detector-exclude class="org.apache.tika.parser.microsoft.POIFSContainerDetector"/ -->
+    </detector>
+  </detectors>
+</properties>

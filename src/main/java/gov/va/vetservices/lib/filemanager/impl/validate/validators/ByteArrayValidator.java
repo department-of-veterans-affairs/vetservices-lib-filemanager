@@ -1,9 +1,8 @@
 package gov.va.vetservices.lib.filemanager.impl.validate.validators;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Value;
 
 import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.messages.MessageSeverity;
@@ -19,14 +18,7 @@ import gov.va.vetservices.lib.filemanager.impl.validate.ValidatorArg;
  */
 public class ByteArrayValidator implements Validator<byte[]> {
 
-	@Value("${" + MessageKeys.FILE_BYTES_NULL_OR_EMPTY + "}")
-	private String nulloremptyValue;
-
-	@Value("${" + MessageKeys.FILE_BYTES_SIZE + "}")
-	private String sizeValue;
-
-	@Value("${" + FileManagerProperties.DEFAULT_FILE_MAX_BYTES + "}")
-	private int maxBytes;
+	private int maxBytes = new Integer(FileManagerProperties.DEFAULT_FILE_MAX_BYTES);
 
 	/**
 	 * <p>
@@ -45,10 +37,12 @@ public class ByteArrayValidator implements Validator<byte[]> {
 		Message message = null;
 
 		if ((bytes == null) || (bytes.length < 1)) {
-			message = new Message(MessageSeverity.ERROR, MessageKeys.FILE_BYTES_NULL_OR_EMPTY, nulloremptyValue);
+			message = new Message(MessageSeverity.ERROR, MessageKeys.FILE_BYTES_NULL_OR_EMPTY.getKey(),
+					MessageKeys.FILE_BYTES_NULL_OR_EMPTY.getMessage());
 
 		} else if (bytes.length > maxBytes) {
-			message = new Message(MessageSeverity.ERROR, MessageKeys.FILE_BYTES_SIZE, sizeValue);
+			message = new Message(MessageSeverity.ERROR, MessageKeys.FILE_BYTES_SIZE.getKey(),
+					MessageFormat.format(MessageKeys.FILE_BYTES_SIZE.getMessage(), maxBytes));
 		}
 
 		return message == null ? null : Arrays.asList(new Message[] { message });

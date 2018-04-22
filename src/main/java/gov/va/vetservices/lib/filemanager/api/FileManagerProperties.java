@@ -1,9 +1,11 @@
 package gov.va.vetservices.lib.filemanager.api;
 
-import javax.annotation.PostConstruct;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 
 /**
  * <p>
@@ -21,12 +23,14 @@ public class FileManagerProperties {
 
 	/* KEY constants */
 
-	/** Constant key for max file size in bytes */
+	/** Constant key for max Operating System (Windows/Linux/macOS) file size in bytes */
 	public static final String KEY_FILE_MAX_BYTES = "filemanager.config.file.max.bytes";
-	/** Constant key for textual max file size in MB */
+	/** Constant key for human-readable max file size in MB */
 	public static final String KEY_FILE_MAX_TEXT_MB = "filemanager.config.file.max.text.megabytes";
 	/** Constant key for file extensions that can be converted to PDF */
 	public static final String KEY_CONVERTIBLE_FILE_EXTENSIONS = "filemanager.config.file.convertible.extensions";
+	/** Constant key for max filename length in bytes */
+	public static final String KEY_FILENAME_MAX_LENGTH = "filemanager.config.filname.max.length";
 
 	/* DEFAULT constants */
 
@@ -34,8 +38,13 @@ public class FileManagerProperties {
 	public static final String DEFAULT_FILE_MAX_BYTES = "26214400";
 	/** Constant for the default value of {@value #KEY_FILE_MAX_TEXT_MB} */
 	public static final String DEFAULT_FILE_MAX_TEXT_MB = "25 MB";
-	/** Constant for file extensions that can be converted to PDF */
-	public static final String[] CONVERTIBLE_FILE_EXTENSIONS = { "BMP", "GIF", "JPEG", "JPG", "PDF", "PNG", "TIF", "TIFF", "TXT" };
+	/** Constant for the default value of {@value #KEY_FILE_MAX_TEXT_MB} */
+	public static final String DEFAULT_FILENAME_MAX_LENGTH = "255";
+	/** Constant for file extensions that are supported for conversion to PDF */
+	public static final String CONVERTIBLE_FILE_EXTENSIONS_STRING = Arrays.toString(ConvertibleTypesEnum.values());
+
+	public static final int MAX_OS_FILENAME_LENGTH = 255;
+	public static final int MAX_OS_FILEPATH_LENGTH = 4096;
 
 	/* MEMBERS FOR EXPOSED CONSTANTS */
 
@@ -54,11 +63,8 @@ public class FileManagerProperties {
 	@Value("${filemanager.config.file.max.text.megabytes:25 MB}")
 	private String maxFileMegaBytes;
 
-	@PostConstruct
-	public final void postConstruct() {
-//		Defense.isTrue(maxFileBytes > 0, "The maxFileBytes value is not defined.");
-//		Defense.isNull(maxFileMegaBytes, "The maxFileMegaBytes value cannot be null.");
-	}
+	@Value("${filemanager.config.filname.max.length:255}")
+	private String maxFilenameLen;
 
 	/**
 	 * <p>
@@ -85,5 +91,18 @@ public class FileManagerProperties {
 	 */
 	public String getMaxFileMegaBytes() {
 		return maxFileMegaBytes;
+	}
+
+	/**
+	 * The max length that a filename (without path elements) can be in bytes.
+	 * <p>
+	 * This property can be overridden by including it in the application configuration as:<br/>
+	 * {@value #KEY_FILE_MAX_TEXT_MB} (default is {@value #DEFAULT_FILE_MAX_TEXT_MB}, equivalent to {@value #DEFAULT_FILE_MAX_BYTES}
+	 * bytes).
+	 *
+	 * @return the maxFilenameLen
+	 */
+	public String getMaxFilenameLen() {
+		return maxFilenameLen;
 	}
 }
