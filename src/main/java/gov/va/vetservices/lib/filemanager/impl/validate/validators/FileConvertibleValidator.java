@@ -30,6 +30,7 @@ import gov.va.vetservices.lib.filemanager.pdf.PdfIntegrityChecker;
  *
  * @author aburkholder
  */
+@java.lang.SuppressWarnings("squid:S1166")
 public class FileConvertibleValidator implements Validator<ValidatorDto> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileConvertibleValidator.class);
@@ -69,7 +70,8 @@ public class FileConvertibleValidator implements Validator<ValidatorDto> {
 					vdto.addMessage(MessageSeverity.ERROR, MessageKeys.PDF_LOCKED.getKey(),
 							MessageFormat.format(MessageKeys.PDF_LOCKED.getMessage(), vdto.getFileDto().getFilename()));
 				}
-			} catch (FileManagerException e) {
+			} catch (FileManagerException e) { // squid:S1166
+				LOGGER.debug(e.getMessageSeverity().toString() + " " + e.getKey() + ": " + e.getMessage());
 				vdto.addMessage(e.getMessageSeverity(), e.getKey(), e.getMessage());
 			}
 		}
@@ -120,12 +122,24 @@ public class FileConvertibleValidator implements Validator<ValidatorDto> {
 		boolean isValid = false;
 
 		// get the mime type for the extension
-		try {
-			// performs all necessary checks, including extension match and supported types
-			detectedMimetype = mimeTypeDetector.detectMimeType(vdto.getFileDto().getFilebytes(), vdto.getFileDto().getFilename());
-			isValid = detectedMimetype != null;
-		} catch (FileManagerException e) {
-			vdto.addMessage(e.getMessageSeverity(), e.getKey(), e.getMessage());
+		if (vdto == null) {
+
+			throw new IllegalArgumentException("Validator Dto cannot be null.");
+
+		} else if ((vdto.getFileDto() == null) || (vdto.getFileDto().getFilebytes() == null)
+				|| (vdto.getFileDto().getFilebytes().length < 1)) {
+
+			vdto.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_DTO_NULL.getKey(), MessageKeys.FILE_DTO_NULL.getMessage());
+
+		} else {
+			try {
+				// performs all necessary checks, including extension match and supported types
+				detectedMimetype = mimeTypeDetector.detectMimeType(vdto.getFileDto().getFilebytes(), vdto.getFileDto().getFilename());
+				isValid = detectedMimetype != null;
+			} catch (FileManagerException e) { // squid:S1166
+				LOGGER.debug(e.getMessageSeverity().toString() + " " + e.getKey() + ": " + e.getMessage());
+				vdto.addMessage(e.getMessageSeverity(), e.getKey(), e.getMessage());
+			}
 		}
 
 		return isValid;
@@ -152,8 +166,12 @@ public class FileConvertibleValidator implements Validator<ValidatorDto> {
 						e);
 				vdto.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_CONTENT_NOT_CONVERTIBLE.getKey(),
 						MessageFormat.format(MessageKeys.FILE_CONTENT_NOT_CONVERTIBLE.getMessage(), vdto.getFileDto().getFilename()));
-			} catch (final Throwable e) {
+			} catch (final Throwable e) { // NOSONAR - intent is to catch everything // squid:S1166
 				isValid = false;
+				LOGGER.debug(
+						MessageSeverity.ERROR.toString() + " " + MessageKeys.IMAGE_ITEXT_NOT_CONVERTIBLE.getKey() + ": "
+								+ MessageKeys.IMAGE_ITEXT_NOT_CONVERTIBLE.getMessage(),
+						vdto.getFileDto().getFilename(), e.getMessage());
 				vdto.addMessage(MessageSeverity.ERROR, MessageKeys.IMAGE_ITEXT_NOT_CONVERTIBLE.getKey(), MessageFormat.format(
 						MessageKeys.IMAGE_ITEXT_NOT_CONVERTIBLE.getMessage(), vdto.getFileDto().getFilename(), e.getMessage()));
 			}

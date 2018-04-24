@@ -18,7 +18,7 @@ import gov.va.vetservices.lib.filemanager.impl.validate.ValidatorArg;
  */
 public class ByteArrayValidator implements Validator<byte[]> {
 
-	private int maxBytes = new Integer(FileManagerProperties.DEFAULT_FILE_MAX_BYTES);
+	private int maxBytes = Integer.parseInt(FileManagerProperties.DEFAULT_FILE_MAX_BYTES);
 
 	/**
 	 * <p>

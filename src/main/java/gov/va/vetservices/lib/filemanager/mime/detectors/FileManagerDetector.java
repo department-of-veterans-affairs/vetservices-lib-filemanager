@@ -31,7 +31,7 @@ public class FileManagerDetector implements Detector {
 		String mimetypeAsString = null;
 
 		FileParts parts = FileManagerUtils.getFileParts(filename);
-		if (!StringUtils.isBlank(parts.getExtension())) {
+		if ((parts != null) && !StringUtils.isBlank(parts.getExtension())) {
 			MimeType mimetype = ConvertibleTypesEnum.getMimeTypeForExtension(parts.getExtension());
 			if (mimetype != null) {
 				mimetypeAsString = mimetype.getBaseType();

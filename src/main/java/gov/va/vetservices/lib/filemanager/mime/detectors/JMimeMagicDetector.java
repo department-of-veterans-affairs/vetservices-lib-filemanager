@@ -49,14 +49,16 @@ public class JMimeMagicDetector implements Detector {
 	@Override
 	public String detectWithFilename(final byte[] bytes, final String filename) throws IOException {
 		String mimetypeAsString = null;
-		try {
-			final MagicMatch match = Magic.getMagicMatch(bytes, true);
-			if (match != null) {
-				mimetypeAsString = match.getMimeType();
+		if (bytes != null) {
+			try {
+				final MagicMatch match = Magic.getMagicMatch(bytes, true);
+				if (match != null) {
+					mimetypeAsString = match.getMimeType();
+				}
+			} catch (final MagicParseException | MagicMatchNotFoundException | MagicException e) {
+				throw new IOException(
+						"Internal jmimemagic " + e.getClass().getSimpleName() + " while parsing file bytes: " + e.getMessage(), e);
 			}
-		} catch (final MagicParseException | MagicMatchNotFoundException | MagicException e) {
-			throw new IOException(
-					"Internal jmimemagic " + e.getClass().getSimpleName() + " while parsing file bytes: " + e.getMessage(), e);
 		}
 		return mimetypeAsString;
 	}

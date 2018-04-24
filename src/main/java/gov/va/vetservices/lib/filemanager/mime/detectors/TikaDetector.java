@@ -28,7 +28,7 @@ public class TikaDetector implements Detector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TikaDetector.class);
 
 	/** Classpath to the Tika Config file */
-	private static final String TIKA_CONFIG = "/tika-config.xml";
+	protected static final String TIKA_CONFIG = "/tika-config.xml";
 	/** Tika Config, contains the detector resources */
 	private TikaConfig tikaConfig;
 

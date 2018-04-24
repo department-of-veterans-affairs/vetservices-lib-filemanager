@@ -28,6 +28,7 @@ public class FileManagerImplTest {
 	public void testValidateFileForPDFConversionTest() {
 
 		// happy
+
 		fileDto = new FileDto();
 		fileDto.setFilebytes(STRING_BYTES);
 		fileDto.setFilename(STRING_FILENAME);
@@ -45,6 +46,22 @@ public class FileManagerImplTest {
 		assertNotNull(response.getMessages());
 		assertTrue(!response.getMessages().isEmpty());
 		assertNull(response.getFileDto());
+
+		fileDto = new FileDto();
+		fileDto.setFilebytes(null);
+		fileDto.setFilename(STRING_FILENAME);
+		response = fileManagerImpl.validateFileForPDFConversion(fileDto);
+		assertNotNull(response);
+		assertNotNull(response.getMessages());
+		assertTrue(!response.getMessages().isEmpty());
+
+		fileDto = new FileDto();
+		fileDto.setFilebytes(STRING_BYTES);
+		fileDto.setFilename(null);
+		response = fileManagerImpl.validateFileForPDFConversion(fileDto);
+		assertNotNull(response);
+		assertNotNull(response.getMessages());
+		assertTrue(!response.getMessages().isEmpty());
 	}
 
 	@Test

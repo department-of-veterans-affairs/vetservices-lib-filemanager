@@ -16,6 +16,7 @@ import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
 import gov.va.vetservices.lib.filemanager.mime.detectors.FileManagerDetector;
 import gov.va.vetservices.lib.filemanager.mime.detectors.JMimeMagicDetector;
 import gov.va.vetservices.lib.filemanager.mime.detectors.TikaDetector;
+import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 /**
  * Uses jMimeMagic to attempt detection of the MIME type of a byte array.
@@ -121,7 +122,7 @@ public class MimeTypeDetector {
 		if ((withMagic == null) && (withFilename == null)) {
 			// both are null, do nothing
 		} else if ((withMagic == null) || (withFilename == null)) {
-			winner = withMagic == null ? (withFilename == null ? null : withFilename) : withMagic;
+			winner = withMagic == null ? withFilename : withMagic;
 		} else if (!withMagic.equals(withFilename)) {
 			winner = withMagic;
 		} else {
@@ -178,10 +179,10 @@ public class MimeTypeDetector {
 	 */
 	private void checkContentVsExtension(String detectedType, String derivedtype, String filename) throws FileManagerException {
 		if (!derivedtype.equals(detectedType)) {
-			String fileExt = derivedtype.contains("/") ? derivedtype.substring(derivedtype.indexOf("/") + 1) : derivedtype;
-			String detectedSubtype =
-					(detectedType != null) && detectedType.contains("/") ? detectedType.substring(detectedType.indexOf("/") + 1)
-							: detectedType;
+			String fileExt = FileManagerUtils.splitOnLastOf(derivedtype, '.')[1];
+			fileExt = StringUtils.isBlank(fileExt) ? derivedtype : fileExt;
+			String detectedSubtype = FileManagerUtils.splitOnLastOf(detectedType, '.')[1];
+			detectedSubtype = StringUtils.isBlank(detectedSubtype) ? detectedType : detectedSubtype;
 
 			LOGGER.error("MIME type detection mismatch. File: " + filename + "; Type by filename extension: " + derivedtype
 					+ "; Type by magic byte detection: " + detectedType);

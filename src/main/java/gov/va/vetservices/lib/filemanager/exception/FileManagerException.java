@@ -38,7 +38,7 @@ public class FileManagerException extends Exception {
 	 * @return the message (text)
 	 */
 	@Override
-	public String getMessage() {
+	public String getMessage() { // NOSONAR - explicit override for the javadoc
 		return super.getMessage();
 	}
 

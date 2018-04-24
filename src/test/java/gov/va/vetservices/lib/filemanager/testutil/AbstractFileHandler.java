@@ -28,6 +28,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
+import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
@@ -164,7 +165,7 @@ public abstract class AbstractFileHandler {
 	 */
 	protected boolean isRelativePath(Path path) {
 		return (path != null) && FileManagerUtils.hasFilename(path.toFile().getName())
-				&& !StringUtils.startsWithAny(path.toString(), FileManagerUtils.ILLEGAL_FILE_START_CHARS);
+				&& !StringUtils.startsWithAny(path.toString(), FileManagerProperties.FILE_NAME_ILLEGAL_STRING);
 	}
 
 	/**

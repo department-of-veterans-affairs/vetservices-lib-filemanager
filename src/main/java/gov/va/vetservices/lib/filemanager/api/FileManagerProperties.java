@@ -43,17 +43,17 @@ public class FileManagerProperties {
 	/** Constant for file extensions that are supported for conversion to PDF */
 	public static final String CONVERTIBLE_FILE_EXTENSIONS_STRING = Arrays.toString(ConvertibleTypesEnum.values());
 
+	/* SUPPORTING constants */
+
+	/** Array of characters that are not allowed at the beginning of a file names: {@code . / \ :} */
+	public static final String[] FILE_NAME_ILLEGAL_CHARS = { "/", "\\", ":", "." }; // NOSONAR - will be used
+	/** String of characters that are not allowed at the beginning of a file names: {@code . / \ :} */
+	public static final String FILE_NAME_ILLEGAL_STRING = Arrays.toString(FILE_NAME_ILLEGAL_CHARS);
+
 	public static final int MAX_OS_FILENAME_LENGTH = 255;
 	public static final int MAX_OS_FILEPATH_LENGTH = 4096;
 
 	/* MEMBERS FOR EXPOSED CONSTANTS */
-
-//	/**
-//	 * Do not instantiate
-//	 */
-//	FileManagerProperties() {
-//		throw new IllegalAccessError("FileManagerProperties is a static class. Do not instantiate it.");
-//	}
 
 //	@Value("${" + KEY_FILE_MAX_BYTES + ":" + DEFAULT_FILE_MAX_BYTES + "}")
 	@Value("${filemanager.config.file.max.bytes:26214400}")

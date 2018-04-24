@@ -9,6 +9,7 @@ import gov.va.ascent.framework.messages.Message;
  *
  * @author aburkholder
  */
+@FunctionalInterface
 public interface Validator<T> {
 
 	/**

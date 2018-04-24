@@ -36,14 +36,19 @@ public class FilenameValidator implements Validator<ValidatorDto> {
 	 * <p>
 	 */
 	@Override
-	public List<Message> validate(ValidatorArg<ValidatorDto> toValidate) {
+	public List<Message> validate(ValidatorArg<ValidatorDto> toValidate) {  // NOSONAR - shut up complaint about cyclomatic complexity
 		ValidatorDto vdto = toValidate.getValue();
 
-		if (vdto.getFileDto() == null) {
+		if (vdto == null) {
+
+			throw new IllegalArgumentException("Validator Dto cannot be null.");
+
+		} else if (vdto.getFileDto() == null) {
 
 			vdto.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_DTO_NULL.getKey(), MessageKeys.FILE_DTO_NULL.getMessage());
 
-		} else if (StringUtils.isBlank(vdto.getFileDto().getFilename()) || StringUtils.isBlank(vdto.getFileParts().getName())) {
+		} else if (StringUtils.isBlank(vdto.getFileDto().getFilename()) || StringUtils.isBlank(vdto.getFileParts().getName())
+				|| StringUtils.isBlank(vdto.getFileParts().getExtension())) {
 
 			vdto.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_NAME_NULL_OR_EMPTY.getKey(),
 					MessageKeys.FILE_NAME_NULL_OR_EMPTY.getMessage());
@@ -52,6 +57,12 @@ public class FilenameValidator implements Validator<ValidatorDto> {
 
 			vdto.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_NAME_TOO_LONG.getKey(),
 					MessageKeys.FILE_NAME_TOO_LONG.getMessage());
+
+		} else if (StringUtils.startsWithAny(FileManagerProperties.FILE_NAME_ILLEGAL_STRING, vdto.getFileParts().getName())
+				|| StringUtils.endsWithAny(FileManagerProperties.FILE_NAME_ILLEGAL_STRING, vdto.getFileParts().getName())) {
+
+			vdto.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_NAME_MALFORMED.getKey(),
+					MessageKeys.FILE_NAME_MALFORMED.getMessage());
 
 		}
 

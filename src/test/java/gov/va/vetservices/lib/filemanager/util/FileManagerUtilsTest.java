@@ -108,4 +108,81 @@ public class FileManagerUtilsTest {
 		assertNull("ValidatorDto.fileParts should be null.", vdto.getFileParts());
 	}
 
+	@Test
+	public final void testSplitOnLastOf() {
+		final char c = '/';
+		final String empty = "";
+		final String blank = "   ";
+		final String bstringb = " string ";
+		final String string = "string";
+		final String cstring = "/string";
+		final String stringc = "string/";
+		final String strcing = "str/ing";
+		final String strcingcses = "str/ing/ses";
+
+		String[] parts = FileManagerUtils.splitOnLastOf(null, c);
+		assertNotNull(parts);
+		assertTrue(parts.length == 2);
+		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		assertTrue(parts[0] == null);
+		assertTrue(parts[1] == null);
+
+		parts = FileManagerUtils.splitOnLastOf(empty, c);
+		assertNotNull(parts);
+		assertTrue(parts.length == 2);
+		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		assertTrue(parts[0] == null);
+		assertTrue(parts[1] == null);
+
+		parts = FileManagerUtils.splitOnLastOf(blank, c);
+		assertNotNull(parts);
+		assertTrue(parts.length == 2);
+		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		assertTrue(parts[0] == null);
+		assertTrue(parts[1] == null);
+
+		parts = FileManagerUtils.splitOnLastOf(bstringb, c);
+		assertNotNull(parts);
+		assertTrue(parts.length == 2);
+		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		assertTrue(bstringb.equals(parts[0]));
+		assertTrue(parts[1] == null);
+
+		parts = FileManagerUtils.splitOnLastOf(string, c);
+		assertNotNull(parts);
+		assertTrue(parts.length == 2);
+		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		assertTrue(string.equals(parts[0]));
+		assertTrue(parts[1] == null);
+
+		parts = FileManagerUtils.splitOnLastOf(cstring, c);
+		assertNotNull(parts);
+		assertTrue(parts.length == 2);
+		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		assertTrue(empty.equals(parts[0]));
+		assertTrue(cstring.endsWith(parts[1]));
+
+		parts = FileManagerUtils.splitOnLastOf(stringc, c);
+		assertNotNull(parts);
+		assertTrue(parts.length == 2);
+		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		assertTrue(stringc.startsWith(parts[0]));
+		assertTrue(empty.equals(parts[1]));
+
+		parts = FileManagerUtils.splitOnLastOf(strcing, c);
+		assertNotNull(parts);
+		assertTrue(parts.length == 2);
+		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		assertTrue("str".equals(parts[0]));
+		assertTrue("ing".equals(parts[1]));
+
+		parts = FileManagerUtils.splitOnLastOf(strcingcses, c);
+		assertNotNull(parts);
+		assertTrue(parts.length == 2);
+		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		assertTrue("str/ing".equals(parts[0]));
+		assertTrue("ses".equals(parts[1]));
+
+	}
+
 }

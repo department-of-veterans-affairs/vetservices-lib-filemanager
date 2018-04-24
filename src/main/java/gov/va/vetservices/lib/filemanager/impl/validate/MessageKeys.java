@@ -1,6 +1,7 @@
 package gov.va.vetservices.lib.filemanager.impl.validate;
 
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
+import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 public enum MessageKeys {
 
@@ -8,6 +9,9 @@ public enum MessageKeys {
 	FILE_DTO_NULL("filemanager.file.dto.null", "File data transfer object cannot be null."),
 	/** Filename was null or empty */
 	FILE_NAME_NULL_OR_EMPTY("filemanager.file.name.null.or.empty", "File name cannot be null or empty."),
+	/** Filename starts or ends with one of {@link FileManagerUtils.ILLEGAL_FILE_START_CHARS} */
+	FILE_NAME_MALFORMED("filemanager.file.name.nmalformed",
+			"File name is malformed. Filenames cannot begin or end with any of " + FileManagerProperties.FILE_NAME_ILLEGAL_CHARS),
 	/** Filename was too long */
 	FILE_NAME_TOO_LONG("filemanager.file.name.length", "File name must be less than " + maxFilenameLength() + " characters."),
 	/** Byte array was null or empty */
@@ -28,15 +32,25 @@ public enum MessageKeys {
 			"Filename {0} cannot be verified to have {1} content. Ensure your file has a valid file extension, or try a different format.Supported types are: "
 					+ convertibleTypes()),
 	/** PDF content is invalid. <b>Args:</b> {@code filename} */
-	PDF_CONTENT_INVALID("filemanager.pdf.content.invalid", "The content of {0} is corrput or otherwise invalid."),
+	PDF_CONTENT_INVALID("filemanager.pdf.content.invalid", "The content of {0} is locked, corrput or otherwise invalid."),
 	/** The PDF is locked with Adobe encryption. <b>Args:</b> {@code filename} */
 	PDF_LOCKED("filemanager.pdf.locked", "The file {0} is locked with Adobe encryption. Unlock the PDF file."),
 	/** The PDF is locked with Adobe encryption. <b>Args:</b> {@code filename} */
 	PDF_TAMPERED("filemanager.pdf.tampered", "The file {0} is signed and has been tampered with."),
+	/** PDF is unreadable. <b>Args:</b> {@code filename} */
+	PDF_UNREADABLE("filemanager.pdf.unreadable", "The file {0} cannot be read. It may be corrupt or tampered with."),
 	/** The image is not convertible for PDF. <b>Args:</b> {@code filename, itextErrorMessage} */
 	IMAGE_ITEXT_NOT_CONVERTIBLE("filemanager.pdf.image.not.consumable", "The file {0} cannot be used in a PDF. Error: {1}"),
 	/** Internal FileManager issues that cannot be resolved at runtime */
 	FILEMANAGER_ISSUE("filemanager.internal.issue", "Internal issue occurred. Please check the application logs.");
+
+	private String key;
+	private String message;
+
+	MessageKeys(String key, String message) {
+		this.key = key;
+		this.message = message;
+	}
 
 	/**
 	 * Make supported (convertible) types available to the enumerations.
@@ -49,14 +63,6 @@ public enum MessageKeys {
 
 	private static String maxFilenameLength() {
 		return FileManagerProperties.DEFAULT_FILENAME_MAX_LENGTH;
-	}
-
-	private String key;
-	private String message;
-
-	MessageKeys(String key, String message) {
-		this.key = key;
-		this.message = message;
 	}
 
 	/**

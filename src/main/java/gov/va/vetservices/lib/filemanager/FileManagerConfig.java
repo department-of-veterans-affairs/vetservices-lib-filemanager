@@ -17,6 +17,10 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 @ComponentScan(basePackages = { "gov.va.vetservices.lib.filemanager.*" }, excludeFilters = @Filter(Configuration.class))
 public class FileManagerConfig {
 
+	FileManagerConfig() {
+		super();
+	}
+
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();

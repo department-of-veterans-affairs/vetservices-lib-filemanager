@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author aburkholder
  */
+//Sonar raises a major violation for exceptions that are not logged - even though they are clearly logged.
+@java.lang.SuppressWarnings("squid:S1166")
 public enum ConvertibleTypesEnum {
 
 	/** Type for extension "bmp": image/bmp */
@@ -78,9 +80,9 @@ public enum ConvertibleTypesEnum {
 		MimeType mt = null;
 		try {
 			mt = new MimeType(this.mimetype);
-		} catch (MimeTypeParseException e) {
+		} catch (MimeTypeParseException e) { // squid:S1166
 			// should not happen, log it
-			LOGGER.error("Unexpected issue parsing " + this.mimetype + " into a MimeType object.");
+			LOGGER.error("Unexpected issue parsing " + this.mimetype + " into a MimeType object.", e);
 		}
 		return mt;
 	}
@@ -116,7 +118,8 @@ public enum ConvertibleTypesEnum {
 		try {
 			MimeType mt = new MimeType(mimetype);
 			return hasMimeType(mt);
-		} catch (MimeTypeParseException e) {
+		} catch (MimeTypeParseException e) { // squid:S1166
+			LOGGER.debug("Unexpected issue parsing " + mimetype + " into a MimeType object.", e);
 			return false;
 		}
 	}
@@ -130,18 +133,10 @@ public enum ConvertibleTypesEnum {
 	public static boolean hasMimeType(MimeType mimetype) {
 		boolean matched = false;
 
-		if (mimetype != null) {
-			for (ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
-				try {
-					if (mimetype.match(enumeration.getMimeString())) {
-						matched = true;
-						break;
-					}
-					// CHECKSTYLE:OFF
-				} catch (MimeTypeParseException e) {
-					// INTENTIONALLY do nothing, just return false
-				}
-				// CHECKSTYLE:ON
+		for (ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
+			if (enumeration.getMimeType().match(mimetype)) {
+				matched = true;
+				break;
 			}
 		}
 

@@ -16,10 +16,15 @@ public class InterrogateFileTest {
 
 	private static final byte[] STRING_BYTES = "This is a test.".getBytes();
 	private static final String STRING_FILENAME = "test.txt";
+	private static final String STRING_FILENAME_NO_NAME = ".txt";
+	private static final String STRING_FILENAME_NO_EXT = "test.";
+	private static final String STRING_FILENAME_MALFORMED = "test..txt";
+	private static final String STRING_FILENAME_UNSUPPORTED = "test.chat";
 
 	private InterrogateFile interrogateFile = new InterrogateFile();
 	FileDto filedto;
 	ValidatorDto vdto;
+	FileManagerResponse response;
 
 	@Before
 	public void setUp() {
@@ -28,7 +33,8 @@ public class InterrogateFileTest {
 
 	@Test
 	public final void testCanConvertToPdf() {
-		// heavy testing of the features used by InterrogateFile is done in other tests
+
+		// happy
 
 		filedto = new FileDto();
 		filedto.setFilebytes(STRING_BYTES);
@@ -36,9 +42,53 @@ public class InterrogateFileTest {
 		vdto = FileManagerUtils.makeValidatorDto(filedto);
 		assertNotNull(vdto);
 
-		FileManagerResponse response = interrogateFile.canConvertToPdf(vdto);
+		response = interrogateFile.canConvertToPdf(vdto);
 		assertNotNull(response);
-		assertTrue(response.getMessages().size() == 0);
+		assertTrue(response.getMessages().isEmpty());
+		assertNull(response.getFileDto());
+
+		// sad
+
+		filedto.setFilebytes(STRING_BYTES);
+		filedto.setFilename(null);
+		response = interrogateFile.canConvertToPdf(vdto);
+		assertNotNull(response);
+		assertTrue(!response.getMessages().isEmpty());
+		assertNull(response.getFileDto());
+
+		filedto.setFilebytes(null);
+		filedto.setFilename(STRING_FILENAME);
+		response = interrogateFile.canConvertToPdf(vdto);
+		assertNotNull(response);
+		assertTrue(!response.getMessages().isEmpty());
+		assertNull(response.getFileDto());
+
+		filedto.setFilebytes(STRING_BYTES);
+		filedto.setFilename(STRING_FILENAME_NO_NAME);
+		response = interrogateFile.canConvertToPdf(vdto);
+		assertNotNull(response);
+		assertTrue(!response.getMessages().isEmpty());
+		assertNull(response.getFileDto());
+
+		filedto.setFilebytes(STRING_BYTES);
+		filedto.setFilename(STRING_FILENAME_NO_EXT);
+		response = interrogateFile.canConvertToPdf(vdto);
+		assertNotNull(response);
+		assertTrue(!response.getMessages().isEmpty());
+		assertNull(response.getFileDto());
+
+		filedto.setFilebytes(STRING_BYTES);
+		filedto.setFilename(STRING_FILENAME_MALFORMED);
+		response = interrogateFile.canConvertToPdf(vdto);
+		assertNotNull(response);
+		assertTrue(!response.getMessages().isEmpty());
+		assertNull(response.getFileDto());
+
+		filedto.setFilebytes(STRING_BYTES);
+		filedto.setFilename(STRING_FILENAME_UNSUPPORTED);
+		response = interrogateFile.canConvertToPdf(vdto);
+		assertNotNull(response);
+		assertTrue(!response.getMessages().isEmpty());
 		assertNull(response.getFileDto());
 	}
 

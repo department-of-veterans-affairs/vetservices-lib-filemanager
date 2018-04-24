@@ -2,6 +2,7 @@ package gov.va.vetservices.lib.filemanager.util;
 
 import org.apache.commons.lang3.StringUtils;
 
+import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
@@ -13,9 +14,6 @@ import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
  *
  */
 public class FileManagerUtils {
-
-	/** Characters that are not allowed at the beginning of a file names: {@code . / \ :} */
-	public static final String[] ILLEGAL_FILE_START_CHARS = { "/", "\\", ":", "." };
 
 	/**
 	 * Do not instantiate
@@ -31,7 +29,7 @@ public class FileManagerUtils {
 	 * @return boolean
 	 */
 	public static boolean hasFilename(String filename) {
-		return !(StringUtils.isBlank(filename) || StringUtils.startsWithAny(filename, ILLEGAL_FILE_START_CHARS));
+		return !(StringUtils.isBlank(filename) || StringUtils.startsWithAny(filename, FileManagerProperties.FILE_NAME_ILLEGAL_CHARS));
 	}
 
 	/**
@@ -62,7 +60,7 @@ public class FileManagerUtils {
 
 	/**
 	 * If filename is not null or empty, returns a populated {@link FileParts} (though it is possible for the members of FileParts to
-	 * be {@code null}, otherwise returns {@code null}
+	 * be {@code null} or empty). Otherwise returns {@code null}
 	 *
 	 * @param filename
 	 * @return FileParts
@@ -73,14 +71,7 @@ public class FileManagerUtils {
 		if (StringUtils.isNotBlank(filename)) {
 			fileParts = new FileParts();
 
-			String[] filenames = { null, null };
-
-			if (filename.contains(".")) {
-				filenames[0] = StringUtils.truncate(filename, filename.lastIndexOf("."));
-				filenames[1] = StringUtils.substring(filename, filename.lastIndexOf(".") + 1);
-			} else {
-				filenames[0] = StringUtils.trim(filename);
-			}
+			String[] filenames = splitOnLastOf(filename, '.');
 
 			if (StringUtils.isBlank(filenames[0])) {
 				filenames[0] = null;
@@ -96,4 +87,40 @@ public class FileManagerUtils {
 		return fileParts;
 	}
 
+	/**
+	 * Split a string into two parts, splitting on the last occurrence of the separator argument.
+	 * <p>
+	 * If the separator does not appear in the string, the {@code string} will be returned on the first member of the array.
+	 * It is possible for either array element to be {@code null} or empty.
+	 *
+	 * <pre>
+	 * FileManagerutils.splitOnLastOf(null,    'x') = { null,   null  }
+	 * FileManagerutils.splitOnLastOf("",      'x') = { null,   null  }
+	 * FileManagerutils.splitOnLastOf("   ",   'x') = { null,   null  }
+	 * FileManagerutils.splitOnLastOf(" bc ",  'x') = { " bc ", null  }
+	 * FileManagerutils.splitOnLastOf("abcd",  'x') = { "abcd", null  }
+	 * FileManagerutils.splitOnLastOf("abcd",  'a') = { "",     "bcd" }
+	 * FileManagerutils.splitOnLastOf("abcd,   'd') = { "abc",  ""    }
+	 * FileManagerutils.splitOnLastOf("abcd",  'b') = { "a",    "cd"  }
+	 * FileManagerutils.splitOnLastOf("abcba", 'b') = { "abc",   "a"  }
+	 * </pre>
+	 *
+	 * @param string the string to split
+	 * @param separator the character on which to split the string
+	 * @return String[] an array of two values
+	 */
+	public static String[] splitOnLastOf(String string, char separator) {
+		String[] separated = { null, null };
+
+		if (!StringUtils.isBlank(string)) {
+			if (string.contains(String.valueOf(separator))) {
+				separated[0] = StringUtils.truncate(string, string.lastIndexOf(separator));
+				separated[1] = StringUtils.substring(string, string.lastIndexOf(separator) + 1);
+			} else {
+				separated[0] = string;
+			}
+		}
+
+		return separated;
+	}
 }
