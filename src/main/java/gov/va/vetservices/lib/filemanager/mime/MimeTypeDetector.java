@@ -92,7 +92,7 @@ public class MimeTypeDetector {
 	 * @throws FileManagerException mismatch between detected and derived types
 	 */
 	private void checkContentVsExtension(MimeType detectedType, MimeType derivedtype, FileParts parts) throws FileManagerException {
-		if (!derivedtype.equals(detectedType)) {
+		if (!derivedtype.match(detectedType)) {
 			String filename = parts.getName() + AbstractDetector.separator + parts.getExtension();
 			LOGGER.error("MIME type detection mismatch. File: " + filename + "; Type by filename extension: " + derivedtype
 					+ "; Type by magic byte detection: " + detectedType);
