@@ -31,7 +31,6 @@ import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
-import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 /**
@@ -344,43 +343,32 @@ public abstract class AbstractFileHandler {
 		List<File> files = null;
 
 		// using hasMimeType() eliminates primary/* and other non-relevant directory search attempts
-		if (ConvertibleTypesEnum.hasMimeType(mimetype)) {
+//		if (ConvertibleTypesEnum.hasMimeType(mimetype)) {
 
-			try {
-				// directory to get files from is based on the mime type, eg .../text/plain
-				PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-				Resource[] resources = resolver.getResources("classpath*:" + DEFAULT_INPUT_DIR + mimetype.toString() + "/**/*.*");
-//				File dir = Paths.get(INPUT_BASE_DIR + mimetype.toString()).toFile();
-//				if (dir.exists()) {
-				if ((resources != null) && (resources.length > 0)) {
-					if (files == null) {
-						files = new ArrayList<>();
-					}
+		try {
+			// directory to get files from is based on the mime type, eg .../text/plain
+			PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+			Resource[] resources = resolver.getResources("classpath*:" + DEFAULT_INPUT_DIR + mimetype.toString() + "/**/*.*");
+			if ((resources != null) && (resources.length > 0)) {
+				if (files == null) {
+					files = new ArrayList<>();
+				}
 
-					for (Resource resource : resources) {
-						if (resource.exists()) {
-							File file = resource.getFile();
-							if (file.isFile()) {
-								files.add(file);
-							}
+				for (Resource resource : resources) {
+					if (resource.exists()) {
+						File file = resource.getFile();
+						if (file.isFile()) {
+							files.add(file);
 						}
 					}
-//					File[] fileArray = dir.listFiles(new FileFilter() {
-//						@Override
-//						public boolean accept(File file) {
-//							return file.isFile();
-//						}
-//					});
-//					if ((fileArray != null) && (fileArray.length > 0)) {
-//						files = Arrays.asList(fileArray);
-//					}
 				}
-			} catch (Throwable e) {
-				e.printStackTrace();
-				throw new IllegalArgumentException(
-						"File IO or security problem getting files in direcoty: " + DEFAULT_INPUT_DIR + mimetype.toString(), e);
 			}
+		} catch (Throwable e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException(
+					"File IO or security problem getting files in direcoty: " + DEFAULT_INPUT_DIR + mimetype.toString(), e);
 		}
+//		}
 		return files;
 	}
 }

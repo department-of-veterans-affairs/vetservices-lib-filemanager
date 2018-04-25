@@ -6,12 +6,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 
 import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -24,22 +21,21 @@ import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
-public class JMimeMagicDetectorTest extends AbstractFileHandler {
+public class FilenameDetectorTest extends AbstractFileHandler {
 
-	private static final String JMIME_DEFAULT = "text/plain";
+//	private final String mimetype = ConvertibleTypesEnum.TXT.getMimeString();
+//	private final FileParts parts = FileManagerUtils.getFileParts("test.txt");
 
-	private static final String UNSUPPORTED_MIMETYPE = "application/stl";
-
-	private JMimeMagicDetector jMimeMagicDetector;
+	FilenameDetector fileManagerDetector;
 
 	@Before
 	public void setUp() throws Exception {
-		jMimeMagicDetector = new JMimeMagicDetector();
-		assertNotNull(jMimeMagicDetector);
+		fileManagerDetector = new FilenameDetector();
+		assertNotNull(fileManagerDetector);
 	}
 
 	@Test
-	public final void testDetect() throws IOException {
+	public final void testDetect() {
 		// test all convertible types
 		for (ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
 			List<File> files = super.listFilesByMimePath(enumeration.getMimeType());
@@ -52,11 +48,9 @@ public class JMimeMagicDetectorTest extends AbstractFileHandler {
 					fail("File enumerated by AbstractFileManager.getFilesByMimePath() returned non-existent file " + file.getPath());
 				}
 
-				byte[] bytes = Files.readAllBytes(file.toPath());
 				FileParts parts = FileManagerUtils.getFileParts(file.getName());
 				try {
-					MimeType mimetype = jMimeMagicDetector.detect(bytes, parts);
-					System.out.println(file.getName() + "\t " + mimetype.getBaseType());
+					MimeType mimetype = fileManagerDetector.detect(null, parts);
 					assertNotNull(mimetype);
 					if (!parts.getName().startsWith("NOT_")) {
 						assertTrue(enumeration.getMimeType().match(mimetype));
@@ -76,51 +70,31 @@ public class JMimeMagicDetectorTest extends AbstractFileHandler {
 
 		// test a non-convertible but valid type
 		FileParts parts = new FileParts();
-		parts.setName("test");
-		parts.setExtension("stl");
-		MimeType testtype = null;
+		parts.setExtension("art");
+
 		try {
-			testtype = new MimeType(UNSUPPORTED_MIMETYPE);
-		} catch (MimeTypeParseException e1) {
-			e1.printStackTrace();
-			fail("Why couldn't MimeType parser handle " + UNSUPPORTED_MIMETYPE);
-		}
-		List<File> files = super.listFilesByMimePath(testtype);
+			MimeType mimetype = fileManagerDetector.detect(null, parts);
+			assertNotNull(mimetype);
 
-		for (File file : files) {
-			try {
-				byte[] moreBytes = Files.readAllBytes(file.toPath());
-				MimeType mimetype = jMimeMagicDetector.detect(moreBytes, parts);
-				assertNotNull(mimetype);
-
-			} catch (FileManagerException e) {
-				assertNotNull(e);
-				if (MessageKeys.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
-					e.printStackTrace();
-					fail("Something went wrong: " + e.getKey() + ": " + e.getMessage());
-				}
-				System.out.println("Threw " + e.getClass().getSimpleName() + " - " + e.getKey() + ": " + e.getMessage());
-				assertTrue(!StringUtils.isBlank(e.getKey()));
+		} catch (FileManagerException e) {
+			assertNotNull(e);
+			if (MessageKeys.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
+				e.printStackTrace();
+				fail("Something went wrong: " + e.getKey() + ": " + e.getMessage());
 			}
+			System.out.println("Threw " + e.getClass().getSimpleName() + " - " + e.getKey() + ": " + e.getMessage());
+			assertTrue(!StringUtils.isBlank(e.getKey()));
 		}
 	}
 
 	@Test
 	public final void testDetect_Invalid() {
-		// null bytes and parts
+		// null extension
 		FileParts parts = new FileParts();
-		parts.setName(null);
 		parts.setExtension(null);
 
-		testNullBytesAndParts(null, null);
-		testNullBytesAndParts(null, parts);
-		testNullBytesAndParts(new byte[] {}, parts);
-
-	}
-
-	private void testNullBytesAndParts(byte[] bytes, FileParts parts) {
 		try {
-			MimeType mimetype = jMimeMagicDetector.detect(bytes, parts);
+			MimeType mimetype = fileManagerDetector.detect(null, parts);
 			assertNull(mimetype);
 
 		} catch (FileManagerException e) {
@@ -131,8 +105,46 @@ public class JMimeMagicDetectorTest extends AbstractFileHandler {
 			}
 			System.out.println("Threw " + e.getClass().getSimpleName() + " - " + e.getKey() + ": " + e.getMessage());
 			assertTrue(!StringUtils.isBlank(e.getKey()));
-			assertTrue(MessageKeys.FILE_BYTES_NULL_OR_EMPTY.getKey().equals(e.getKey())
-					|| MessageKeys.FILE_BYTES_UNREADABLE.getKey().equals(e.getKey()));
+			assertTrue(MessageKeys.FILE_TYPE_UNVERIFIABLE.getKey().equals(e.getKey()));
 		}
+
+		// empty extension
+		parts = new FileParts();
+		parts.setExtension("");
+
+		try {
+			MimeType mimetype = fileManagerDetector.detect(null, parts);
+			assertNull(mimetype);
+
+		} catch (FileManagerException e) {
+			assertNotNull(e);
+			if (MessageKeys.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
+				e.printStackTrace();
+				fail("Something went wrong: " + e.getKey() + ": " + e.getMessage());
+			}
+			System.out.println("Threw " + e.getClass().getSimpleName() + " - " + e.getKey() + ": " + e.getMessage());
+			assertTrue(!StringUtils.isBlank(e.getKey()));
+			assertTrue(MessageKeys.FILE_TYPE_UNVERIFIABLE.getKey().equals(e.getKey()));
+		}
+
+		// non-existent extension
+		parts = new FileParts();
+		parts.setExtension("abc123");
+
+		try {
+			MimeType mimetype = fileManagerDetector.detect(null, parts);
+			assertNull(mimetype);
+
+		} catch (FileManagerException e) {
+			assertNotNull(e);
+			if (MessageKeys.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
+				e.printStackTrace();
+				fail("Something went wrong: " + e.getKey() + ": " + e.getMessage());
+			}
+			System.out.println("Threw " + e.getClass().getSimpleName() + " - " + e.getKey() + ": " + e.getMessage());
+			assertTrue(!StringUtils.isBlank(e.getKey()));
+			assertTrue(MessageKeys.FILE_TYPE_UNVERIFIABLE.getKey().equals(e.getKey()));
+		}
+
 	}
 }

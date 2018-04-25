@@ -16,6 +16,9 @@ public enum MessageKeys {
 	FILE_NAME_TOO_LONG("filemanager.file.name.length", "File name must be less than " + maxFilenameLength() + " characters."),
 	/** Byte array was null or empty */
 	FILE_BYTES_NULL_OR_EMPTY("filemanager.file.bytes.null.or.empty", "File content cannot be null or empty array."),
+	/** Byte array cannot be read. <b>Args:</b> {@code filename} */
+	FILE_BYTES_UNREADABLE("filemanager.file.bytes.unreadable",
+			"Content of {0} cannot be read due to corrupted file or an unexpected issue."),
 	/** Byte array is too large. <b>Args:</b> {@code maxSizeMB} */
 	FILE_BYTES_SIZE("filemanager.file.bytes.size", "File size exceeds maximum allowable size of {0}."),
 	/** Filename extension is not convertible to PDF. <b>Args:</b> {@code filename} */
@@ -27,9 +30,9 @@ public enum MessageKeys {
 	/** File extension doesn't match detected type. <b>Args:</b> {@code filename, detectedSubtype, fileExtension} */
 	FILE_EXTENSION_CONTENT_MISMATCH("filemanager.file.extension.content.mismatch",
 			"Filename {0} type does not match file content, or the file is corrupt. The file content is {1}, not {2}."),
-	/** File extension doesn't match detected type. <b>Args:</b> {@code filename, fileExtension} */
+	/** There is uncertainty about the MIME type based on content and file extension. <b>Args:</b> {@code filename, fileExtension} */
 	FILE_TYPE_UNVERIFIABLE("filemanager.file.type.unverifiable",
-			"Filename {0} cannot be verified to have {1} content. Ensure your file has a valid file extension, or try a different format.Supported types are: "
+			"Filename {0} cannot be verified to have {1} content. Ensure your file has a valid file extension, or try a different format. Supported types are: "
 					+ convertibleTypes()),
 	/** PDF content is invalid. <b>Args:</b> {@code filename} */
 	PDF_CONTENT_INVALID("filemanager.pdf.content.invalid", "The content of {0} is locked, corrput or otherwise invalid."),
