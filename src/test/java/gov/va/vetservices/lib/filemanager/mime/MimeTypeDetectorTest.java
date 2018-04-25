@@ -18,10 +18,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 import gov.va.vetservices.lib.filemanager.testutil.TestingConstants;
+import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 public class MimeTypeDetectorTest extends AbstractFileHandler {
 
@@ -62,6 +64,7 @@ public class MimeTypeDetectorTest extends AbstractFileHandler {
 					byte[] bytes = Files.readAllBytes(file.toPath());
 					String filename = file.getName();
 					String msgPrefix = file.getPath() + ": ";
+					FileParts parts = FileManagerUtils.getFileParts(filename);
 
 					if (filename.contains("Corrupt24Bit")) {
 						System.out.println("step from here");
@@ -70,7 +73,7 @@ public class MimeTypeDetectorTest extends AbstractFileHandler {
 					if (filename.startsWith(TestingConstants.TEST_FILE_PREFIX_LEGITIMATE)) {
 						MimeType mimetype = null;
 						try {
-							mimetype = mimeTypeDetector.detectMimeType(bytes, filename);
+							mimetype = mimeTypeDetector.detectMimeType(bytes, parts);
 							assertNotNull(msgPrefix + " detected as null", mimetype);
 
 							String mimestring = mimetype.toString();
@@ -89,7 +92,7 @@ public class MimeTypeDetectorTest extends AbstractFileHandler {
 						// so far, corrupt files have typically still been detected correctly
 						MimeType mimetype = null;
 						try {
-							mimetype = mimeTypeDetector.detectMimeType(bytes, filename);
+							mimetype = mimeTypeDetector.detectMimeType(bytes, parts);
 							assertNotNull(msgPrefix + " detected as null", mimetype);
 
 							String mimestring = mimetype.toString();
@@ -107,7 +110,7 @@ public class MimeTypeDetectorTest extends AbstractFileHandler {
 					} else if (filename.startsWith(TestingConstants.TEST_FILE_PREFIX_ILLEGITIMATE)) {
 						MimeType mimetype = null;
 						try {
-							mimetype = mimeTypeDetector.detectMimeType(bytes, filename);
+							mimetype = mimeTypeDetector.detectMimeType(bytes, parts);
 						} catch (Exception e) {
 							assertTrue(msgPrefix + e.getClass().getSimpleName() + ": " + e.getMessage(),
 									e.getClass().isAssignableFrom(FileManagerException.class));

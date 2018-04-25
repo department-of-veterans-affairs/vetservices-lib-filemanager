@@ -134,7 +134,7 @@ public class FileConvertibleValidator implements Validator<ValidatorDto> {
 		} else {
 			try {
 				// performs all necessary checks, including extension match and supported types
-				detectedMimetype = mimeTypeDetector.detectMimeType(vdto.getFileDto().getFilebytes(), vdto.getFileDto().getFilename());
+				detectedMimetype = mimeTypeDetector.detectMimeType(vdto.getFileDto().getFilebytes(), vdto.getFileParts());
 				isValid = detectedMimetype != null;
 			} catch (FileManagerException e) { // squid:S1166
 				LOGGER.debug(e.getMessageSeverity().toString() + " " + e.getKey() + ": " + e.getMessage());
