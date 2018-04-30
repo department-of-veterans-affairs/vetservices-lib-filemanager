@@ -67,9 +67,6 @@ public class FileConvertibleValidatorTest extends AbstractFileHandler {
 					dto.setFilebytes(readBytes);
 					dto.setFilename(file.getName());
 					arg = new ValidatorArg<>(FileManagerUtils.makeValidatorDto(dto));
-					if (file.getName().equals("IS_Empty.pdf")) {
-						System.out.println("step from here");
-					}
 					messages = fileConvertibleValidator.validate(arg);
 
 					if ((messages != null) && (file.getName().contains(TestingConstants.TEST_FILE_PREFIX_CORRUPT)

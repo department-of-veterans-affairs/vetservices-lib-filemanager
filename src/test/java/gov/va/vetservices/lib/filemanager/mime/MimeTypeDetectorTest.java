@@ -66,10 +66,6 @@ public class MimeTypeDetectorTest extends AbstractFileHandler {
 					String msgPrefix = file.getPath() + ": ";
 					FileParts parts = FileManagerUtils.getFileParts(filename);
 
-					if (filename.contains("Corrupt24Bit")) {
-						System.out.println("step from here");
-					}
-
 					if (filename.startsWith(TestingConstants.TEST_FILE_PREFIX_LEGITIMATE)) {
 						MimeType mimetype = null;
 						try {

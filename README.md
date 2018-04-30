@@ -1,12 +1,14 @@
 # What is this repository for?
 
-This repository contains the VetServices Library project for FileManagement
+This repository contains the VetServices Library project for FileManagement. It provides functionality to validate filenames and file content, convert text and images to PDF, and stamp PDF files with VA headers.
 
 # Overview - VetServices Library FileManagement
 
 This project is a component JAR used to validate and process files (e.g. for conversion to PDF, etc). Include it in your project dependencies.
 
-Include the JAR in your dependencies, and access functionality through the FileManagement interface.
+The API is declared by `gov.va.vetservices.lib.filemanager.api.FileManager`
+
+Properties that can be overridden are declared in `gov.va.vetservices.lib.filemanager.api.FileManagerProperties`
 
 # Requests and Contributions
 
