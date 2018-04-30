@@ -125,7 +125,7 @@ public class AbstractFileHandlerTest {
 	}
 
 	@Test
-	public final void testGetFilesByMimePath_invalidPath() {
+	public final void testGetFilesByMimePath_BadPath() {
 		List<File> nulled = fileHandlerTester.listFilesByMimePath(null);
 		assertNull(nulled);
 

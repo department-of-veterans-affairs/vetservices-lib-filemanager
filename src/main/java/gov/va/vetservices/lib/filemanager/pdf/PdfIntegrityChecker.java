@@ -25,14 +25,7 @@ public class PdfIntegrityChecker {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PdfIntegrityChecker.class);
 
-	/**
-	 * Do not instantiate
-	 */
-	private PdfIntegrityChecker() {
-		// do nothing
-	}
-
-	public static boolean isReadable(final byte[] bytes, String filename) throws FileManagerException {
+	public boolean isReadable(final byte[] bytes, String filename) throws FileManagerException {
 		boolean isreadable = false;
 
 		PdfReader pdfReader = null;
@@ -40,16 +33,23 @@ public class PdfIntegrityChecker {
 			// The document is a valid PDF type if no exception is thrown.
 			pdfReader = newPdfReader(bytes, filename);
 
-			// throws exception if locked (e.g. encrypted)
-			isLocked(pdfReader, filename);
-			// throws exception if signed PDF has been tampered with
-			isTampered(pdfReader, filename);
+			if (pdfReader != null) {
+				// throws exception if locked (e.g. encrypted)
+				isLocked(pdfReader, filename);
+				// throws exception if signed PDF has been tampered with
+				isTampered(pdfReader, filename);
 
+				isreadable = true;
+
+			} else {
+				MessageKeys msg = MessageKeys.PDF_UNREADABLE;
+				throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
+			}
 		} finally {
 			if (pdfReader != null) {
 				try {
 					pdfReader.close();
-				} catch (Throwable e) { // suppresses squid:S1166
+				} catch (Throwable e) { // NOSONAR squid:S1166
 					LOGGER.debug("Couldn't close PdfReader.");
 				}
 			}
@@ -65,11 +65,11 @@ public class PdfIntegrityChecker {
 	 * @return PdfReader the PdfReader
 	 * @throws IOException if bytes cannot be read
 	 */
-	protected static PdfReader newPdfReader(byte[] bytes, String filename) throws FileManagerException {
+	protected PdfReader newPdfReader(byte[] bytes, String filename) throws FileManagerException {
 		PdfReader reader = null;
 		try {
 			reader = new PdfReader(bytes);
-		} catch (Exception e) { // suppresses squid:S1166
+		} catch (Exception e) { // NOSONAR squid:S1166
 			if (e.getClass().isAssignableFrom(InvalidPdfException.class)) {
 				LOGGER.info("PDF file " + filename + " is unreadable.");
 				throw new FileManagerException(MessageSeverity.ERROR, MessageKeys.PDF_UNREADABLE.getKey(),
@@ -86,11 +86,19 @@ public class PdfIntegrityChecker {
 	 * @param filename the name of the file
 	 * @throws FileManagerException thrown if file is encrypted
 	 */
-	protected static final void isLocked(PdfReader pdfReader, String filename) throws FileManagerException {
-		if (pdfReader.isEncrypted() || pdfReader.is128Key()) {
+	protected final void isLocked(PdfReader pdfReader, String filename) throws FileManagerException {
+		boolean islocked = false;
+		MessageKeys msg = MessageKeys.PDF_LOCKED;
+
+		try {
+			islocked = pdfReader.isEncrypted() || pdfReader.is128Key();
+		} catch (Throwable e) { // NOSONAR - intentional
+			msg = MessageKeys.PDF_CONTENT_INVALID;
+			islocked = true;
+		}
+		if (islocked) {
 			LOGGER.debug("PDF file " + filename + " is encrypted.");
-			throw new FileManagerException(MessageSeverity.ERROR, MessageKeys.PDF_LOCKED.getKey(), MessageKeys.PDF_LOCKED.getMessage(),
-					filename);
+			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
 		}
 	}
 
@@ -101,11 +109,19 @@ public class PdfIntegrityChecker {
 	 * @param filename the name of the file
 	 * @throws FileManagerException thrown if file is tampered
 	 */
-	protected static final void isTampered(PdfReader pdfReader, String filename) throws FileManagerException {
-		if (pdfReader.isTampered()) {
+	protected final void isTampered(PdfReader pdfReader, String filename) throws FileManagerException {
+		boolean istampered = false;
+		MessageKeys msg = MessageKeys.PDF_TAMPERED;
+
+		try {
+			istampered = pdfReader.isTampered();
+		} catch (Throwable e) { // NOSONAR - intentional
+			msg = MessageKeys.PDF_CONTENT_INVALID;
+			istampered = true;
+		}
+		if (istampered) {
 			LOGGER.info("Signed PDF file " + filename + " has been tampered with.");
-			throw new FileManagerException(MessageSeverity.ERROR, MessageKeys.PDF_TAMPERED.getKey(),
-					MessageKeys.PDF_TAMPERED.getMessage(), filename);
+			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
 		}
 	}
 }

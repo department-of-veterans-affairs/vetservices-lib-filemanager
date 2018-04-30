@@ -106,7 +106,7 @@ public class JMimeMagicDetectorTest extends AbstractFileHandler {
 	}
 
 	@Test
-	public final void testDetect_Invalid() {
+	public final void testDetect_Bad() {
 		// null bytes and parts
 		FileParts parts = new FileParts();
 		parts.setName(null);
@@ -114,7 +114,8 @@ public class JMimeMagicDetectorTest extends AbstractFileHandler {
 
 		testNullBytesAndParts(null, null);
 		testNullBytesAndParts(null, parts);
-		testNullBytesAndParts(new byte[] {}, parts);
+		testNullBytesAndParts(new byte[] {}, null);
+		testNullBytesAndParts(new byte[] { 0 }, parts);
 
 	}
 
@@ -132,7 +133,8 @@ public class JMimeMagicDetectorTest extends AbstractFileHandler {
 			System.out.println("Threw " + e.getClass().getSimpleName() + " - " + e.getKey() + ": " + e.getMessage());
 			assertTrue(!StringUtils.isBlank(e.getKey()));
 			assertTrue(MessageKeys.FILE_BYTES_NULL_OR_EMPTY.getKey().equals(e.getKey())
-					|| MessageKeys.FILE_BYTES_UNREADABLE.getKey().equals(e.getKey()));
+					|| MessageKeys.FILE_BYTES_UNREADABLE.getKey().equals(e.getKey())
+					|| MessageKeys.FILE_NAME_NULL_OR_EMPTY.getKey().equals(e.getKey()));
 		}
 	}
 }

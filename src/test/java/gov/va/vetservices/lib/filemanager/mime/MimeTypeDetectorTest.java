@@ -141,7 +141,7 @@ public class MimeTypeDetectorTest extends AbstractFileHandler {
 	}
 
 	@Test
-	public final void testIsFileExtensionSupported_InvalidExtension() {
+	public final void testIsFileExtensionSupported_BadExtension() {
 		assertFalse(MimeTypeDetector.isFileExtensionSupported(null));
 		assertFalse(MimeTypeDetector.isFileExtensionSupported(TestingConstants.FILE_EXT_UNSUPPORTED));
 	}

@@ -50,12 +50,12 @@ public class JMimeMagicDetector extends AbstractDetector {
 
 		} catch (IOException e) {
 			MessageKeys msg = MessageKeys.FILE_BYTES_UNREADABLE;
-			String filename = parts.getName() + separator + parts.getExtension();
+			String filename = parts.getName() + SEPARATOR + parts.getExtension();
 			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), filename));
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
 
 		} catch (MimeTypeParseException e) {
-			String filename = parts.getName() + separator + parts.getExtension();
+			String filename = parts.getName() + SEPARATOR + parts.getExtension();
 			MessageKeys msg = MessageKeys.FILE_CONTENT_NOT_CONVERTIBLE;
 			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), filename));
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);

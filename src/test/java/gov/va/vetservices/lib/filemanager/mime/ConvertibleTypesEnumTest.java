@@ -108,7 +108,7 @@ public class ConvertibleTypesEnumTest {
 	}
 
 	@Test
-	public final void testGetMimeTypeForExtension_InvalidExt() {
+	public final void testGetMimeTypeForExtension_BadExt() {
 		assertNull(ConvertibleTypesEnum.getMimeTypeForExtension(null));
 		assertNull(ConvertibleTypesEnum.getMimeTypeForExtension(TestingConstants.FILE_EXT_UNSUPPORTED));
 	}

@@ -88,7 +88,7 @@ public class FilenameDetectorTest extends AbstractFileHandler {
 	}
 
 	@Test
-	public final void testDetect_Invalid() {
+	public final void testDetect_Bad() {
 		// null extension
 		FileParts parts = new FileParts();
 		parts.setExtension(null);

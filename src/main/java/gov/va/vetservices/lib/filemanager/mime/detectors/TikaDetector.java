@@ -72,7 +72,7 @@ public class TikaDetector extends AbstractDetector {
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
 		}
 
-		String filename = parts.getName() + separator + parts.getExtension();
+		String filename = parts.getName() + SEPARATOR + parts.getExtension();
 		try {
 			MimeType withMagic = detectByMagic(bytes);
 			MimeType withHint = detectWithFilename(bytes, filename);
@@ -81,11 +81,13 @@ public class TikaDetector extends AbstractDetector {
 			mimetype = fixKnownFlaws(mimetype, parts);
 
 		} catch (IOException e) {
+			LOGGER.debug("File " + filename + " is unreadable.");
 			MessageKeys msg = MessageKeys.FILE_BYTES_UNREADABLE;
 			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), filename));
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
 
 		} catch (MimeTypeParseException e) {
+			LOGGER.debug("MIME type '" + mimetype + "' cannot be converted to PDF.");
 			MessageKeys msg = MessageKeys.FILE_CONTENT_NOT_CONVERTIBLE;
 			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), filename));
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
@@ -178,11 +180,12 @@ public class TikaDetector extends AbstractDetector {
 	protected MimeType fixKnownFlaws(MimeType fromBytes, FileParts parts) {
 		MimeType fixed = fromBytes;
 
-		if ((fromBytes != null) && (parts != null) && !StringUtils.isBlank(parts.getExtension())
-				&& MIME_RAW_OCTECT_STREAM.equals(fromBytes.getBaseType())
-				&& StringUtils.equalsIgnoreCase(parts.getExtension(), ConvertibleTypesEnum.TXT.getExtension())) {
+		if ((fromBytes != null) && (parts != null)) {
+			if (!StringUtils.isBlank(parts.getExtension()) && MIME_RAW_OCTECT_STREAM.equals(fromBytes.getBaseType())
+					&& StringUtils.equalsIgnoreCase(parts.getExtension(), ConvertibleTypesEnum.TXT.getExtension())) {
 
-			fixed = ConvertibleTypesEnum.TXT.getMimeType();
+				fixed = ConvertibleTypesEnum.TXT.getMimeType();
+			}
 		}
 
 		return fixed;

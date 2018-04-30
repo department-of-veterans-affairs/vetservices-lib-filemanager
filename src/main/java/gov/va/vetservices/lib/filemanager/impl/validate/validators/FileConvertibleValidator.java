@@ -37,7 +37,7 @@ public class FileConvertibleValidator implements Validator<ValidatorDto> {
 
 	private MimeTypeDetector mimeTypeDetector = new MimeTypeDetector();
 
-	private MimeType detectedMimetype;
+	private PdfIntegrityChecker pdfIntegrityChecker = new PdfIntegrityChecker();
 
 	/**
 	 * <p>
@@ -56,19 +56,18 @@ public class FileConvertibleValidator implements Validator<ValidatorDto> {
 	public List<Message> validate(ValidatorArg<ValidatorDto> toValidate) {
 		ValidatorDto vdto = toValidate.getValue();
 
-		/*
-		 * The order these method calls must not be changed.
-		 * Error messages are returned on the vdto object.
-		 */
-		isExtensionSupported(vdto);
-		isMimetypeValid(vdto);
-		isConvertible(vdto);
+		MimeType detectedMimetype = null;
+		boolean convertible = false;
+		if (isExtensionSupported(vdto)) {
+			detectedMimetype = isMimetypeValid(vdto);
+			convertible = isImageConvertible(vdto, detectedMimetype);
+		}
 
-		if ((detectedMimetype != null) && ConvertibleTypesEnum.PDF.getMimeType().match(detectedMimetype)) {
+		if (convertible && (detectedMimetype != null) && ConvertibleTypesEnum.PDF.getMimeType().match(detectedMimetype)) {
 			try {
-				if (PdfIntegrityChecker.isReadable(vdto.getFileDto().getFilebytes(), vdto.getFileDto().getFilename())) {
-					vdto.addMessage(MessageSeverity.ERROR, MessageKeys.PDF_LOCKED.getKey(),
-							MessageFormat.format(MessageKeys.PDF_LOCKED.getMessage(), vdto.getFileDto().getFilename()));
+				if (!pdfIntegrityChecker.isReadable(vdto.getFileDto().getFilebytes(), vdto.getFileDto().getFilename())) {
+					vdto.addMessage(MessageSeverity.ERROR, MessageKeys.PDF_UNREADABLE.getKey(),
+							MessageFormat.format(MessageKeys.PDF_UNREADABLE.getMessage(), vdto.getFileDto().getFilename()));
 				}
 			} catch (FileManagerException e) { // squid:S1166
 				LOGGER.debug(e.getMessageSeverity().toString() + " " + e.getKey() + ": " + e.getMessage());
@@ -91,8 +90,8 @@ public class FileConvertibleValidator implements Validator<ValidatorDto> {
 	 * @param vdto
 	 * @return boolean
 	 */
-	private boolean isExtensionSupported(ValidatorDto vdto) {
-		boolean isValid = true;
+	protected boolean isExtensionSupported(ValidatorDto vdto) {
+		boolean isValid = false;
 
 		MimeType mimetype = ConvertibleTypesEnum.getMimeTypeForExtension(vdto.getFileParts().getExtension());
 		isValid = mimetype != null;
@@ -114,12 +113,12 @@ public class FileConvertibleValidator implements Validator<ValidatorDto> {
 	 * <li>if neither of the derived or detected MimeTypes are defined, it is considered a mis-match</li>
 	 * <p>
 	 *
-	 * @param vdto
-	 * @return boolean
+	 * @param vdto the ValidatorDto with the bytes and filename
+	 * @return MimeType the detected MIME type
 	 * @throws FileManagerException
 	 */
-	private boolean isMimetypeValid(ValidatorDto vdto) {
-		boolean isValid = false;
+	protected MimeType isMimetypeValid(ValidatorDto vdto) {
+		MimeType detectedMimetype = null;
 
 		// get the mime type for the extension
 		if (vdto == null) {
@@ -135,25 +134,31 @@ public class FileConvertibleValidator implements Validator<ValidatorDto> {
 			try {
 				// performs all necessary checks, including extension match and supported types
 				detectedMimetype = mimeTypeDetector.detectMimeType(vdto.getFileDto().getFilebytes(), vdto.getFileParts());
-				isValid = detectedMimetype != null;
 			} catch (FileManagerException e) { // squid:S1166
 				LOGGER.debug(e.getMessageSeverity().toString() + " " + e.getKey() + ": " + e.getMessage());
 				vdto.addMessage(e.getMessageSeverity(), e.getKey(), e.getMessage());
 			}
 		}
 
-		return isValid;
+		return detectedMimetype;
 	}
 
 	/**
-	 * Check if iText is ok with embedding the provided image.<br/>
-	 * Any MimeType other than {@code image/*} will simply return {@code true}.
+	 * Check if iText is ok with embedding the provided image.
+	 * <p>
+	 * If the detectedMimetype is <b>not</b> {@code image/*}, this method will <b>always</b> return {@code true} - it is intended for
+	 * images only, anything else is not part of this validation.
+	 * If ValidatorDto or its FileDto are {@code null}, {@code false} is always returned.
 	 *
-	 * @param vdto
-	 * @return
+	 * @param vdto the bytes and filename
+	 * @return boolean {@code true} if the image can be embedded (or the bytes are not an image)
 	 */
-	private boolean isConvertible(ValidatorDto vdto) {
+	protected boolean isImageConvertible(ValidatorDto vdto, MimeType detectedMimetype) {
 		boolean isValid = true;
+
+		if ((vdto == null) || (vdto.getFileDto() == null)) {
+			return false;
+		}
 
 		if ((detectedMimetype != null) && "image".equals(detectedMimetype.getPrimaryType())) {
 			// see if itext has any issue

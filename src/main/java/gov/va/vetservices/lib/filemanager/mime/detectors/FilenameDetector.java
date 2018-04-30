@@ -31,31 +31,37 @@ public class FilenameDetector extends AbstractDetector {
 
 	public FilenameDetector() {
 		if (props == null) {
-			synchronized (FilenameDetector.class) {
-				// double lock test (race conditions)
-				if (props == null) {
-					try {
-						props = new Properties();
+			getProps();
+		}
+	}
 
-						Resource resource =
-								(new PathMatchingResourcePatternResolver()).getResources("classpath*:" + PROPS_CLASSPATH)[0];
-						if (resource == null) {
-							throw new IOException(PROPS_CLASSPATH + " does not exist on the classpath.");
-						}
-						InputStream is = resource.getInputStream();
-						if (is == null) {
-							throw new IOException(PROPS_CLASSPATH + " cannot be opened.");
-						}
-						props.load(is);
+	/**
+	 * Load properties from {@value #PROPS_CLASSPATH} from the classpath.
+	 *
+	 * @throws IllegalArgumentException if the properties file cannot be found
+	 */
+	private static final synchronized void getProps() {
+		if (props != null) {
+			return;
+		}
+		try {
+			props = new Properties();
 
-					} catch (IOException e) {
-						String message = "FATAL ERROR: " + e.getClass().getSimpleName() + " - could not load classpath file '"
-								+ PROPS_CLASSPATH + "': " + e.getMessage();
-						LOGGER.error(message);
-						throw new IllegalArgumentException(message, e);
-					}
-				}
+			Resource resource = (new PathMatchingResourcePatternResolver()).getResources("classpath*:" + PROPS_CLASSPATH)[0];
+			if (resource == null) {
+				throw new IOException(PROPS_CLASSPATH + " does not exist on the classpath.");
 			}
+			InputStream is = resource.getInputStream();
+			if (is == null) {
+				throw new IOException(PROPS_CLASSPATH + " cannot be opened.");
+			}
+			props.load(is);
+
+		} catch (IOException e) {
+			String message = "FATAL ERROR: " + e.getClass().getSimpleName() + " - could not load classpath file '" + PROPS_CLASSPATH
+					+ "': " + e.getMessage();
+			LOGGER.error(message);
+			throw new IllegalArgumentException(message, e);
 		}
 	}
 
@@ -91,20 +97,37 @@ public class FilenameDetector extends AbstractDetector {
 		if ((parts != null) && !StringUtils.isBlank(parts.getExtension())) {
 			mimetype = ConvertibleTypesEnum.getMimeTypeForExtension(parts.getExtension());
 			if (mimetype == null) {
-				String filename = parts.getName() + separator + parts.getExtension();
-				String rawtype = URLConnection.guessContentTypeFromName(filename);
-				if (StringUtils.isBlank(rawtype)) {
-					rawtype = props.getProperty(parts.getExtension().toLowerCase());
-				}
-
-				if (rawtype != null) {
-					try {
-						mimetype = new MimeType(rawtype);
-					} catch (MimeTypeParseException e) {
-						// intentionally ignore this, just let mimetype be null
-					}
-				}
+				detectNonConvertibleTypes(parts);
 			}
+		}
+
+		return mimetype;
+	}
+
+	/**
+	 * Try to detect any MIME type, whether it is convertible or not. If not, {@code null} is returned.
+	 *
+	 * @param parts the file extension from which the MIME type is derived
+	 * @return MimeType the derived MIME type, or {@code null}
+	 */
+	private MimeType detectNonConvertibleTypes(FileParts parts) {
+		MimeType mimetype = null;
+
+		String filename = parts.getName() + SEPARATOR + parts.getExtension();
+		String rawtype = URLConnection.guessContentTypeFromName(filename);
+		if (StringUtils.isBlank(rawtype)) {
+			rawtype = props.getProperty(parts.getExtension().toLowerCase());
+		}
+
+		if (rawtype != null) {
+			try {
+				mimetype = new MimeType(rawtype);
+				// CHECKSTYLE:OFF
+			} catch (MimeTypeParseException e) {
+				LOGGER.debug("Could not parse raw MIME type '" + rawtype + "'");
+				// intentionally ignore this, just let mimetype be null
+			}
+			// CHECKSTYLE:ON
 		}
 
 		return mimetype;

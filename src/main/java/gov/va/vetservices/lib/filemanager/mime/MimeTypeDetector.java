@@ -70,9 +70,6 @@ public class MimeTypeDetector {
 					MessageFormat.format(MessageKeys.FILE_TYPE_UNVERIFIABLE.getMessage(), parts, parts.getExtension()));
 		}
 
-		System.out.println("FileExt: '" + filenameDerived.getBaseType() + "'; Tika: '" + tikaDetected.getBaseType() + "'; jMime: '"
-				+ jmimeDetected.getBaseType() + "'\t\t- " + parts.getName() + "." + parts.getExtension());
-
 		// throw exception if filename extension is different than the detected type
 		checkContentVsExtension(bestGuess, filenameDerived, parts);
 
@@ -93,7 +90,7 @@ public class MimeTypeDetector {
 	 */
 	private void checkContentVsExtension(MimeType detectedType, MimeType derivedtype, FileParts parts) throws FileManagerException {
 		if (!derivedtype.match(detectedType)) {
-			String filename = parts.getName() + AbstractDetector.separator + parts.getExtension();
+			String filename = parts.getName() + AbstractDetector.SEPARATOR + parts.getExtension();
 			LOGGER.error("MIME type detection mismatch. File: " + filename + "; Type by filename extension: " + derivedtype
 					+ "; Type by magic byte detection: " + detectedType);
 			throw new FileManagerException(MessageSeverity.ERROR, MessageKeys.FILE_EXTENSION_CONTENT_MISMATCH.getKey(),
@@ -110,7 +107,7 @@ public class MimeTypeDetector {
 	 */
 	private void checkUnsupportedType(MimeType mimetype, FileParts parts) throws FileManagerException {
 		if (!ConvertibleTypesEnum.hasMimeType(mimetype)) {
-			String filename = parts.getName() + AbstractDetector.separator + parts.getExtension();
+			String filename = parts.getName() + AbstractDetector.SEPARATOR + parts.getExtension();
 			LOGGER.error("Files of type " + mimetype + " are not supported. ");
 			throw new FileManagerException(MessageSeverity.ERROR, MessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE.getKey(),
 					MessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE.getMessage(), filename);

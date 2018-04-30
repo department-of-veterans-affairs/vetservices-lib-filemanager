@@ -104,7 +104,7 @@ public class TikaDetectorTest extends AbstractFileHandler {
 	}
 
 	@Test
-	public final void testDetect_Invalid() {
+	public final void testDetect_Bad() {
 		// null bytes and parts
 		FileParts parts = new FileParts();
 		parts.setName(null);

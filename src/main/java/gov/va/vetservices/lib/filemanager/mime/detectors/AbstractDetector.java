@@ -13,7 +13,7 @@ import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 public abstract class AbstractDetector {
 
 	/** Separator between file name and file extension */
-	public static final String separator = ".";
+	public static final String SEPARATOR = ".";
 
 	/**
 	 * Do a check to see if both the magic and filename detectors returned the same value.
