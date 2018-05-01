@@ -2,11 +2,11 @@ package gov.va.vetservices.lib.filemanager.mime;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -48,78 +48,61 @@ public class MimeTypeDetectorTest extends AbstractFileHandler {
 	}
 
 	@Test
-	public final void testDetectMimeType() {
-		try {
-			for (ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
-				List<File> files = super.listFilesByMimePath(enumeration.getMimeType());
-				assertTrue("Files for " + enumeration.getMimeString() + " is null or empty.", (files != null) && !files.isEmpty());
+	public final void testDetectMimeType() throws IOException {
+		for (ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
+			List<File> files = super.listFilesByMimePath(enumeration.getMimeType());
+			assertTrue("Files for " + enumeration.getMimeString() + " is null or empty.", (files != null) && !files.isEmpty());
 
-				// we have to detect every file in the directory
-				// to confirm that we can detect the variations of that file type
-				for (File file : files) {
-					if (!file.exists()) {
-						fail("File enumerated by AbstractFileManager.getFilesByMimePath() returned non-existent file "
-								+ file.getPath());
+			// we have to detect every file in the directory
+			// to confirm that we can detect the variations of that file type
+			for (File file : files) {
+				if (!file.exists()) {
+					fail("File enumerated by AbstractFileManager.getFilesByMimePath() returned non-existent file " + file.getPath());
+				}
+				byte[] bytes = Files.readAllBytes(file.toPath());
+				String filename = file.getName();
+				String msgPrefix = file.getPath() + ": ";
+				FileParts parts = FileManagerUtils.getFileParts(filename);
+
+				System.out.println("File: " + filename);
+
+				if (filename.startsWith(TestingConstants.TEST_FILE_PREFIX_CORRUPT)) {
+					// so far, corrupt files have typically still been detected correctly
+					MimeType mimetype = null;
+					try {
+						mimetype = mimeTypeDetector.detectMimeType(bytes, parts);
+						assertNotNull(msgPrefix + " detected as null", mimetype);
+
+						String mimestring = mimetype.toString();
+						assertTrue(msgPrefix + " blank mimestring", !StringUtils.isBlank(mimestring));
+						assertTrue(msgPrefix + mimestring + " != " + enumeration.getMimeString(),
+								StringUtils.equals(mimestring, enumeration.getMimeString()));
+
+					} catch (FileManagerException e) {
+						if (MessageKeys.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
+							e.printStackTrace();
+							fail(msgPrefix + " something went wrong: " + e.getMessage());
+						}
 					}
-					byte[] bytes = Files.readAllBytes(file.toPath());
-					String filename = file.getName();
-					String msgPrefix = file.getPath() + ": ";
-					FileParts parts = FileManagerUtils.getFileParts(filename);
+				} else {
+					MimeType mimetype = null;
+					try {
+						mimetype = mimeTypeDetector.detectMimeType(bytes, parts);
+						assertNotNull(msgPrefix + " detected as null", mimetype);
 
-					if (filename.startsWith(TestingConstants.TEST_FILE_PREFIX_LEGITIMATE)) {
-						MimeType mimetype = null;
-						try {
-							mimetype = mimeTypeDetector.detectMimeType(bytes, parts);
-							assertNotNull(msgPrefix + " detected as null", mimetype);
+						String mimestring = mimetype.toString();
+						assertTrue(msgPrefix + " blank mimestring", !StringUtils.isBlank(mimestring));
+						assertTrue(msgPrefix + mimestring + " != " + enumeration.getMimeString(),
+								StringUtils.equals(mimestring, enumeration.getMimeString()));
 
-							String mimestring = mimetype.toString();
-							assertTrue(msgPrefix + " blank mimestring", !StringUtils.isBlank(mimestring));
-							assertTrue(msgPrefix + mimestring + " != " + enumeration.getMimeString(),
-									StringUtils.equals(mimestring, enumeration.getMimeString()));
-
-						} catch (FileManagerException e) {
-							if (MessageKeys.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
-								e.printStackTrace();
-								fail(msgPrefix + " something went wrong: " + e.getMessage());
-							}
+					} catch (FileManagerException e) {
+						if (MessageKeys.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
+							e.printStackTrace();
+							fail(msgPrefix + " something went wrong: " + e.getMessage());
 						}
-
-					} else if (filename.startsWith(TestingConstants.TEST_FILE_PREFIX_CORRUPT)) {
-						// so far, corrupt files have typically still been detected correctly
-						MimeType mimetype = null;
-						try {
-							mimetype = mimeTypeDetector.detectMimeType(bytes, parts);
-							assertNotNull(msgPrefix + " detected as null", mimetype);
-
-							String mimestring = mimetype.toString();
-							assertTrue(msgPrefix + " blank mimestring", !StringUtils.isBlank(mimestring));
-							assertTrue(msgPrefix + mimestring + " != " + enumeration.getMimeString(),
-									StringUtils.equals(mimestring, enumeration.getMimeString()));
-
-						} catch (FileManagerException e) {
-							if (MessageKeys.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
-								e.printStackTrace();
-								fail(msgPrefix + " something went wrong: " + e.getMessage());
-							}
-						}
-
-					} else if (filename.startsWith(TestingConstants.TEST_FILE_PREFIX_ILLEGITIMATE)) {
-						MimeType mimetype = null;
-						try {
-							mimetype = mimeTypeDetector.detectMimeType(bytes, parts);
-						} catch (Exception e) {
-							assertTrue(msgPrefix + e.getClass().getSimpleName() + ": " + e.getMessage(),
-									e.getClass().isAssignableFrom(FileManagerException.class));
-							FileManagerException f = (FileManagerException) e;
-							assertTrue((f.getKey() != null) && !f.getKey().equals(MessageKeys.FILEMANAGER_ISSUE.getKey()));
-						}
-						assertNull(mimetype);
 					}
 				}
 			}
-		} catch (Throwable e) {
-			e.printStackTrace();
-			fail(e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
 	}
 

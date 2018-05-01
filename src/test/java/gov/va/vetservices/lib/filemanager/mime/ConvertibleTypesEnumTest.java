@@ -7,9 +7,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Set;
+
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,6 +47,15 @@ public class ConvertibleTypesEnumTest {
 			}
 
 		}
+	}
+
+	@Test
+	public final void testGetConvertiblePrimaryTypes() {
+		Set<String> set = ConvertibleTypesEnum.getConvertiblePrimaryTypes();
+		assertNotNull(set);
+		assertTrue(set.size() > 0);
+		String primaryType = set.iterator().next();
+		assertTrue(!StringUtils.isBlank(primaryType));
 	}
 
 	@Test
@@ -114,7 +126,26 @@ public class ConvertibleTypesEnumTest {
 	}
 
 	@Test
-	public final void testHasMimeType() throws MimeTypeParseException {
+	public final void testHasMimeTypeString() throws MimeTypeParseException {
+		assertTrue(ConvertibleTypesEnum.hasMimeType(TestingConstants.MIME_RAW_BMP));
+		assertTrue(ConvertibleTypesEnum.hasMimeType(TestingConstants.MIME_RAW_GIF));
+		assertTrue(ConvertibleTypesEnum.hasMimeType(TestingConstants.MIME_RAW_JPEG));
+		assertTrue(ConvertibleTypesEnum.hasMimeType(TestingConstants.MIME_RAW_JPG));
+		assertTrue(ConvertibleTypesEnum.hasMimeType(TestingConstants.MIME_RAW_PDF));
+		assertTrue(ConvertibleTypesEnum.hasMimeType(TestingConstants.MIME_RAW_PNG));
+		assertTrue(ConvertibleTypesEnum.hasMimeType(TestingConstants.MIME_RAW_TIF));
+		assertTrue(ConvertibleTypesEnum.hasMimeType(TestingConstants.MIME_RAW_TIFF));
+		assertTrue(ConvertibleTypesEnum.hasMimeType(TestingConstants.MIME_RAW_TXT));
+	}
+
+	@Test
+	public final void testHasMimeTypeString_Unsupported() throws MimeTypeParseException {
+		assertFalse(ConvertibleTypesEnum.hasMimeType(TestingConstants.MIME_RAW_UNSUPPORTED));
+		assertFalse(ConvertibleTypesEnum.hasMimeType(TestingConstants.MIME_RAW_INVALID));
+	}
+
+	@Test
+	public final void testHasMimeTypeMimeType() throws MimeTypeParseException {
 		assertTrue(ConvertibleTypesEnum.hasMimeType((new MimeType(TestingConstants.MIME_RAW_BMP))));
 		assertTrue(ConvertibleTypesEnum.hasMimeType((new MimeType(TestingConstants.MIME_RAW_GIF))));
 		assertTrue(ConvertibleTypesEnum.hasMimeType((new MimeType(TestingConstants.MIME_RAW_JPEG))));
@@ -127,8 +158,7 @@ public class ConvertibleTypesEnumTest {
 	}
 
 	@Test
-	public final void testHasMimeType_Unsupported() throws MimeTypeParseException {
+	public final void testHasMimeTypeMimeType_Unsupported() throws MimeTypeParseException {
 		assertFalse(ConvertibleTypesEnum.hasMimeType((new MimeType(TestingConstants.MIME_RAW_UNSUPPORTED))));
 	}
-
 }

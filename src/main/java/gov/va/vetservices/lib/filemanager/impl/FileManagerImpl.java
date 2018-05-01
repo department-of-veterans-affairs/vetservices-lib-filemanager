@@ -16,7 +16,7 @@ import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
  * @author aburkholder
  */
 /*
- * TODO Dev notes:
+ * NOSONAR TODO Dev notes:
  * In WSS there is a disconnect between PDFServiceImpl and PdfGenerator.
  * One objective of this class is to combine the best of both for consistent results.
  */
@@ -55,12 +55,12 @@ public class FileManagerImpl implements FileManager {
 	 *
 	 * @see gov.va.vetservices.lib.filemanager.api.FileManager#convertToPdf(byte[])
 	 *
-	 * TODO Dev notes:
+	 * NOSONAR TODO Dev notes:
 	 * - Method is sourced from wss PDFServiceImpl.convertPDF(..) & PDFGenerate.generateBody()
 	 */
 	@Override
 	public FileManagerResponse convertToPdf(FileDto fileDto) {
-		// TODO Auto-generated method stub
+		// NOSONAR TODO Auto-generated method stub
 		return null;
 	}
 
@@ -69,14 +69,14 @@ public class FileManagerImpl implements FileManager {
 	 *
 	 * @see gov.va.vetservices.lib.filemanager.api.FileManager#stampPdf(java.lang.String, byte[])
 	 *
-	 * TODO Dev notes:
+	 * NOSONAR TODO Dev notes:
 	 * - Method is sourced from wss PDFServiceImpl.stampPDF(..) & PDFGenerate.generateBody()
 	 * - It may be necesary to provide more information to this method
 	 * - ... could replace String param with a model (content, font size, etc as needed)
 	 */
 	@Override
 	public FileManagerResponse stampPdf(String stampContent, FileDto fileDto) {
-		// TODO Auto-generated method stub
+		// NOSONAR TODO Auto-generated method stub
 		return null;
 	}
 

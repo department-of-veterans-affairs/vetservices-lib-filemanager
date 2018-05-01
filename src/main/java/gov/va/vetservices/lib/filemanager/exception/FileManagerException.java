@@ -17,19 +17,46 @@ import gov.va.ascent.framework.messages.MessageSeverity;
 public class FileManagerException extends Exception {
 	private static final long serialVersionUID = -7522183183501249719L;
 
-	private final String key; // NOSONAR
-	private final MessageSeverity messageSeverity; // NOSONAR
+	protected String key = null; // NOSONAR
+	protected MessageSeverity messageSeverity = null; // NOSONAR
 
+	/**
+	 * Create an exception that can be thrown to callers outside of this library.
+	 *
+	 * @param severity the {@link MessageSeverity}
+	 * @param key the MessageKeys key
+	 * @param message the MessageKeys message
+	 * @param replaceableArgs any replaceable atguments for use in the message (or nothing)
+	 */
 	public FileManagerException(final MessageSeverity severity, final String key, final String message,
 			final String... replaceableArgs) {
 		this((Throwable) null, severity, key, message, replaceableArgs);
 	}
 
+	/**
+	 * Create an exception that can be thrown to callers outside of this library.
+	 *
+	 * @param cause the root cause of this exception
+	 * @param severity the {@link MessageSeverity}
+	 * @param key the MessageKeys key
+	 * @param message the MessageKeys message
+	 * @param replaceableArgs any replaceable arguments for use in the message (or nothing)
+	 */
 	public FileManagerException(final Throwable cause, final MessageSeverity severity, final String key, final String message,
 			final String... replaceableArgs) {
-		super(MessageFormat.format(message, replaceableArgs), cause);
+		this(MessageFormat.format(message, (Object[]) replaceableArgs), cause);
 		this.key = key;
 		this.messageSeverity = severity;
+	}
+
+	/**
+	 * This constructor provides a means for subclasses to pass message and cause to the {@link Exception} superclass
+	 *
+	 * @param message the MessageKeys message
+	 * @param cause the root cause of this exception
+	 */
+	protected FileManagerException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 	/**

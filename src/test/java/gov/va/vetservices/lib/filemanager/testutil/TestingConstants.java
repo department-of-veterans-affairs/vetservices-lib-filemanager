@@ -50,6 +50,8 @@ public class TestingConstants {
 	public static String MIME_RAW_TXT = "text/plain";
 	/** Raw MimeType (a string): "application/x-chat" */
 	public static String MIME_RAW_UNSUPPORTED = "application/x-chat";
+	/** Raw MimeType (a string): "not.valid" */
+	public static String MIME_RAW_INVALID = "not.valid";
 
 	/**
 	 * Do not instantiate.

@@ -48,13 +48,13 @@ public class JMimeMagicDetector extends AbstractDetector {
 			mimetype = detectByMagic(bytes);
 			mimetype = fixKnownFlaws(mimetype, parts.getExtension());
 
-		} catch (IOException e) {
+		} catch (IOException e) { // NOSONAR - sonar doesn't see the exception being thrown
 			MessageKeys msg = MessageKeys.FILE_BYTES_UNREADABLE;
 			String filename = parts.getName() + SEPARATOR + parts.getExtension();
 			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), filename));
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
 
-		} catch (MimeTypeParseException e) {
+		} catch (MimeTypeParseException e) { // NOSONAR - sonar doesn't see the exception being thrown
 			String filename = parts.getName() + SEPARATOR + parts.getExtension();
 			MessageKeys msg = MessageKeys.FILE_CONTENT_NOT_CONVERTIBLE;
 			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), filename));

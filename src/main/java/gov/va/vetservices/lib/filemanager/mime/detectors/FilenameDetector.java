@@ -123,7 +123,7 @@ public class FilenameDetector extends AbstractDetector {
 			try {
 				mimetype = new MimeType(rawtype);
 				// CHECKSTYLE:OFF
-			} catch (MimeTypeParseException e) {
+			} catch (MimeTypeParseException e) { // NOSONAR - intentionally do not re-throw
 				LOGGER.debug("Could not parse raw MIME type '" + rawtype + "'");
 				// intentionally ignore this, just let mimetype be null
 			}

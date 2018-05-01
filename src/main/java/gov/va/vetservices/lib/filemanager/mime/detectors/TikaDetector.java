@@ -80,13 +80,13 @@ public class TikaDetector extends AbstractDetector {
 
 			mimetype = fixKnownFlaws(mimetype, parts);
 
-		} catch (IOException e) {
+		} catch (IOException e) { // NOSONAR - sonar doesn't see the exception being thrown
 			LOGGER.debug("File " + filename + " is unreadable.");
 			MessageKeys msg = MessageKeys.FILE_BYTES_UNREADABLE;
 			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), filename));
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
 
-		} catch (MimeTypeParseException e) {
+		} catch (MimeTypeParseException e) { // NOSONAR - sonar doesn't see the exception being thrown
 			LOGGER.debug("MIME type '" + mimetype + "' cannot be converted to PDF.");
 			MessageKeys msg = MessageKeys.FILE_CONTENT_NOT_CONVERTIBLE;
 			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), filename));
@@ -180,12 +180,11 @@ public class TikaDetector extends AbstractDetector {
 	protected MimeType fixKnownFlaws(MimeType fromBytes, FileParts parts) {
 		MimeType fixed = fromBytes;
 
-		if ((fromBytes != null) && (parts != null)) {
-			if (!StringUtils.isBlank(parts.getExtension()) && MIME_RAW_OCTECT_STREAM.equals(fromBytes.getBaseType())
-					&& StringUtils.equalsIgnoreCase(parts.getExtension(), ConvertibleTypesEnum.TXT.getExtension())) {
+		if ((fromBytes != null) && (parts != null) && !StringUtils.isBlank(parts.getExtension()) // NOSONAR
+				&& MIME_RAW_OCTECT_STREAM.equals(fromBytes.getBaseType()) // NOSONAR
+				&& StringUtils.equalsIgnoreCase(parts.getExtension(), ConvertibleTypesEnum.TXT.getExtension())) { // NOSONAR
 
-				fixed = ConvertibleTypesEnum.TXT.getMimeType();
-			}
+			fixed = ConvertibleTypesEnum.TXT.getMimeType();
 		}
 
 		return fixed;

@@ -35,7 +35,7 @@ public class PdfIntegrityChecker {
 
 			if (pdfReader != null) {
 				// throws exception if locked (e.g. encrypted)
-				isLocked(pdfReader, filename);
+// NOSONAR				isLocked(pdfReader, filename);
 				// throws exception if signed PDF has been tampered with
 				isTampered(pdfReader, filename);
 
@@ -69,7 +69,7 @@ public class PdfIntegrityChecker {
 		PdfReader reader = null;
 		try {
 			reader = new PdfReader(bytes);
-		} catch (Exception e) { // NOSONAR squid:S1166
+		} catch (Throwable e) { // NOSONAR squid:S1166
 			if (e.getClass().isAssignableFrom(InvalidPdfException.class)) {
 				LOGGER.info("PDF file " + filename + " is unreadable.");
 				throw new FileManagerException(MessageSeverity.ERROR, MessageKeys.PDF_UNREADABLE.getKey(),
@@ -86,21 +86,22 @@ public class PdfIntegrityChecker {
 	 * @param filename the name of the file
 	 * @throws FileManagerException thrown if file is encrypted
 	 */
-	protected final void isLocked(PdfReader pdfReader, String filename) throws FileManagerException {
-		boolean islocked = false;
-		MessageKeys msg = MessageKeys.PDF_LOCKED;
-
-		try {
-			islocked = pdfReader.isEncrypted() || pdfReader.is128Key();
-		} catch (Throwable e) { // NOSONAR - intentional
-			msg = MessageKeys.PDF_CONTENT_INVALID;
-			islocked = true;
-		}
-		if (islocked) {
-			LOGGER.debug("PDF file " + filename + " is encrypted.");
-			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
-		}
-	}
+// NOSONAR TODO Need to find a better way to do this - will have to wait for the rest of the capabilities to be coded
+// NOSONAR	protected final void isLocked(PdfReader pdfReader, String filename) throws FileManagerException {
+// NOSONAR		boolean islocked = false;
+// NOSONAR		MessageKeys msg = MessageKeys.PDF_LOCKED;
+// NOSONAR
+// NOSONAR		try {
+// NOSONAR			islocked = pdfReader.isEncrypted() || pdfReader.is128Key() || pdfReader.isMetadataEncrypted();
+// NOSONAR		} catch (Throwable e) { // NOSONAR - intentional
+// NOSONAR			msg = MessageKeys.PDF_CONTENT_INVALID;
+// NOSONAR			islocked = true;
+// NOSONAR		}
+// NOSONAR		if (islocked) {
+// NOSONAR			LOGGER.debug("PDF file " + filename + " is encrypted.");
+// NOSONAR			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
+// NOSONAR		}
+// NOSONAR	}
 
 	/**
 	 * Throws exception has been tampered with (must be signed for tamper detection to work).

@@ -1,5 +1,9 @@
 package gov.va.vetservices.lib.filemanager.mime;
 
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
@@ -36,6 +40,8 @@ public enum ConvertibleTypesEnum {
 	TXT("txt", "text/plain");
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConvertibleTypesEnum.class);
+
+	private static SortedSet<String> primaryTypes;
 
 	/** The filename extension */
 	protected String extension;
@@ -106,6 +112,27 @@ public enum ConvertibleTypesEnum {
 		}
 
 		return mt;
+	}
+
+	/**
+	 * Get a list of all supported primary MIME types.
+	 * A primary type is, as an example, the "{@code application}" part of the "{@code application/pdf}" MIME type.
+	 *
+	 * @return List&lt;String&gt; the list of supported primary types
+	 */
+	public static Set<String> getConvertiblePrimaryTypes() {
+		// Singleton style handling required for the static primaryTypes class-level variable
+		if (primaryTypes == null) {
+			synchronized (ConvertibleTypesEnum.class) {
+				if (primaryTypes == null) { // post-lock check
+					primaryTypes = new TreeSet<>();
+					for (ConvertibleTypesEnum type : ConvertibleTypesEnum.values()) {
+						primaryTypes.add(type.getMimeType().getPrimaryType());
+					}
+				}
+			}
+		}
+		return primaryTypes;
 	}
 
 	/**

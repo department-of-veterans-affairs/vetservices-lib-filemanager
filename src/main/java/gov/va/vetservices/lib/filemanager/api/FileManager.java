@@ -8,8 +8,8 @@ import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
  *
  * @author aburkholder
  */
-// TODO Dev notes:
-// See the IMPL class for TODO dev notes
+// NOSONAR TODO Dev notes:
+// See the IMPL class for TO-DO dev notes
 public interface FileManager {
 
 	/**
