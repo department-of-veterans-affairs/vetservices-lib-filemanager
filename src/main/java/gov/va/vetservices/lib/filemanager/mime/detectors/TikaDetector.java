@@ -180,6 +180,9 @@ public class TikaDetector extends AbstractDetector {
 	protected MimeType fixKnownFlaws(MimeType fromBytes, FileParts parts) {
 		MimeType fixed = fromBytes;
 
+		// sonar cannot be made happy here - it complains about too many arguments in the if statement,
+		// and splitting it into 2 if statements, it says to merge them into one statement again
+		// ... and it is pointless to create another method just to put the other half of the if statement
 		if ((fromBytes != null) && (parts != null) && !StringUtils.isBlank(parts.getExtension()) // NOSONAR
 				&& MIME_RAW_OCTECT_STREAM.equals(fromBytes.getBaseType()) // NOSONAR
 				&& StringUtils.equalsIgnoreCase(parts.getExtension(), ConvertibleTypesEnum.TXT.getExtension())) { // NOSONAR
