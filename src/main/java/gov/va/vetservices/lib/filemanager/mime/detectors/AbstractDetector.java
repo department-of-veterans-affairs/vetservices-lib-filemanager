@@ -31,9 +31,8 @@ public abstract class AbstractDetector {
 			// both are null, do nothing
 		} else if ((withMagic == null) || (withHint == null)) {
 			winner = withMagic == null ? withHint : withMagic;
-		} else if (!withMagic.match(withHint)) {
-			winner = withMagic;
 		} else {
+			// magic does not match hint
 			winner = withMagic;
 		}
 
