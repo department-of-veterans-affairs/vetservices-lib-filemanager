@@ -16,7 +16,6 @@ public class FileManagerImplTest {
 	private final static String STRING_FILENAME = "test.txt";
 
 	private FileManagerImpl fileManagerImpl = new FileManagerImpl();
-	private FileDto fileDto;
 	FileManagerResponse response;
 
 	@Before
@@ -26,6 +25,7 @@ public class FileManagerImplTest {
 
 	@Test
 	public void testValidateFileForPDFConversionTest() {
+		FileDto fileDto = null;
 
 		// happy
 
@@ -67,9 +67,24 @@ public class FileManagerImplTest {
 
 	@Test
 	public void testConvertToPdfTest() {
-		// TODO make this a real test
-		FileManagerResponse response = fileManagerImpl.convertToPdf(null);
-		assertNull(response);
+		FileDto fileDto = null;
+
+		// Happy
+
+		fileDto = new FileDto();
+		fileDto.setFilebytes(STRING_BYTES);
+		fileDto.setFilename(null);
+		FileManagerResponse response = fileManagerImpl.convertToPdf(fileDto);
+		assertNotNull(response);
+		assertTrue((response.getMessages() != null) && !response.getMessages().isEmpty());
+		assertNull(response.getFileDto());
+
+		// Sad
+
+		response = fileManagerImpl.convertToPdf(null);
+		assertNotNull(response);
+		assertTrue((response.getMessages() != null) && !response.getMessages().isEmpty());
+		assertNull(response.getFileDto());
 	}
 
 	@Test

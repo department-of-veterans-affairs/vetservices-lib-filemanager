@@ -23,8 +23,6 @@ import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
  */
 public class FileManagerImpl implements FileManager {
 
-	InterrogateFile interrogateFile = new InterrogateFile();
-
 	/*
 	 * (non-Javadoc)
 	 *
@@ -33,17 +31,11 @@ public class FileManagerImpl implements FileManager {
 	 */
 	@Override
 	public FileManagerResponse validateFileForPDFConversion(FileDto fileDto) {
+		InterrogateFile interrogateFile = new InterrogateFile();
 		FileManagerResponse response = new FileManagerResponse();
 
-		if (fileDto == null) {
-			response.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_DTO_NULL.getKey(), MessageKeys.FILE_DTO_NULL.getMessage());
-		} else if (StringUtils.isBlank(fileDto.getFilename())) {
-			response.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_NAME_NULL_OR_EMPTY.getKey(),
-					MessageKeys.FILE_NAME_NULL_OR_EMPTY.getMessage());
-		} else if ((fileDto.getFilebytes() == null) || (fileDto.getFilebytes().length < 1)) {
-			response.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_BYTES_NULL_OR_EMPTY.getKey(),
-					MessageKeys.FILE_BYTES_NULL_OR_EMPTY.getMessage());
-		} else {
+		validateInputs(fileDto, response);
+		if (response.getMessages().isEmpty()) {
 			ValidatorDto validatorDto = FileManagerUtils.makeValidatorDto(fileDto);
 
 			// determine if the file can be converted to PDF
@@ -63,8 +55,18 @@ public class FileManagerImpl implements FileManager {
 	 */
 	@Override
 	public FileManagerResponse convertToPdf(FileDto fileDto) {
-		// NOSONAR TODO Auto-generated method stub
-		return null;
+		ConvertFile convertFile = new ConvertFile();
+		FileManagerResponse response = new FileManagerResponse();
+
+		validateInputs(fileDto, response);
+		if (response.getMessages().isEmpty()) {
+			ValidatorDto validatorDto = FileManagerUtils.makeValidatorDto(fileDto);
+
+			// converted the file to PDF
+			convertFile.doConversion(validatorDto);
+		}
+
+		return response;
 	}
 
 	/*
@@ -83,4 +85,21 @@ public class FileManagerImpl implements FileManager {
 		return null;
 	}
 
+	/**
+	 * Add error messages onto the response if there are any issues with the FileDto object / contents.
+	 * 
+	 * @param fileDto the FileDto
+	 * @param response the File Manager Response
+	 */
+	private void validateInputs(FileDto fileDto, FileManagerResponse response) {
+		if (fileDto == null) {
+			response.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_DTO_NULL.getKey(), MessageKeys.FILE_DTO_NULL.getMessage());
+		} else if (StringUtils.isBlank(fileDto.getFilename())) {
+			response.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_NAME_NULL_OR_EMPTY.getKey(),
+					MessageKeys.FILE_NAME_NULL_OR_EMPTY.getMessage());
+		} else if ((fileDto.getFilebytes() == null) || (fileDto.getFilebytes().length < 1)) {
+			response.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_BYTES_NULL_OR_EMPTY.getKey(),
+					MessageKeys.FILE_BYTES_NULL_OR_EMPTY.getMessage());
+		}
+	}
 }

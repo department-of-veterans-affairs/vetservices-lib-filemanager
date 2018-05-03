@@ -12,6 +12,7 @@ import gov.va.vetservices.lib.filemanager.impl.validate.validators.FileTypeValid
 import gov.va.vetservices.lib.filemanager.impl.validate.validators.FilenameValidator;
 
 /**
+ * Interrogate a provided file byte array to determine if it can be converted to PDF.
  *
  * @author aburkholder
  */
@@ -26,7 +27,6 @@ public class InterrogateFile {
 	ConversionValidator conversionValidator = new ConversionValidator();
 
 	/**
-	 * <p>
 	 * Determines if a file can be converted to a PDF with the technologies currently being used by this library.
 	 * <p>
 	 * Any validation errors that occur are passed in the response messages, otherwise the response messages will be {@code null}.
