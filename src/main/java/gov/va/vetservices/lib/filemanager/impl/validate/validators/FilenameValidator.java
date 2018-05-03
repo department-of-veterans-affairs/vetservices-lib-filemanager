@@ -17,7 +17,8 @@ import gov.va.vetservices.lib.filemanager.impl.validate.ValidatorArg;
 
 /**
  * Validate file names for consistency with common operating system constraints.
- *
+ * This class does NOT attempt to determine if the file is supported for PDF conversion.
+ * <p>
  * The returned messages list is the same as the messages returned on the ValidatorDto parameter.
  *
  * @author aburkholder
@@ -27,6 +28,7 @@ public class FilenameValidator implements Validator<ValidatorDto> {
 	/**
 	 * <p>
 	 * Validate file names for consistency with common operating system constraints.
+	 * This method does NOT attempt to determine if the file is supported for PDF conversion.
 	 * <p>
 	 * If validations succeeds, {@code null} is returned, otherwise the returned list of messages is also returned on the ValidataorDto
 	 * parameter.
@@ -37,6 +39,10 @@ public class FilenameValidator implements Validator<ValidatorDto> {
 	 */
 	@Override
 	public List<Message> validate(ValidatorArg<ValidatorDto> toValidate) {  // NOSONAR - shut up complaint about cyclomatic complexity
+		if (toValidate == null) {
+			throw new IllegalArgumentException("Validator Dto cannot be null.");
+		}
+
 		ValidatorDto vdto = toValidate.getValue();
 
 		if (vdto == null) {
@@ -45,28 +51,35 @@ public class FilenameValidator implements Validator<ValidatorDto> {
 
 		} else if (vdto.getFileDto() == null) {
 
-			vdto.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_DTO_NULL.getKey(), MessageKeys.FILE_DTO_NULL.getMessage());
+			addError(vdto, MessageKeys.FILE_DTO_NULL);
 
 		} else if (StringUtils.isBlank(vdto.getFileDto().getFilename()) || StringUtils.isBlank(vdto.getFileParts().getName())
 				|| StringUtils.isBlank(vdto.getFileParts().getExtension())) {
 
-			vdto.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_NAME_NULL_OR_EMPTY.getKey(),
-					MessageKeys.FILE_NAME_NULL_OR_EMPTY.getMessage());
+			addError(vdto, MessageKeys.FILE_NAME_NULL_OR_EMPTY);
 
 		} else if (vdto.getFileDto().getFilename().length() > FileManagerProperties.MAX_OS_FILENAME_LENGTH) {
 
-			vdto.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_NAME_TOO_LONG.getKey(),
-					MessageKeys.FILE_NAME_TOO_LONG.getMessage());
+			addError(vdto, MessageKeys.FILE_NAME_TOO_LONG);
 
-		} else if (StringUtils.startsWithAny(FileManagerProperties.FILE_NAME_ILLEGAL_STRING, vdto.getFileParts().getName())
-				|| StringUtils.endsWithAny(FileManagerProperties.FILE_NAME_ILLEGAL_STRING, vdto.getFileParts().getName())) {
+		} else if (StringUtils.startsWithAny(vdto.getFileParts().getName(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)
+				|| StringUtils.endsWithAny(vdto.getFileParts().getName(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)) {
 
-			vdto.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_NAME_MALFORMED.getKey(),
-					MessageKeys.FILE_NAME_MALFORMED.getMessage());
+			addError(vdto, MessageKeys.FILE_NAME_MALFORMED);
 
 		}
 
 		return vdto.getMessages().isEmpty() ? null : vdto.getMessages();
+	}
+
+	/**
+	 * Adds a {@link MessageSeverity#ERROR} message to the {@link ValidatorDto}.
+	 *
+	 * @param vdto the ValidatorDto
+	 * @param messageKey the {@link MessageKeys} enumeration for key and message
+	 */
+	private void addError(ValidatorDto vdto, MessageKeys messageKey) {
+		vdto.addMessage(MessageSeverity.ERROR, messageKey.getKey(), messageKey.getMessage());
 	}
 
 }

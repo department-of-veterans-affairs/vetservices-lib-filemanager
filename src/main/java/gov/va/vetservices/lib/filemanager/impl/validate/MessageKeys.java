@@ -3,6 +3,14 @@ package gov.va.vetservices.lib.filemanager.impl.validate;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
+/**
+ * An enumeration of messages that could be sent back to a calling program if an exception occurs.
+ * Each enumeration contains a key (for reference purposes) and an explanatory message.
+ * <p>
+ * The messages may contain replaceable parameters, according to the rules of the {@link java.text.MessageFormat} class.
+ *
+ * @author aburkholder
+ */
 public enum MessageKeys {
 
 	/** FileDto was null */
@@ -44,12 +52,21 @@ public enum MessageKeys {
 	PDF_UNREADABLE("filemanager.pdf.unreadable", "The file {0} cannot be read. It may be corrupt or tampered with."),
 	/** The image is not convertible for PDF. <b>Args:</b> {@code filename, itextErrorMessage} */
 	IMAGE_ITEXT_NOT_CONVERTIBLE("filemanager.pdf.image.not.consumable", "The file {0} cannot be used in a PDF. Error: {1}"),
+	/** Problem with internal (iText) processing during conversion. <b>Args:</b> {@code filename, itextErrorMessage} */
+	CONVERSION_PROCESSING("filemanager.pdf.conversion.processing",
+			"The file {0} cannot be converted to PDF due to internal processing issue. Error: {1}"),
 	/** Internal FileManager issues that cannot be resolved at runtime */
 	FILEMANAGER_ISSUE("filemanager.internal.issue", "Internal issue occurred. Please check the application logs.");
 
 	private String key;
 	private String message;
 
+	/**
+	 * Add a new enumeration with key and message.
+	 *
+	 * @param key the message key
+	 * @param message the explanatory message
+	 */
 	MessageKeys(String key, String message) {
 		this.key = key;
 		this.message = message;
@@ -64,19 +81,28 @@ public enum MessageKeys {
 		return FileManagerProperties.CONVERTIBLE_FILE_EXTENSIONS_STRING;
 	}
 
+	/**
+	 * The maximum file length allowed in bytes.
+	 *
+	 * @return String
+	 */
 	private static String maxFilenameLength() {
 		return FileManagerProperties.DEFAULT_FILENAME_MAX_LENGTH;
 	}
 
 	/**
-	 * @return the key
+	 * The key for the enumeration.
+	 *
+	 * @return String the key
 	 */
 	public String getKey() {
 		return key;
 	}
 
 	/**
-	 * @return the message
+	 * The message for the enumeration.
+	 *
+	 * @return String the message
 	 */
 	public String getMessage() {
 		return message;

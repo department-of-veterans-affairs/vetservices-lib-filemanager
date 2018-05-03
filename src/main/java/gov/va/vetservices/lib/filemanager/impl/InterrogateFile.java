@@ -7,16 +7,23 @@ import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.ValidatorArg;
 import gov.va.vetservices.lib.filemanager.impl.validate.validators.ByteArrayValidator;
-import gov.va.vetservices.lib.filemanager.impl.validate.validators.FileConvertibleValidator;
+import gov.va.vetservices.lib.filemanager.impl.validate.validators.ConversionValidator;
+import gov.va.vetservices.lib.filemanager.impl.validate.validators.FileTypeValidator;
 import gov.va.vetservices.lib.filemanager.impl.validate.validators.FilenameValidator;
 
+/**
+ *
+ * @author aburkholder
+ */
 public class InterrogateFile {
 
 	FilenameValidator filenameValidator = new FilenameValidator();
 
 	ByteArrayValidator bytearrayValidator = new ByteArrayValidator();
 
-	FileConvertibleValidator filetypeValidator = new FileConvertibleValidator();
+	FileTypeValidator filetypeValidator = new FileTypeValidator();
+
+	ConversionValidator conversionValidator = new ConversionValidator();
 
 	/**
 	 * <p>
@@ -32,15 +39,23 @@ public class InterrogateFile {
 
 		List<Message> messages = null;
 
+		// validate file name
 		if ((messages = filenameValidator.validate((new ValidatorArg<ValidatorDto>(validatorDto)))) != null) {
 			response.addMessages(messages);
 		}
 
+		// validate byte array
 		if ((messages = bytearrayValidator.validate((new ValidatorArg<byte[]>(validatorDto.getFileDto().getFilebytes())))) != null) {
 			response.addMessages(messages);
 		} else {
+			// validate file type
 			if ((messages = filetypeValidator.validate((new ValidatorArg<ValidatorDto>(validatorDto)))) != null) {
 				response.addMessages(messages);
+			} else {
+				// validate can be converted
+				if ((messages = conversionValidator.validate((new ValidatorArg<ValidatorDto>(validatorDto)))) != null) {
+					response.addMessages(messages);
+				}
 			}
 		}
 

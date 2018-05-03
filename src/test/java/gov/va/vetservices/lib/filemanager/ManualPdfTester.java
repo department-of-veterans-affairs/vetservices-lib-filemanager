@@ -58,7 +58,8 @@ public class ManualPdfTester extends AbstractFileHandler {
 		PdfReader pdfReader = null;
 		for (File file : files) {
 			if (!file.exists()) {
-				fail("File enumerated by AbstractFileManager.getFilesByMimePath() returned non-existent file " + file.getPath());
+				fail("File enumerated by " + super.getClass().getSimpleName() + ".getFilesByMimePath() returned non-existent file "
+						+ file.getPath());
 			}
 
 			System.out.println("File: " + file.getName());

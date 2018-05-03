@@ -13,6 +13,7 @@ import gov.va.vetservices.lib.filemanager.impl.validate.ValidatorArg;
 
 /**
  * Determines if the file byte array contains bytes, and does not contain more than {@link FileManagerProperties#KEY_FILE_MAX_BYTES}.
+ * This class does NOT attempt to determine if the file is supported for PDF conversion.
  *
  * @author aburkholder
  */
@@ -23,6 +24,7 @@ public class ByteArrayValidator implements Validator<byte[]> {
 	/**
 	 * <p>
 	 * Validates that the file has bytes, and is no larger than {@link FileManagerProperties#KEY_FILE_MAX_BYTES}.
+	 * This method does NOT attempt to determine if the file is supported for PDF conversion.
 	 * <p>
 	 * If validation succeeds, {@code null} is returned, otherwise a list of messages is returned.
 	 * <p>

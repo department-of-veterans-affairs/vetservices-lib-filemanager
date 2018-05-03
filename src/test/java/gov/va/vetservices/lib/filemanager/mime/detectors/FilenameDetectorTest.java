@@ -45,7 +45,8 @@ public class FilenameDetectorTest extends AbstractFileHandler {
 			// to confirm that we can detect the variations of that file type
 			for (File file : files) {
 				if (!file.exists()) {
-					fail("File enumerated by AbstractFileManager.getFilesByMimePath() returned non-existent file " + file.getPath());
+					fail("File enumerated by " + super.getClass().getSimpleName() + ".getFilesByMimePath() returned non-existent file "
+							+ file.getPath());
 				}
 
 				FileParts parts = FileManagerUtils.getFileParts(file.getName());

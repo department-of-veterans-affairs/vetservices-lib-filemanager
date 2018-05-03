@@ -26,7 +26,7 @@ import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 import gov.va.vetservices.lib.filemanager.testutil.TestingConstants;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
-public class FileConvertibleValidatorTest extends AbstractFileHandler {
+public class FileTypeValidatorTest extends AbstractFileHandler {
 
 	private static final byte[] bytesTxt = "This is a text/plain byte array".getBytes();
 	private static final String filenameTxt = "plaintext.txt";
@@ -36,7 +36,7 @@ public class FileConvertibleValidatorTest extends AbstractFileHandler {
 	private static final Path imageUnsupportedDoc = Paths.get("files/application/msword/IS_Test.docx");
 	private static final String imageDocMimeRaw = "application/msword";
 
-	private FileConvertibleValidator fileConvertibleValidator = new FileConvertibleValidator();
+	private FileTypeValidator fileConvertibleValidator = new FileTypeValidator();
 	private ValidatorArg<ValidatorDto> arg;
 	private List<Message> messages;
 
@@ -58,7 +58,8 @@ public class FileConvertibleValidatorTest extends AbstractFileHandler {
 			// to confirm that we can detect the variations of that file type
 			for (File file : files) {
 				if (!file.exists()) {
-					fail("File enumerated by AbstractFileManager.getFilesByMimePath() returned non-existent file " + file.getPath());
+					fail("File enumerated by " + super.getClass().getSimpleName() + ".getFilesByMimePath() returned non-existent file "
+							+ file.getPath());
 				}
 
 				try {

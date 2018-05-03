@@ -46,14 +46,35 @@ public class TikaDetector extends AbstractDetector {
 
 	/**
 	 * Instantiate the Tika with {@value #TIKA_CONFIG}.
+	 * Can throw runtime exception if classpath file is not found
 	 */
 	public TikaDetector() {
+		getTikaConfig(TIKA_CONFIG);
+	}
+
+	/**
+	 * Load configuration from the specified tika-config.xml.
+	 *
+	 * @param path the path (on the classpath) to the config file
+	 * @throws IllegalArgumentException could not locate or load the specified file
+	 */
+	protected void getTikaConfig(String path) {
+		if (StringUtils.isBlank(path)) {
+			throw new IllegalArgumentException("Configuration file cannot be null or empty.");
+		}
+
 		try {
-			Resource resource = (new PathMatchingResourcePatternResolver()).getResources("classpath*:" + TIKA_CONFIG)[0];
+			Resource[] resources = (new PathMatchingResourcePatternResolver()).getResources("classpath*:" + path);
+			if ((resources == null) || (resources.length < 1)) {
+				throw new IllegalArgumentException("Configuration file '" + path + "' not found.");
+			} else if (resources.length > 1) {
+				throw new IllegalArgumentException("Multiple configuration files found at '" + path + "'.");
+			}
+			Resource resource = resources[0];
 			tikaConfig = new TikaConfig(resource.getFile());
 		} catch (TikaException | IOException | SAXException e) {
-			String message = "FATAL ERROR: " + e.getClass().getSimpleName() + " - could not load classpath file '" + TIKA_CONFIG
-					+ "': " + e.getMessage();
+			String message = "FATAL ERROR: " + e.getClass().getSimpleName() + " - could not load classpath file '" + path + "': "
+					+ e.getMessage();
 			LOGGER.error(message);
 			throw new IllegalArgumentException(message, e);
 		}

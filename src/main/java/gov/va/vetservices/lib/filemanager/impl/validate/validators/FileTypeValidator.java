@@ -24,16 +24,21 @@ import gov.va.vetservices.lib.filemanager.mime.MimeTypeDetector;
 import gov.va.vetservices.lib.filemanager.pdf.PdfIntegrityChecker;
 
 /**
- * Validate the file MIME type to ensure the file is a type that can be converted to PDF.
- *
+ * Validate the file MIME type to ensure the file meets the criteria for conversion to PDF.
+ * <p>
+ * This class determines if the file meets all criteria for conversion to PDF.
+ * It DOES NOT perform any tests to confirm that the conversion can be successfully performed.
+ * <p>
  * Validation messages are returned on the validatorDto parameter.
  *
  * @author aburkholder
  */
 @java.lang.SuppressWarnings("squid:S1166")
-public class FileConvertibleValidator implements Validator<ValidatorDto> {
+public class FileTypeValidator implements Validator<ValidatorDto> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FileConvertibleValidator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileTypeValidator.class);
+
+	private static final String IMAGE = "image";
 
 	private MimeTypeDetector mimeTypeDetector = new MimeTypeDetector();
 
@@ -41,7 +46,10 @@ public class FileConvertibleValidator implements Validator<ValidatorDto> {
 
 	/**
 	 * <p>
-	 * Validate the file MIME type to ensure the file is a type that can be converted to PDF.
+	 * Validate the file MIME type to ensure the file meets the criteria for conversion to PDF.
+	 * <p>
+	 * This method determines if the file meets all criteria for conversion to PDF.
+	 * It DOES NOT perform any tests to confirm that the conversion can be successfully performed.
 	 * <p>
 	 * If validations succeeds, {@code null} is returned, otherwise the returned list of messages is also returned on the ValidataorDto
 	 * parameter.
@@ -160,7 +168,7 @@ public class FileConvertibleValidator implements Validator<ValidatorDto> {
 			return false;
 		}
 
-		if ((detectedMimetype != null) && "image".equals(detectedMimetype.getPrimaryType())) {
+		if ((detectedMimetype != null) && IMAGE.equals(detectedMimetype.getPrimaryType())) {
 			// see if itext has any issue
 			try {
 				// the document is a valid image type if no exception is thrown.

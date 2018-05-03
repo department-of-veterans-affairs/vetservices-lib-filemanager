@@ -2,6 +2,8 @@ package gov.va.vetservices.lib.filemanager.impl.validate.validators;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -15,6 +17,7 @@ import gov.va.ascent.framework.messages.Message;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
 import gov.va.vetservices.lib.filemanager.impl.validate.ValidatorArg;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
@@ -71,6 +74,37 @@ public class FilenameValidatorTest {
 		messages = filenameValidator.validate(arg);
 		assertNotNull(messages);
 
+		try {
+			messages = filenameValidator.validate(null);
+			fail("filenameValidator.validate(null) should have thrown exception.");
+		} catch (Throwable e) {
+			e.printStackTrace();
+			assertNotNull(e);
+			assertTrue(IllegalArgumentException.class.equals(e.getClass()));
+		}
+
+		arg = new ValidatorArg<>(null);
+		try {
+			messages = filenameValidator.validate(null);
+			fail("filenameValidator.validate(null) should have thrown exception.");
+		} catch (Throwable e) {
+			e.printStackTrace();
+			assertNotNull(e);
+			assertTrue(IllegalArgumentException.class.equals(e.getClass()));
+		}
+
+		arg = new ValidatorArg<>(FileManagerUtils.makeValidatorDto(null));
+		messages = filenameValidator.validate(arg);
+		assertNotNull(messages);
+		assertTrue(messages.size() > 0);
+		assertTrue(messages.get(0).getKey().equals(MessageKeys.FILE_DTO_NULL.getKey()));
+
+		dto.setFilename("./bad.file");
+		arg = new ValidatorArg<>(FileManagerUtils.makeValidatorDto(dto));
+		messages = filenameValidator.validate(arg);
+		assertNotNull(messages);
+		assertTrue(messages.size() > 0);
+		assertTrue(messages.get(0).getKey().equals(MessageKeys.FILE_NAME_MALFORMED.getKey()));
 	}
 
 }

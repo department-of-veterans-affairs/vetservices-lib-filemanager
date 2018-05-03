@@ -97,7 +97,7 @@ public class FilenameDetector extends AbstractDetector {
 		if ((parts != null) && !StringUtils.isBlank(parts.getExtension())) {
 			mimetype = ConvertibleTypesEnum.getMimeTypeForExtension(parts.getExtension());
 			if (mimetype == null) {
-				detectNonConvertibleTypes(parts);
+				mimetype = detectNonConvertibleTypes(parts);
 			}
 		}
 

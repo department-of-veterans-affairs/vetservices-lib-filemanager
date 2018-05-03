@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.api.FileManager;
+import gov.va.vetservices.lib.filemanager.api.stamper.StampData;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
@@ -44,6 +45,8 @@ public class FileManagerImpl implements FileManager {
 					MessageKeys.FILE_BYTES_NULL_OR_EMPTY.getMessage());
 		} else {
 			ValidatorDto validatorDto = FileManagerUtils.makeValidatorDto(fileDto);
+
+			// determine if the file can be converted to PDF
 			response = interrogateFile.canConvertToPdf(validatorDto);
 		}
 
@@ -75,7 +78,7 @@ public class FileManagerImpl implements FileManager {
 	 * - ... could replace String param with a model (content, font size, etc as needed)
 	 */
 	@Override
-	public FileManagerResponse stampPdf(String stampContent, FileDto fileDto) {
+	public FileManagerResponse stampPdf(StampData stampData, FileDto fileDto) {
 		// NOSONAR TODO Auto-generated method stub
 		return null;
 	}

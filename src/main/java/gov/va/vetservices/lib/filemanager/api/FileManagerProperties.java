@@ -47,10 +47,9 @@ public class FileManagerProperties {
 
 	/** Array of characters that are not allowed at the beginning of a file names: {@code . / \ :} */
 	public static final String[] FILE_NAME_ILLEGAL_CHARS = { "/", "\\", ":", "." }; // NOSONAR - will be used
-	/** String of characters that are not allowed at the beginning of a file names: {@code . / \ :} */
-	public static final String FILE_NAME_ILLEGAL_STRING = Arrays.toString(FILE_NAME_ILLEGAL_CHARS);
-
+	/** Maximum length of a file name, constrained by lowest size allowed on common operating systems */
 	public static final int MAX_OS_FILENAME_LENGTH = 255;
+	/** Maximum length of absolute file path, constrained by lowest size allowed on common operating systems */
 	public static final int MAX_OS_FILEPATH_LENGTH = 4096;
 
 	/* MEMBERS FOR EXPOSED CONSTANTS */

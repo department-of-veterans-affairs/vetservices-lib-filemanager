@@ -44,7 +44,8 @@ public class InterrogateFileTest {
 
 		response = interrogateFile.canConvertToPdf(vdto);
 		assertNotNull(response);
-		assertTrue(response.getMessages().isEmpty());
+		// NOSONAR TODO line below will have to change when ConversionValidator is completed
+		assertTrue(!response.getMessages().isEmpty() && response.getMessages().get(0).getKey().equals("UNFINISHED.WORK"));
 		assertNull(response.getFileDto());
 
 		// sad

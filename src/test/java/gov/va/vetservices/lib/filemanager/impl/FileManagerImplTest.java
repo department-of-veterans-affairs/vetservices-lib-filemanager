@@ -36,7 +36,8 @@ public class FileManagerImplTest {
 		response = fileManagerImpl.validateFileForPDFConversion(fileDto);
 		assertNotNull(response);
 		assertNotNull(response.getMessages());
-		assertTrue(response.getMessages().isEmpty());
+		// NOSONAR TODO line below will have to change when ConversionValidator is completed
+		assertTrue(!response.getMessages().isEmpty() && response.getMessages().get(0).getKey().equals("UNFINISHED.WORK"));
 		assertNull(response.getFileDto());
 
 		// sad

@@ -41,12 +41,14 @@ public class MimeTypeDetector {
 
 	/**
 	 * <p>
-	 * Uses jMimeMagic to attempt detection of the MIME type of a byte array.
+	 * Uses Tika and jMimeMagic to attempt detection of the MIME type of a byte array.
+	 * The detected MIME type must match the MIME type that is derived from the file extension.
 	 * <p>
 	 * Returns {@code null} if an error occurred while parsing the byte array or the detected MIME type,
 	 * or a new uninitialized MimeType if the type could not be detected.
 	 *
 	 * @param bytes the byte array to inspect
+	 * @param parts the file definition info
 	 * @return MimeType null, uninitialized MimeType, or the detected MimeType
 	 * @throws FileManagerException mismatch between detected file bytes and the filename extension
 	 */
