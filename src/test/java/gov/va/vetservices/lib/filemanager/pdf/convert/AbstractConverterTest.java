@@ -22,7 +22,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
@@ -35,7 +35,7 @@ public class AbstractConverterTest {
 	class TestConverter extends AbstractConverter {
 
 		@Override
-		public byte[] getPdf(byte[] bytes, FileParts parts) throws FileManagerException {
+		public byte[] getPdf(byte[] bytes, FilePartsDto parts) throws FileManagerException {
 			// don't care about this, just the methods in the abstract class
 			return null;
 		}

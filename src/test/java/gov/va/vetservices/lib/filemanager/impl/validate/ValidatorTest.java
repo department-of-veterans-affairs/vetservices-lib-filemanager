@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.Test;
 
 import gov.va.ascent.framework.messages.Message;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 
 public class ValidatorTest {
 
@@ -16,14 +17,14 @@ public class ValidatorTest {
 
 	class StringValidator implements Validator<String> {
 		@Override
-		public List<Message> validate(ValidatorArg<String> toValidate) {
+		public List<Message> validate(ImplArgDto<String> toValidate) {
 			return null;
 		}
 	}
 
 	class IntegerValidator implements Validator<Integer> {
 		@Override
-		public List<Message> validate(ValidatorArg<Integer> toValidate) {
+		public List<Message> validate(ImplArgDto<Integer> toValidate) {
 			return null;
 		}
 	}
@@ -32,13 +33,13 @@ public class ValidatorTest {
 	public final void testValidate() {
 		StringValidator sv = new StringValidator();
 		assertNotNull(sv);
-		ValidatorArg<String> vas = new ValidatorArg<>(ARG_STRING);
+		ImplArgDto<String> vas = new ImplArgDto<>(ARG_STRING);
 		List<Message> lms = sv.validate(vas);
 		assertNull(lms);
 
 		IntegerValidator iv = new IntegerValidator();
 		assertNotNull(iv);
-		ValidatorArg<Integer> vai = new ValidatorArg<>(ARG_INTEGER);
+		ImplArgDto<Integer> vai = new ImplArgDto<>(ARG_INTEGER);
 		List<Message> lmi = iv.validate(vai);
 		assertNull(lmi);
 	}

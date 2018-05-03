@@ -4,10 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.api.FileManager;
-import gov.va.vetservices.lib.filemanager.api.stamper.StampData;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
@@ -36,7 +35,7 @@ public class FileManagerImpl implements FileManager {
 
 		validateInputs(fileDto, response);
 		if (response.getMessages().isEmpty()) {
-			ValidatorDto validatorDto = FileManagerUtils.makeValidatorDto(fileDto);
+			ImplDto validatorDto = FileManagerUtils.makeImplDto(fileDto);
 
 			// determine if the file can be converted to PDF
 			response = interrogateFile.canConvertToPdf(validatorDto);
@@ -60,7 +59,7 @@ public class FileManagerImpl implements FileManager {
 
 		validateInputs(fileDto, response);
 		if (response.getMessages().isEmpty()) {
-			ValidatorDto validatorDto = FileManagerUtils.makeValidatorDto(fileDto);
+			ImplDto validatorDto = FileManagerUtils.makeImplDto(fileDto);
 
 			// converted the file to PDF
 			convertFile.doConversion(validatorDto);
@@ -69,25 +68,9 @@ public class FileManagerImpl implements FileManager {
 		return response;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see gov.va.vetservices.lib.filemanager.api.FileManager#stampPdf(java.lang.String, byte[])
-	 *
-	 * NOSONAR TODO Dev notes:
-	 * - Method is sourced from wss PDFServiceImpl.stampPDF(..) & PDFGenerate.generateBody()
-	 * - It may be necesary to provide more information to this method
-	 * - ... could replace String param with a model (content, font size, etc as needed)
-	 */
-	@Override
-	public FileManagerResponse stampPdf(StampData stampData, FileDto fileDto) {
-		// NOSONAR TODO Auto-generated method stub
-		return null;
-	}
-
 	/**
 	 * Add error messages onto the response if there are any issues with the FileDto object / contents.
-	 * 
+	 *
 	 * @param fileDto the FileDto
 	 * @param response the File Manager Response
 	 */

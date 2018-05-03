@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
@@ -32,7 +32,7 @@ public class JMimeMagicDetector extends AbstractDetector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JMimeMagicDetector.class);
 
 	@Override
-	public MimeType detect(byte[] bytes, FileParts parts) throws FileManagerException {
+	public MimeType detect(byte[] bytes, FilePartsDto parts) throws FileManagerException {
 		MimeType mimetype = null;
 
 		if (bytes == null) {

@@ -87,11 +87,4 @@ public class FileManagerImplTest {
 		assertNull(response.getFileDto());
 	}
 
-	@Test
-	public void testStampPdfTest() {
-		// TODO make this a real test
-		FileManagerResponse response = fileManagerImpl.stampPdf(null, null);
-		assertNull(response);
-	}
-
 }

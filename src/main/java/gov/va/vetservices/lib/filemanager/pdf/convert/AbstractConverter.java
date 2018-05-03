@@ -15,7 +15,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfWriter;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
@@ -37,7 +37,7 @@ public abstract class AbstractConverter {
 	 * @return byte[] the PDF
 	 * @throws FileManagerException some problem processing the bytes
 	 */
-	public abstract byte[] getPdf(byte[] bytes, FileParts parts) throws FileManagerException;
+	public abstract byte[] getPdf(byte[] bytes, FilePartsDto parts) throws FileManagerException;
 
 	/**
 	 * Set page dimensions and open the iText PDF @link Document}.

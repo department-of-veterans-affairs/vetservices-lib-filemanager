@@ -7,9 +7,9 @@ import java.util.List;
 import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
 import gov.va.vetservices.lib.filemanager.impl.validate.Validator;
-import gov.va.vetservices.lib.filemanager.impl.validate.ValidatorArg;
 
 /**
  * Determines if the file byte array contains bytes, and does not contain more than {@link FileManagerProperties#KEY_FILE_MAX_BYTES}.
@@ -33,7 +33,7 @@ public class ByteArrayValidator implements Validator<byte[]> {
 	 * <p>
 	 */
 	@Override
-	public List<Message> validate(ValidatorArg<byte[]> toValidate) {
+	public List<Message> validate(ImplArgDto<byte[]> toValidate) {
 		byte[] bytes = toValidate.getValue();
 
 		Message message = null;

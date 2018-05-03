@@ -12,8 +12,8 @@ import org.junit.Test;
 
 import gov.va.ascent.framework.messages.Message;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
-import gov.va.vetservices.lib.filemanager.impl.validate.ValidatorArg;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
@@ -36,8 +36,8 @@ public class ConversionValidatorTest extends AbstractFileHandler {
 		FileDto fileDto = new FileDto();
 		fileDto.setFilename(FILE_PATH_GOOD);
 		fileDto.setFilebytes(super.readFile(Paths.get(FILE_PATH_GOOD)));
-		ValidatorDto vdto = FileManagerUtils.makeValidatorDto(fileDto);
-		List<Message> messages = conversionValidator.validate(new ValidatorArg<ValidatorDto>(vdto));
+		ImplDto implDto = FileManagerUtils.makeImplDto(fileDto);
+		List<Message> messages = conversionValidator.validate(new ImplArgDto<ImplDto>(implDto));
 		// NOSONAR TODO when code is implemented, fix this test and add bad tests
 		assertNotNull(messages);
 	}

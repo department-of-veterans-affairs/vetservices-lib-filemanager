@@ -11,8 +11,8 @@ import org.junit.Test;
 
 import gov.va.ascent.framework.messages.Message;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
-import gov.va.vetservices.lib.filemanager.impl.validate.ValidatorArg;
 
 public class ByteArrayValidatorTest {
 
@@ -29,27 +29,27 @@ public class ByteArrayValidatorTest {
 	public final void testValidate() {
 		// happy
 
-		ValidatorArg<byte[]> arg = new ValidatorArg<>(bytes);
+		ImplArgDto<byte[]> arg = new ImplArgDto<>(bytes);
 		messages = byteArrayValidator.validate(arg);
 		assertNull(messages);
 
-		arg = new ValidatorArg<>(bytesMax);
+		arg = new ImplArgDto<>(bytesMax);
 		messages = byteArrayValidator.validate(arg);
 		assertNull(messages);
 
 		// sad
 
-		arg = new ValidatorArg<>(bytesEmpty);
+		arg = new ImplArgDto<>(bytesEmpty);
 		messages = byteArrayValidator.validate(arg);
 		assertNotNull(messages);
 		assertTrue(MessageKeys.FILE_BYTES_NULL_OR_EMPTY.getKey().equals(messages.get(0).getKey()));
 
-		arg = new ValidatorArg<>(null);
+		arg = new ImplArgDto<>(null);
 		messages = byteArrayValidator.validate(arg);
 		assertNotNull(messages);
 		assertTrue(MessageKeys.FILE_BYTES_NULL_OR_EMPTY.getKey().equals(messages.get(0).getKey()));
 
-		arg = new ValidatorArg<>(bytesOver);
+		arg = new ImplArgDto<>(bytesOver);
 		messages = byteArrayValidator.validate(arg);
 		assertNotNull(messages);
 		assertTrue(MessageKeys.FILE_BYTES_SIZE.getKey().equals(messages.get(0).getKey()));

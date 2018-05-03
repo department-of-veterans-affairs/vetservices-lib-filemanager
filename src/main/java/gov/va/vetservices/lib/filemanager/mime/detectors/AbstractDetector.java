@@ -2,7 +2,7 @@ package gov.va.vetservices.lib.filemanager.mime.detectors;
 
 import javax.activation.MimeType;
 
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 
 /**
@@ -46,6 +46,6 @@ public abstract class AbstractDetector {
 	 * @param filename the original name of the file
 	 * @return MimeType the MIME type
 	 */
-	public abstract MimeType detect(final byte[] bytes, final FileParts parts) throws FileManagerException;
+	public abstract MimeType detect(final byte[] bytes, final FilePartsDto parts) throws FileManagerException;
 
 }

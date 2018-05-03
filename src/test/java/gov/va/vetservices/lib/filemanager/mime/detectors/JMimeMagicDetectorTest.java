@@ -17,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
@@ -54,7 +54,7 @@ public class JMimeMagicDetectorTest extends AbstractFileHandler {
 				}
 
 				byte[] bytes = Files.readAllBytes(file.toPath());
-				FileParts parts = FileManagerUtils.getFileParts(file.getName());
+				FilePartsDto parts = FileManagerUtils.getFileParts(file.getName());
 				try {
 					MimeType mimetype = jMimeMagicDetector.detect(bytes, parts);
 					System.out.println(file.getName() + "\t " + mimetype.getBaseType());
@@ -76,7 +76,7 @@ public class JMimeMagicDetectorTest extends AbstractFileHandler {
 		}
 
 		// test a non-convertible but valid type
-		FileParts parts = new FileParts();
+		FilePartsDto parts = new FilePartsDto();
 		parts.setName("test");
 		parts.setExtension("stl");
 		MimeType testtype = null;
@@ -109,7 +109,7 @@ public class JMimeMagicDetectorTest extends AbstractFileHandler {
 	@Test
 	public final void testDetect_Bad() {
 		// null bytes and parts
-		FileParts parts = new FileParts();
+		FilePartsDto parts = new FilePartsDto();
 		parts.setName(null);
 		parts.setExtension(null);
 
@@ -120,7 +120,7 @@ public class JMimeMagicDetectorTest extends AbstractFileHandler {
 
 	}
 
-	private void testNullBytesAndParts(byte[] bytes, FileParts parts) {
+	private void testNullBytesAndParts(byte[] bytes, FilePartsDto parts) {
 		try {
 			MimeType mimetype = jMimeMagicDetector.detect(bytes, parts);
 			assertNull(mimetype);

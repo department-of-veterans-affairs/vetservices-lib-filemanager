@@ -12,7 +12,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfWriter;
 
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
 
@@ -36,7 +36,7 @@ public class TextConverter extends AbstractConverter {
 	 * @throws PdfConverterException some problem processing the bytes
 	 */
 	@Override
-	public byte[] getPdf(byte[] bytes, FileParts parts) throws FileManagerException {
+	public byte[] getPdf(byte[] bytes, FilePartsDto parts) throws FileManagerException {
 		final ByteArrayOutputStream pdfContent = new ByteArrayOutputStream();
 		final Document pdfDocument = new Document();
 		PdfWriter writer = null;

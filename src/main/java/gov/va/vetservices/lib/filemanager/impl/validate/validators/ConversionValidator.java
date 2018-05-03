@@ -5,22 +5,22 @@ import java.util.List;
 
 import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.Validator;
-import gov.va.vetservices.lib.filemanager.impl.validate.ValidatorArg;
 
 /**
  * Perform the necessary tests to confirm that the file can be converted to PDF.
  *
  * @author aburkholder
  */
-public class ConversionValidator implements Validator<ValidatorDto> {
+public class ConversionValidator implements Validator<ImplDto> {
 
 	/**
 	 * Perform the necessary tests to confirm that the file can be converted to PDF.
 	 */
 	@Override
-	public List<Message> validate(ValidatorArg<ValidatorDto> toValidate) {
+	public List<Message> validate(ImplArgDto<ImplDto> toValidate) {
 		// NOSONAR TODO requires conversion and stamping code to be written first
 		List<Message> list = new ArrayList<>();
 		list.add(new Message(MessageSeverity.ERROR, "UNFINISHED.WORK",

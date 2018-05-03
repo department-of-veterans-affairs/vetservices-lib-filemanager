@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
@@ -67,7 +67,7 @@ public class TikaDetectorTest extends AbstractFileHandler {
 				}
 
 				byte[] bytes = Files.readAllBytes(file.toPath());
-				FileParts parts = FileManagerUtils.getFileParts(file.getName());
+				FilePartsDto parts = FileManagerUtils.getFileParts(file.getName());
 				try {
 					MimeType mimetype = tikaDetector.detect(bytes, parts);
 					System.out.println(file.getName() + "\t " + mimetype.getBaseType());
@@ -89,7 +89,7 @@ public class TikaDetectorTest extends AbstractFileHandler {
 		}
 
 		// test a non-convertible but valid type
-		FileParts parts = new FileParts();
+		FilePartsDto parts = new FilePartsDto();
 		parts.setName("test");
 		parts.setExtension("stl");
 		MimeType testtype = null;
@@ -122,7 +122,7 @@ public class TikaDetectorTest extends AbstractFileHandler {
 	@Test
 	public final void testDetect_Bad() {
 		// null bytes and parts
-		FileParts parts = new FileParts();
+		FilePartsDto parts = new FilePartsDto();
 		parts.setName(null);
 		parts.setExtension(null);
 
@@ -132,7 +132,7 @@ public class TikaDetectorTest extends AbstractFileHandler {
 
 	}
 
-	private void testNullBytesAndParts(byte[] bytes, FileParts parts) {
+	private void testNullBytesAndParts(byte[] bytes, FilePartsDto parts) {
 		try {
 			MimeType mimetype = tikaDetector.detect(bytes, parts);
 			assertNull(mimetype);

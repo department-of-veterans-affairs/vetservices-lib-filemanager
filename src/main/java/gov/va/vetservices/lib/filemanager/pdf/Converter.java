@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
@@ -41,7 +41,7 @@ public class Converter {
 	 * @return byte[] the PDF file byte array
 	 * @throws FileManagerException
 	 */
-	public final byte[] convert(byte[] bytes, FileParts parts) throws FileManagerException {
+	public final byte[] convert(byte[] bytes, FilePartsDto parts) throws FileManagerException {
 		MimeType mimetype = detector.detectMimeType(bytes, parts);
 
 		if (ConvertibleTypesEnum.hasMimeType(mimetype) && mimetype.match(ConvertibleTypesEnum.PDF.getMimeType())) {

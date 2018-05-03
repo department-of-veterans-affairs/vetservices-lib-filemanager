@@ -16,7 +16,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
@@ -72,7 +72,7 @@ public class FilenameDetector extends AbstractDetector {
 	 * @throws FileManagerException if MIME type cannot be derived
 	 */
 	@Override
-	public MimeType detect(byte[] bytes, FileParts parts) throws FileManagerException {
+	public MimeType detect(byte[] bytes, FilePartsDto parts) throws FileManagerException {
 		MimeType mimetype = null;
 
 		mimetype = detectWithExtension(parts);
@@ -91,7 +91,7 @@ public class FilenameDetector extends AbstractDetector {
 	 * @param parts the file extension from which the MIME type is derived
 	 * @throws NullPointerException if parts is {@code null} or parts.getExtension() returns {@code null}
 	 */
-	protected MimeType detectWithExtension(FileParts parts) {
+	protected MimeType detectWithExtension(FilePartsDto parts) {
 		MimeType mimetype = null;
 
 		if ((parts != null) && !StringUtils.isBlank(parts.getExtension())) {
@@ -110,7 +110,7 @@ public class FilenameDetector extends AbstractDetector {
 	 * @param parts the file extension from which the MIME type is derived
 	 * @return MimeType the derived MIME type, or {@code null}
 	 */
-	private MimeType detectNonConvertibleTypes(FileParts parts) {
+	private MimeType detectNonConvertibleTypes(FilePartsDto parts) {
 		MimeType mimetype = null;
 
 		String filename = parts.getName() + SEPARATOR + parts.getExtension();

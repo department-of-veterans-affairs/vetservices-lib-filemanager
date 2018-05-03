@@ -18,7 +18,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
@@ -63,7 +63,7 @@ public class MimeTypeDetectorTest extends AbstractFileHandler {
 				byte[] bytes = Files.readAllBytes(file.toPath());
 				String filename = file.getName();
 				String msgPrefix = file.getPath() + ": ";
-				FileParts parts = FileManagerUtils.getFileParts(filename);
+				FilePartsDto parts = FileManagerUtils.getFileParts(filename);
 
 				System.out.println("File: " + filename);
 

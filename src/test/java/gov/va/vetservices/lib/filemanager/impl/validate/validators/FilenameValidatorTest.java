@@ -16,9 +16,9 @@ import com.google.common.base.Strings;
 import gov.va.ascent.framework.messages.Message;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
-import gov.va.vetservices.lib.filemanager.impl.validate.ValidatorArg;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 public class FilenameValidatorTest {
@@ -30,7 +30,7 @@ public class FilenameValidatorTest {
 
 	private FilenameValidator filenameValidator = new FilenameValidator();
 	private FileDto dto;
-	private ValidatorArg<ValidatorDto> arg;
+	private ImplArgDto<ImplDto> arg;
 	private List<Message> messages;
 
 	@Before
@@ -48,29 +48,29 @@ public class FilenameValidatorTest {
 		// happy
 
 		dto.setFilename(FILENAME);
-		arg = new ValidatorArg<>(FileManagerUtils.makeValidatorDto(dto));
+		arg = new ImplArgDto<>(FileManagerUtils.makeImplDto(dto));
 		messages = filenameValidator.validate(arg);
 		assertNull(messages);
 
 		dto.setFilename(FILENAME_LONG);
-		arg = new ValidatorArg<>(FileManagerUtils.makeValidatorDto(dto));
+		arg = new ImplArgDto<>(FileManagerUtils.makeImplDto(dto));
 		messages = filenameValidator.validate(arg);
 		assertNull(messages);
 
 		// sad
 
 		dto.setFilename(null);
-		arg = new ValidatorArg<>(FileManagerUtils.makeValidatorDto(dto));
+		arg = new ImplArgDto<>(FileManagerUtils.makeImplDto(dto));
 		messages = filenameValidator.validate(arg);
 		assertNotNull(messages);
 
 		dto.setFilename(FILENAME_EMPTY);
-		arg = new ValidatorArg<>(FileManagerUtils.makeValidatorDto(dto));
+		arg = new ImplArgDto<>(FileManagerUtils.makeImplDto(dto));
 		messages = filenameValidator.validate(arg);
 		assertNotNull(messages);
 
 		dto.setFilename(FILENAME_TOO_LONG);
-		arg = new ValidatorArg<>(FileManagerUtils.makeValidatorDto(dto));
+		arg = new ImplArgDto<>(FileManagerUtils.makeImplDto(dto));
 		messages = filenameValidator.validate(arg);
 		assertNotNull(messages);
 
@@ -83,7 +83,7 @@ public class FilenameValidatorTest {
 			assertTrue(IllegalArgumentException.class.equals(e.getClass()));
 		}
 
-		arg = new ValidatorArg<>(null);
+		arg = new ImplArgDto<>(null);
 		try {
 			messages = filenameValidator.validate(null);
 			fail("filenameValidator.validate(null) should have thrown exception.");
@@ -93,14 +93,14 @@ public class FilenameValidatorTest {
 			assertTrue(IllegalArgumentException.class.equals(e.getClass()));
 		}
 
-		arg = new ValidatorArg<>(FileManagerUtils.makeValidatorDto(null));
+		arg = new ImplArgDto<>(FileManagerUtils.makeImplDto(null));
 		messages = filenameValidator.validate(arg);
 		assertNotNull(messages);
 		assertTrue(messages.size() > 0);
 		assertTrue(messages.get(0).getKey().equals(MessageKeys.FILE_DTO_NULL.getKey()));
 
 		dto.setFilename("./bad.file");
-		arg = new ValidatorArg<>(FileManagerUtils.makeValidatorDto(dto));
+		arg = new ImplArgDto<>(FileManagerUtils.makeImplDto(dto));
 		messages = filenameValidator.validate(arg);
 		assertNotNull(messages);
 		assertTrue(messages.size() > 0);

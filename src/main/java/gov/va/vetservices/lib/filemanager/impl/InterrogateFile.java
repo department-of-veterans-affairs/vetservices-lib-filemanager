@@ -4,8 +4,8 @@ import java.util.List;
 
 import gov.va.ascent.framework.messages.Message;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
-import gov.va.vetservices.lib.filemanager.impl.validate.ValidatorArg;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.validators.ByteArrayValidator;
 import gov.va.vetservices.lib.filemanager.impl.validate.validators.ConversionValidator;
 import gov.va.vetservices.lib.filemanager.impl.validate.validators.FileTypeValidator;
@@ -34,26 +34,26 @@ public class InterrogateFile {
 	 * @param fileDto the file to interrogate
 	 * @return ServiceResponse with {@code null} messages if the file can be converted
 	 */
-	public FileManagerResponse canConvertToPdf(ValidatorDto validatorDto) {
+	public FileManagerResponse canConvertToPdf(ImplDto validatorDto) {
 		FileManagerResponse response = new FileManagerResponse();
 
 		List<Message> messages = null;
 
 		// validate file name
-		if ((messages = filenameValidator.validate((new ValidatorArg<ValidatorDto>(validatorDto)))) != null) {
+		if ((messages = filenameValidator.validate((new ImplArgDto<ImplDto>(validatorDto)))) != null) {
 			response.addMessages(messages);
 		}
 
 		// validate byte array
-		if ((messages = bytearrayValidator.validate((new ValidatorArg<byte[]>(validatorDto.getFileDto().getFilebytes())))) != null) {
+		if ((messages = bytearrayValidator.validate((new ImplArgDto<byte[]>(validatorDto.getFileDto().getFilebytes())))) != null) {
 			response.addMessages(messages);
 		} else {
 			// validate file type
-			if ((messages = filetypeValidator.validate((new ValidatorArg<ValidatorDto>(validatorDto)))) != null) {
+			if ((messages = filetypeValidator.validate((new ImplArgDto<ImplDto>(validatorDto)))) != null) {
 				response.addMessages(messages);
 			} else {
 				// validate can be converted
-				if ((messages = conversionValidator.validate((new ValidatorArg<ValidatorDto>(validatorDto)))) != null) {
+				if ((messages = conversionValidator.validate((new ImplArgDto<ImplDto>(validatorDto)))) != null) {
 					response.addMessages(messages);
 				}
 			}

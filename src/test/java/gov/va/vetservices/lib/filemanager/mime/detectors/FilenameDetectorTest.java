@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
@@ -24,7 +24,7 @@ import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 public class FilenameDetectorTest extends AbstractFileHandler {
 
 //	private final String mimetype = ConvertibleTypesEnum.TXT.getMimeString();
-//	private final FileParts parts = FileManagerUtils.getFileParts("test.txt");
+//	private final FilePartsDto parts = FileManagerUtils.getFileParts("test.txt");
 
 	FilenameDetector fileManagerDetector;
 
@@ -49,7 +49,7 @@ public class FilenameDetectorTest extends AbstractFileHandler {
 							+ file.getPath());
 				}
 
-				FileParts parts = FileManagerUtils.getFileParts(file.getName());
+				FilePartsDto parts = FileManagerUtils.getFileParts(file.getName());
 				try {
 					MimeType mimetype = fileManagerDetector.detect(null, parts);
 					assertNotNull(mimetype);
@@ -70,7 +70,7 @@ public class FilenameDetectorTest extends AbstractFileHandler {
 		}
 
 		// test a non-convertible but valid type
-		FileParts parts = new FileParts();
+		FilePartsDto parts = new FilePartsDto();
 		parts.setExtension("art");
 
 		try {
@@ -91,7 +91,7 @@ public class FilenameDetectorTest extends AbstractFileHandler {
 	@Test
 	public final void testDetect_Bad() {
 		// null extension
-		FileParts parts = new FileParts();
+		FilePartsDto parts = new FilePartsDto();
 		parts.setExtension(null);
 
 		try {
@@ -110,7 +110,7 @@ public class FilenameDetectorTest extends AbstractFileHandler {
 		}
 
 		// empty extension
-		parts = new FileParts();
+		parts = new FilePartsDto();
 		parts.setExtension("");
 
 		try {
@@ -129,7 +129,7 @@ public class FilenameDetectorTest extends AbstractFileHandler {
 		}
 
 		// non-existent extension
-		parts = new FileParts();
+		parts = new FilePartsDto();
 		parts.setExtension("abc123");
 
 		try {

@@ -4,7 +4,6 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import gov.va.vetservices.lib.filemanager.api.stamper.StampData;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 
@@ -22,11 +21,6 @@ public class FileManagerTest {
 			return new FileManagerResponse();
 		}
 
-		@Override
-		public FileManagerResponse stampPdf(StampData stampContent, FileDto file) {
-			return new FileManagerResponse();
-		}
-
 	}
 
 	@Test
@@ -35,7 +29,6 @@ public class FileManagerTest {
 		assertNotNull(test);
 		assertNotNull(test.validateFileForPDFConversion(null));
 		assertNotNull(test.convertToPdf(null));
-		assertNotNull(test.stampPdf(null, null));
 	}
 
 }

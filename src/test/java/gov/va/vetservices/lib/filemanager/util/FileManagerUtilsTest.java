@@ -13,8 +13,8 @@ import org.bouncycastle.util.Arrays;
 import org.junit.Test;
 
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 
 public class FileManagerUtilsTest {
@@ -64,7 +64,7 @@ public class FileManagerUtilsTest {
 		String extension = FILE_RELATIVE.split("\\.")[1];
 
 		// happy
-		FileParts parts = FileManagerUtils.getFileParts(FILE_RELATIVE);
+		FilePartsDto parts = FileManagerUtils.getFileParts(FILE_RELATIVE);
 		assertNotNull(parts);
 		assertTrue(filename.equals(parts.getName()));
 		assertTrue(extension.equals(parts.getExtension()));
@@ -83,29 +83,29 @@ public class FileManagerUtilsTest {
 	}
 
 	@Test
-	public final void testMakeValidatorDto() {
+	public final void testMakeImplDto() {
 		FileDto fdto = new FileDto();
 		fdto.setFilename("test filename.txt");
 		fdto.setFilebytes(new byte[] { 33, 34, 35, 36 });
 
-		ValidatorDto vdto = FileManagerUtils.makeValidatorDto(fdto);
+		ImplDto implDto = FileManagerUtils.makeImplDto(fdto);
 
-		assertNotNull("ValidatorDto is unexpectedly null.", vdto);
-		assertNotNull("ValidatorDto.fileDto is null.", vdto.getFileDto());
-		assertEquals("Filenames do not match.", vdto.getFileDto().getFilename(), fdto.getFilename());
-		assertTrue("Filebytes do not match.", Arrays.areEqual(vdto.getFileDto().getFilebytes(), fdto.getFilebytes()));
-		assertNotNull("FileParts is null.", vdto.getFileParts());
-		assertFalse("FileParts.name is null or empty.", StringUtils.isBlank(vdto.getFileParts().getName()));
-		assertFalse("FileParts.extension is null or empty.", StringUtils.isBlank(vdto.getFileParts().getExtension()));
+		assertNotNull("ImplDto is unexpectedly null.", implDto);
+		assertNotNull("ImplDto.fileDto is null.", implDto.getFileDto());
+		assertEquals("Filenames do not match.", implDto.getFileDto().getFilename(), fdto.getFilename());
+		assertTrue("Filebytes do not match.", Arrays.areEqual(implDto.getFileDto().getFilebytes(), fdto.getFilebytes()));
+		assertNotNull("FilePartsDto is null.", implDto.getFileParts());
+		assertFalse("FilePartsDto.name is null or empty.", StringUtils.isBlank(implDto.getFileParts().getName()));
+		assertFalse("FilePartsDto.extension is null or empty.", StringUtils.isBlank(implDto.getFileParts().getExtension()));
 	}
 
 	@Test
-	public final void testMakeValidatorDto_NullFileDto() {
-		ValidatorDto vdto = FileManagerUtils.makeValidatorDto(null);
+	public final void testMakeImplDto_NullFileDto() {
+		ImplDto implDto = FileManagerUtils.makeImplDto(null);
 
-		assertNotNull("ValidatorDto is unexpectedly null.", vdto);
-		assertNull("ValidatorDto.fileDto should be null.", vdto.getFileDto());
-		assertNull("ValidatorDto.fileParts should be null.", vdto.getFileParts());
+		assertNotNull("ImplDto is unexpectedly null.", implDto);
+		assertNull("ImplDto.fileDto should be null.", implDto.getFileDto());
+		assertNull("ImplDto.fileParts should be null.", implDto.getFileParts());
 	}
 
 	@Test

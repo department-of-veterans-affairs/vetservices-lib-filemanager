@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 public class InterrogateFileTest {
@@ -23,7 +23,7 @@ public class InterrogateFileTest {
 
 	private InterrogateFile interrogateFile = new InterrogateFile();
 	FileDto filedto;
-	ValidatorDto vdto;
+	ImplDto implDto;
 	FileManagerResponse response;
 
 	@Before
@@ -39,10 +39,10 @@ public class InterrogateFileTest {
 		filedto = new FileDto();
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(STRING_FILENAME);
-		vdto = FileManagerUtils.makeValidatorDto(filedto);
-		assertNotNull(vdto);
+		implDto = FileManagerUtils.makeImplDto(filedto);
+		assertNotNull(implDto);
 
-		response = interrogateFile.canConvertToPdf(vdto);
+		response = interrogateFile.canConvertToPdf(implDto);
 		assertNotNull(response);
 		// NOSONAR TODO line below will have to change when ConversionValidator is completed
 		assertTrue(!response.getMessages().isEmpty() && response.getMessages().get(0).getKey().equals("UNFINISHED.WORK"));
@@ -52,48 +52,48 @@ public class InterrogateFileTest {
 
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(null);
-		vdto = FileManagerUtils.makeValidatorDto(filedto);
-		response = interrogateFile.canConvertToPdf(vdto);
+		implDto = FileManagerUtils.makeImplDto(filedto);
+		response = interrogateFile.canConvertToPdf(implDto);
 		assertNotNull(response);
 		assertTrue(!response.getMessages().isEmpty());
 		assertNull(response.getFileDto());
 
 		filedto.setFilebytes(null);
 		filedto.setFilename(STRING_FILENAME);
-		vdto = FileManagerUtils.makeValidatorDto(filedto);
-		response = interrogateFile.canConvertToPdf(vdto);
+		implDto = FileManagerUtils.makeImplDto(filedto);
+		response = interrogateFile.canConvertToPdf(implDto);
 		assertNotNull(response);
 		assertTrue(response.getMessages() == null ? false : !response.getMessages().isEmpty());
 		assertNull(response.getFileDto());
 
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(STRING_FILENAME_NO_NAME);
-		vdto = FileManagerUtils.makeValidatorDto(filedto);
-		response = interrogateFile.canConvertToPdf(vdto);
+		implDto = FileManagerUtils.makeImplDto(filedto);
+		response = interrogateFile.canConvertToPdf(implDto);
 		assertNotNull(response);
 		assertTrue(response.getMessages() == null ? false : !response.getMessages().isEmpty());
 		assertNull(response.getFileDto());
 
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(STRING_FILENAME_NO_EXT);
-		vdto = FileManagerUtils.makeValidatorDto(filedto);
-		response = interrogateFile.canConvertToPdf(vdto);
+		implDto = FileManagerUtils.makeImplDto(filedto);
+		response = interrogateFile.canConvertToPdf(implDto);
 		assertNotNull(response);
 		assertTrue(response.getMessages() == null ? false : !response.getMessages().isEmpty());
 		assertNull(response.getFileDto());
 
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(STRING_FILENAME_MALFORMED);
-		vdto = FileManagerUtils.makeValidatorDto(filedto);
-		response = interrogateFile.canConvertToPdf(vdto);
+		implDto = FileManagerUtils.makeImplDto(filedto);
+		response = interrogateFile.canConvertToPdf(implDto);
 		assertNotNull(response);
 		assertTrue(response.getMessages() == null ? false : !response.getMessages().isEmpty());
 		assertNull(response.getFileDto());
 
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(STRING_FILENAME_UNSUPPORTED);
-		vdto = FileManagerUtils.makeValidatorDto(filedto);
-		response = interrogateFile.canConvertToPdf(vdto);
+		implDto = FileManagerUtils.makeImplDto(filedto);
+		response = interrogateFile.canConvertToPdf(implDto);
 		assertNotNull(response);
 		assertTrue(response.getMessages() == null ? false : !response.getMessages().isEmpty());
 		assertNull(response.getFileDto());

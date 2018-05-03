@@ -28,24 +28,6 @@
 		MODEL OBJECTS
 		************************************************************************************************************************************* -->
 
-	<xs:complexType name="ValidatorDto">
-		<xs:complexContent>
-			<xs:extension base="ascent:serviceResponse">
-				<xs:sequence>
-					<xs:element name="fileDto" type="FileDto" minOccurs="0" />
-					<xs:element name="fileParts" type="FileParts" minOccurs="0" />
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-
-	<xs:complexType name="FileParts">
-		<xs:sequence>
-			<xs:element name="name" type="xs:string" minOccurs="0" />
-			<xs:element name="extension" type="xs:string" minOccurs="0" />
-		</xs:sequence>
-	</xs:complexType>
-
 	<xs:complexType name="FileDto">
 		<xs:sequence>
 			<xs:element name="filename" type="xs:string" minOccurs="0" />

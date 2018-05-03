@@ -12,7 +12,7 @@ import javax.activation.MimeType;
 import org.junit.Before;
 import org.junit.Test;
 
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.mime.MimeTypeDetector;
@@ -44,14 +44,14 @@ public class ImageConverterTest extends AbstractFileHandler {
 			fail("Unexpected exception.");
 		}
 
-		FileParts parts = FileManagerUtils.getFileParts(Paths.get(FILE_PATH).toFile().getName());
+		FilePartsDto parts = FileManagerUtils.getFileParts(Paths.get(FILE_PATH).toFile().getName());
 
 		try {
 			byte[] pdf = imageConverter.getPdf(bytes, parts);
 			assertNotNull(pdf);
 			assertTrue(pdf.length > 0);
 
-			FileParts pdfparts = FileManagerUtils.getFileParts("IS_Transparent.pdf");
+			FilePartsDto pdfparts = FileManagerUtils.getFileParts("IS_Transparent.pdf");
 			MimeType pdftype = mimetypeDetector.detectMimeType(pdf, pdfparts);
 			assertTrue(ConvertibleTypesEnum.PDF.getMimeType().match(pdftype));
 

@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
 import gov.va.vetservices.lib.filemanager.mime.detectors.AbstractDetector;
@@ -52,7 +52,7 @@ public class MimeTypeDetector {
 	 * @return MimeType null, uninitialized MimeType, or the detected MimeType
 	 * @throws FileManagerException mismatch between detected file bytes and the filename extension
 	 */
-	public MimeType detectMimeType(byte[] bytes, FileParts parts) throws FileManagerException {
+	public MimeType detectMimeType(byte[] bytes, FilePartsDto parts) throws FileManagerException {
 
 		MimeType bestGuess = null;
 
@@ -90,7 +90,7 @@ public class MimeTypeDetector {
 	 * @param filename the original filename
 	 * @throws FileManagerException mismatch between detected and derived types
 	 */
-	private void checkContentVsExtension(MimeType detectedType, MimeType derivedtype, FileParts parts) throws FileManagerException {
+	private void checkContentVsExtension(MimeType detectedType, MimeType derivedtype, FilePartsDto parts) throws FileManagerException {
 		if (!derivedtype.match(detectedType)) {
 			String filename = parts.getName() + AbstractDetector.SEPARATOR + parts.getExtension();
 			LOGGER.error("MIME type detection mismatch. File: " + filename + "; Type by filename extension: " + derivedtype
@@ -107,7 +107,7 @@ public class MimeTypeDetector {
 	 * @param mimetype the detected MimeType
 	 * @throws FileManagerException unsupported type
 	 */
-	private void checkUnsupportedType(MimeType mimetype, FileParts parts) throws FileManagerException {
+	private void checkUnsupportedType(MimeType mimetype, FilePartsDto parts) throws FileManagerException {
 		if (!ConvertibleTypesEnum.hasMimeType(mimetype)) {
 			String filename = parts.getName() + AbstractDetector.SEPARATOR + parts.getExtension();
 			LOGGER.error("Files of type " + mimetype + " are not supported. ");

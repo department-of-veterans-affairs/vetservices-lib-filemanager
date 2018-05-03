@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.pdf.convert.ImageConverter;
@@ -51,8 +51,8 @@ public class ConverterTest extends AbstractFileHandler {
 	@Test
 	public final void testConvert() {
 		try {
-			when(imageConverter.getPdf(any(byte[].class), any(FileParts.class))).thenReturn(BYTES_RESPONSE.getBytes());
-			when(textConverter.getPdf(any(byte[].class), any(FileParts.class))).thenReturn(BYTES_RESPONSE.getBytes());
+			when(imageConverter.getPdf(any(byte[].class), any(FilePartsDto.class))).thenReturn(BYTES_RESPONSE.getBytes());
+			when(textConverter.getPdf(any(byte[].class), any(FilePartsDto.class))).thenReturn(BYTES_RESPONSE.getBytes());
 		} catch (FileManagerException e) {
 			e.printStackTrace();
 			fail("Mock failed.");
@@ -74,7 +74,7 @@ public class ConverterTest extends AbstractFileHandler {
 
 				try {
 					byte[] readBytes = Files.readAllBytes(file.toPath());
-					FileParts parts = FileManagerUtils.getFileParts(file.getName());
+					FilePartsDto parts = FileManagerUtils.getFileParts(file.getName());
 
 					converter.convert(readBytes, parts);
 
@@ -95,7 +95,7 @@ public class ConverterTest extends AbstractFileHandler {
 			fail("Unexpected exception");
 		}
 
-		FileParts parts = FileManagerUtils.getFileParts(Paths.get(FILE_UNSUPPORTED).toFile().getName());
+		FilePartsDto parts = FileManagerUtils.getFileParts(Paths.get(FILE_UNSUPPORTED).toFile().getName());
 		try {
 			converter.convert(bytes, parts);
 			fail("converter.convert() should have thrown exception");

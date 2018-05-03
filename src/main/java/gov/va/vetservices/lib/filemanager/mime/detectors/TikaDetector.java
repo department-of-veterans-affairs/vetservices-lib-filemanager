@@ -21,7 +21,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.xml.sax.SAXException;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
@@ -81,7 +81,7 @@ public class TikaDetector extends AbstractDetector {
 	}
 
 	@Override
-	public MimeType detect(byte[] bytes, FileParts parts) throws FileManagerException {
+	public MimeType detect(byte[] bytes, FilePartsDto parts) throws FileManagerException {
 		MimeType mimetype = null;
 
 		if (bytes == null) {
@@ -198,7 +198,7 @@ public class TikaDetector extends AbstractDetector {
 	 * @param filename the filename
 	 * @return MimeType the fixed Tika detected MIME type
 	 */
-	protected MimeType fixKnownFlaws(MimeType fromBytes, FileParts parts) {
+	protected MimeType fixKnownFlaws(MimeType fromBytes, FilePartsDto parts) {
 		MimeType fixed = fromBytes;
 
 		// sonar cannot be made happy here - it complains about too many arguments in the if statement,

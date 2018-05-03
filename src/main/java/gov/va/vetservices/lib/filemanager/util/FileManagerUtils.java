@@ -4,8 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileParts;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 
 /**
  * Static utilities to help with file processing
@@ -47,29 +47,29 @@ public class FileManagerUtils {
 	 * If the fileDto paramter is null,
 	 *
 	 * @param fileDto
-	 * @return ValidatorDto
+	 * @return ImplDto
 	 */
-	public static final ValidatorDto makeValidatorDto(FileDto fileDto) {
-		ValidatorDto vdto = new ValidatorDto();
+	public static final ImplDto makeImplDto(FileDto fileDto) {
+		ImplDto implDto = new ImplDto();
 		if (fileDto != null) { // should never happen, but check anyway
-			vdto.setFileDto(fileDto);
-			vdto.setFileParts(getFileParts(fileDto.getFilename()));
+			implDto.setFileDto(fileDto);
+			implDto.setFileParts(getFileParts(fileDto.getFilename()));
 		}
-		return vdto;
+		return implDto;
 	}
 
 	/**
-	 * If filename is not null or empty, returns a populated {@link FileParts} (though it is possible for the members of FileParts to
+	 * If filename is not null or empty, returns a populated {@link FilePartsDto} (though it is possible for the members of FilePartsDto to
 	 * be {@code null} or empty). Otherwise returns {@code null}
 	 *
 	 * @param filename
-	 * @return FileParts
+	 * @return FilePartsDto
 	 */
-	public static final FileParts getFileParts(String filename) {
-		FileParts fileParts = null;
+	public static final FilePartsDto getFileParts(String filename) {
+		FilePartsDto fileParts = null;
 
 		if (StringUtils.isNotBlank(filename)) {
-			fileParts = new FileParts();
+			fileParts = new FilePartsDto();
 
 			String[] filenames = splitOnLastOf(filename, '.');
 

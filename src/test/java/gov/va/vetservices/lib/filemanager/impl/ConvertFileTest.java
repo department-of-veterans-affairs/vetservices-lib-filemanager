@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.ValidatorDto;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 public class ConvertFileTest {
@@ -22,7 +22,7 @@ public class ConvertFileTest {
 
 	private ConvertFile convertFile = new ConvertFile();
 	FileDto filedto;
-	ValidatorDto vdto;
+	ImplDto implDto;
 	FileManagerResponse response;
 
 	@Before
@@ -38,10 +38,10 @@ public class ConvertFileTest {
 		filedto = new FileDto();
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(STRING_FILENAME);
-		vdto = FileManagerUtils.makeValidatorDto(filedto);
-		assertNotNull(vdto);
+		implDto = FileManagerUtils.makeImplDto(filedto);
+		assertNotNull(implDto);
 
-		response = convertFile.doConversion(vdto);
+		response = convertFile.doConversion(implDto);
 		assertNotNull(response);
 		assertTrue(response.getMessages().isEmpty());
 		assertNotNull(response.getFileDto());
@@ -50,48 +50,48 @@ public class ConvertFileTest {
 
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(null);
-		vdto = FileManagerUtils.makeValidatorDto(filedto);
-		response = convertFile.doConversion(vdto);
+		implDto = FileManagerUtils.makeImplDto(filedto);
+		response = convertFile.doConversion(implDto);
 		assertNotNull(response);
 		assertTrue(response.getMessages() == null ? false : !response.getMessages().isEmpty());
 		assertNull(response.getFileDto());
 
 		filedto.setFilebytes(null);
 		filedto.setFilename(STRING_FILENAME);
-		vdto = FileManagerUtils.makeValidatorDto(filedto);
-		response = convertFile.doConversion(vdto);
+		implDto = FileManagerUtils.makeImplDto(filedto);
+		response = convertFile.doConversion(implDto);
 		assertNotNull(response);
 		assertTrue(response.getMessages() == null ? false : !response.getMessages().isEmpty());
 		assertNull(response.getFileDto());
 
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(STRING_FILENAME_NO_NAME);
-		vdto = FileManagerUtils.makeValidatorDto(filedto);
-		response = convertFile.doConversion(vdto);
+		implDto = FileManagerUtils.makeImplDto(filedto);
+		response = convertFile.doConversion(implDto);
 		assertNotNull(response);
 		assertTrue(response.getMessages() == null ? true : response.getMessages().isEmpty());
 		assertNotNull(response.getFileDto());
 
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(STRING_FILENAME_NO_EXT);
-		vdto = FileManagerUtils.makeValidatorDto(filedto);
-		response = convertFile.doConversion(vdto);
+		implDto = FileManagerUtils.makeImplDto(filedto);
+		response = convertFile.doConversion(implDto);
 		assertNotNull(response);
 		assertTrue(response.getMessages() == null ? false : !response.getMessages().isEmpty());
 		assertNull(response.getFileDto());
 
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(STRING_FILENAME_MALFORMED);
-		vdto = FileManagerUtils.makeValidatorDto(filedto);
-		response = convertFile.doConversion(vdto);
+		implDto = FileManagerUtils.makeImplDto(filedto);
+		response = convertFile.doConversion(implDto);
 		assertNotNull(response);
 		assertTrue(response.getMessages() == null ? true : response.getMessages().isEmpty());
 		assertNotNull(response.getFileDto());
 
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(STRING_FILENAME_UNSUPPORTED);
-		vdto = FileManagerUtils.makeValidatorDto(filedto);
-		response = convertFile.doConversion(vdto);
+		implDto = FileManagerUtils.makeImplDto(filedto);
+		response = convertFile.doConversion(implDto);
 		assertNotNull(response);
 		assertTrue(response.getMessages() == null ? false : !response.getMessages().isEmpty());
 		assertNull(response.getFileDto());

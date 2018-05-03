@@ -1,6 +1,5 @@
 package gov.va.vetservices.lib.filemanager.api;
 
-import gov.va.vetservices.lib.filemanager.api.stamper.StampData;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 
@@ -32,12 +31,4 @@ public interface FileManager {
 	 */
 	public FileManagerResponse convertToPdf(FileDto fileDto);
 
-	/**
-	 * Put a VA approved banner stamp on the provided PDF byte array.
-	 *
-	 * @param file the PDF file as a byte array
-	 * @param stampData the info to be stamped into the PDF
-	 * @return byte[] the stamped PDF
-	 */
-	public FileManagerResponse stampPdf(StampData stampData, FileDto fileDto);
 }
