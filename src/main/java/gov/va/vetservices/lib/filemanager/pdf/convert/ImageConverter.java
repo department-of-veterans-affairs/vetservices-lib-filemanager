@@ -50,9 +50,9 @@ public class ImageConverter extends AbstractConverter {
 			pdfDocument.add(image);
 
 		} catch (DocumentException | IOException e) {
-			throwException(e, parts.getName() + "." + parts.getExtension());
+			doThrowException(e, parts.getName() + "." + parts.getExtension());
 		} finally {
-			close(pdfDocument, pdfWriter);
+			doClose(pdfDocument, pdfWriter);
 		}
 
 		return bytesOutputStream.toByteArray();

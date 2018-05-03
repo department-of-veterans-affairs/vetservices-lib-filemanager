@@ -70,7 +70,7 @@ public abstract class AbstractConverter {
 	 * @param filename the filename argument for {@link java.text.MessageFormat} processing on the message
 	 * @throws PdfConverterException the PDF Conversion Processing exception
 	 */
-	protected void throwException(Throwable e, String filename) throws PdfConverterException {
+	protected void doThrowException(Throwable e, String filename) throws PdfConverterException {
 		MessageKeys messageKeys = MessageKeys.CONVERSION_PROCESSING;
 
 		LOGGER.error(messageKeys.getKey() + ": " + messageKeys.getMessage(), e);
@@ -84,7 +84,7 @@ public abstract class AbstractConverter {
 	 * @param pdfDocument the document
 	 * @param pdfWriter the writer
 	 */
-	protected void close(final Document pdfDocument, final PdfWriter pdfWriter) {
+	protected void doClose(final Document pdfDocument, final PdfWriter pdfWriter) {
 		// close pdfDocument
 		try {
 			if (pdfDocument != null) {

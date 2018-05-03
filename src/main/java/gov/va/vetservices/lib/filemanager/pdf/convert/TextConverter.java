@@ -64,9 +64,9 @@ public class TextConverter extends AbstractConverter {
 			}
 
 		} catch (DocumentException | IOException e) {
-			throwException(e, parts.getName() + "." + parts.getExtension());
+			doThrowException(e, parts.getName() + "." + parts.getExtension());
 		} finally {
-			close(pdfDocument, writer);
+			doClose(pdfDocument, writer);
 		}
 
 		return pdfContent.toByteArray();

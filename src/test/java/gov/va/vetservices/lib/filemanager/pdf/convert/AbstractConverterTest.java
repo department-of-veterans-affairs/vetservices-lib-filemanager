@@ -105,12 +105,12 @@ public class AbstractConverterTest {
 	}
 
 	@Test
-	public final void testThrowException() {
+	public final void testDoThrowException() {
 		Exception exception = new Exception();
 		MessageKeys messageKey = MessageKeys.CONVERSION_PROCESSING;
 
 		try {
-			testConverter.throwException(exception, "filename.txt");
+			testConverter.doThrowException(exception, "filename.txt");
 			fail("Should have thrown an exception.");
 
 		} catch (PdfConverterException e) {
@@ -124,7 +124,7 @@ public class AbstractConverterTest {
 	}
 
 	@Test
-	public final void testClose() {
+	public final void testDoClose() {
 		ByteArrayOutputStream bytesOutputStream = null;
 		Document pdfDocument = null;
 		PdfWriter pdfWriter = null;
@@ -136,7 +136,7 @@ public class AbstractConverterTest {
 
 			testConverter.initializePdfDocument(pdfDocument);
 
-			testConverter.close(pdfDocument, pdfWriter);
+			testConverter.doClose(pdfDocument, pdfWriter);
 			assertNotNull(pdfDocument);
 			assertTrue(!pdfDocument.isOpen());
 			assertNotNull(pdfWriter);
@@ -168,7 +168,7 @@ public class AbstractConverterTest {
 		// throw on document
 		Document mockDocument = mock(Document.class);
 		Mockito.doThrow(new RuntimeException("Testing.")).when(mockDocument).close();
-		testConverter.close(mockDocument, pdfWriter);
+		testConverter.doClose(mockDocument, pdfWriter);
 		// clean up
 		if (pdfDocument != null) {
 			pdfDocument.close();
@@ -184,7 +184,7 @@ public class AbstractConverterTest {
 		// throw on pdf writer
 		PdfWriter mockWriter = mock(PdfWriter.class);
 		Mockito.doThrow(new RuntimeException("Testing.")).when(mockWriter).close();
-		testConverter.close(pdfDocument, mockWriter);
+		testConverter.doClose(pdfDocument, mockWriter);
 		// clean up
 		if (pdfWriter != null) {
 			pdfWriter.close();

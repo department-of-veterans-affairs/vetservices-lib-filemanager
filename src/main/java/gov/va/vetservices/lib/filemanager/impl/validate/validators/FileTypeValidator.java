@@ -101,13 +101,15 @@ public class FileTypeValidator implements Validator<ValidatorDto> {
 	protected boolean isExtensionSupported(ValidatorDto vdto) {
 		boolean isValid = false;
 
-		if ((vdto != null) && (vdto.getFileParts() != null)) {
-			MimeType mimetype = ConvertibleTypesEnum.getMimeTypeForExtension(vdto.getFileParts().getExtension());
-			isValid = mimetype != null;
-		}
-		if (!isValid) {
-			vdto.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE.getKey(),
-					MessageFormat.format(MessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE.getMessage(), vdto.getFileDto().getFilename()));
+		if (vdto != null) {
+			if (vdto.getFileParts() != null) {
+				MimeType mimetype = ConvertibleTypesEnum.getMimeTypeForExtension(vdto.getFileParts().getExtension());
+				isValid = mimetype != null;
+			}
+			if (!isValid) {
+				vdto.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE.getKey(), MessageFormat
+						.format(MessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE.getMessage(), vdto.getFileDto().getFilename()));
+			}
 		}
 
 		return isValid;

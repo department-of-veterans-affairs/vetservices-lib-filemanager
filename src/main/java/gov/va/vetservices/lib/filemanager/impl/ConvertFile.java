@@ -37,7 +37,7 @@ public class ConvertFile {
 
 			response.setFileDto(fdto);
 
-		} catch (FileManagerException e) {
+		} catch (FileManagerException e) { // NOSONAR - error is reported, shut up sonar
 			response.addMessage(e.getMessageSeverity(), e.getKey(), e.getMessage());
 		}
 
