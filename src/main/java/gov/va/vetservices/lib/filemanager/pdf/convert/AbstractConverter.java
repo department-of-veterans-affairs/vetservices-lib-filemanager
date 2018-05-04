@@ -18,7 +18,7 @@ import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 
 public abstract class AbstractConverter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConverter.class);
@@ -71,7 +71,7 @@ public abstract class AbstractConverter {
 	 * @throws PdfConverterException the PDF Conversion Processing exception
 	 */
 	protected void doThrowException(Throwable e, String filename) throws PdfConverterException {
-		MessageKeys messageKeys = MessageKeys.CONVERSION_PROCESSING;
+		MessageKeysEnum messageKeys = MessageKeysEnum.CONVERSION_PROCESSING;
 
 		LOGGER.error(messageKeys.getKey() + ": " + messageKeys.getMessage(), e);
 		throw new PdfConverterException(e, MessageSeverity.ERROR, messageKeys.getKey(), messageKeys.getMessage(), filename,

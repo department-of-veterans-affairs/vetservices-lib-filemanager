@@ -8,7 +8,7 @@
 
 	<!--************************************************************************************************************************************
 		REQUEST+RESPONSE OBJECTS
-		*************************************************************************************************************************************-->
+		************************************************************************************************************************************* -->
 
 	<xs:import schemaLocation="../../mvn-copied/xsd/ascent-framework-types.xsd"
 		namespace="http://www.va.gov/ascent/framework/schema/v1" />
@@ -30,9 +30,23 @@
 
 	<xs:complexType name="FileDto">
 		<xs:sequence>
+			<xs:element name="formName" type="FormsEnum" minOccurs="0" />
 			<xs:element name="filename" type="xs:string" minOccurs="0" />
 			<xs:element name="filebytes" type="xs:base64Binary" minOccurs="0" />
 		</xs:sequence>
 	</xs:complexType>
+
+	<!-- ***** IMPORTANT *****
+		Any enumeration in "FormsEnum" below must be a valid enum member name.
+		It is *strongly* advised that form names be mapped to a typesafeEnumMember in
+		jaxb-bindings.xjb <jaxb:bindings schemaLocation="v1/filemanager-api.xsd">
+		*********************-->
+	<xs:simpleType name="FormsEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="526" />
+			<xs:enumeration value="526EZ" />
+			<xs:enumeration value="Other" />
+		</xs:restriction>
+	</xs:simpleType>
 
 </xs:schema>

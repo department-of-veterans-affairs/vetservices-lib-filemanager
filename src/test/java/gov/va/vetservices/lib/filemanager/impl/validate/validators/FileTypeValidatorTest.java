@@ -19,8 +19,8 @@ import org.junit.Test;
 
 import gov.va.ascent.framework.messages.Message;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
-import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 import gov.va.vetservices.lib.filemanager.testutil.TestingConstants;
@@ -33,7 +33,7 @@ public class FileTypeValidatorTest extends AbstractFileHandler {
 	private static final Path imageGoodPng = Paths.get("files/image/png/IS_16bit.png");
 	private static final Path imageUnsupportedDwg = Paths.get("files/image/vnddwg/visualization-aerial.dwg");
 	private static final String imageDwgMimeRaw = "image/vnddwg";
-	private static final Path imageUnsupportedDoc = Paths.get("files/application/msword/IS_Test.docx");
+//	private static final Path imageUnsupportedDoc = Paths.get("files/application/msword/IS_Test.docx");
 	private static final String imageDocMimeRaw = "application/msword";
 
 	private FileTypeValidator fileConvertibleValidator = new FileTypeValidator();

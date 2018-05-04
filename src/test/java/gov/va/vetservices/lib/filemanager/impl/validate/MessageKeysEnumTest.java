@@ -5,14 +5,14 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class MessageKeysTest {
+public class MessageKeysEnumTest {
 
 	@Test
 	public final void test() {
-		assertNotNull(MessageKeys.values());
-		assertTrue(MessageKeys.values().length > 0);
+		assertNotNull(MessageKeysEnum.values());
+		assertTrue(MessageKeysEnum.values().length > 0);
 
-		for (MessageKeys mk : MessageKeys.values()) {
+		for (MessageKeysEnum mk : MessageKeysEnum.values()) {
 			assertNotNull(mk.getKey());
 			assertNotNull(mk.getMessage());
 		}

@@ -7,8 +7,6 @@ import org.junit.Test;
 
 import com.lowagie.text.Font;
 
-import gov.va.vetservices.lib.filemanager.api.stamper.FontName;
-
 public class PdfFontFactoryTest {
 
 	@Test
@@ -23,7 +21,7 @@ public class PdfFontFactoryTest {
 
 	@Test
 	public final void testGetFont() {
-		Font font = PdfFontFactory.getFont(FontName.COURIER);
+		Font font = PdfFontFactory.getFont(FontNameEnum.COURIER);
 		assertNotNull(font);
 		assertNotNull(font.getFamily());
 	}

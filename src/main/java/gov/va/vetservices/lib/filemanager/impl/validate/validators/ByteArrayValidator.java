@@ -8,7 +8,7 @@ import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.impl.validate.Validator;
 
 /**
@@ -39,12 +39,12 @@ public class ByteArrayValidator implements Validator<byte[]> {
 		Message message = null;
 
 		if ((bytes == null) || (bytes.length < 1)) {
-			message = new Message(MessageSeverity.ERROR, MessageKeys.FILE_BYTES_NULL_OR_EMPTY.getKey(),
-					MessageKeys.FILE_BYTES_NULL_OR_EMPTY.getMessage());
+			message = new Message(MessageSeverity.ERROR, MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY.getKey(),
+					MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY.getMessage());
 
 		} else if (bytes.length > maxBytes) {
-			message = new Message(MessageSeverity.ERROR, MessageKeys.FILE_BYTES_SIZE.getKey(),
-					MessageFormat.format(MessageKeys.FILE_BYTES_SIZE.getMessage(), maxBytes));
+			message = new Message(MessageSeverity.ERROR, MessageKeysEnum.FILE_BYTES_SIZE.getKey(),
+					MessageFormat.format(MessageKeysEnum.FILE_BYTES_SIZE.getMessage(), maxBytes));
 		}
 
 		return message == null ? null : Arrays.asList(new Message[] { message });

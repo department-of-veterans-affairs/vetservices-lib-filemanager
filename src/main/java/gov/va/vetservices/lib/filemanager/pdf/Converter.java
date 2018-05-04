@@ -9,7 +9,7 @@ import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.mime.MimeTypeDetector;
 import gov.va.vetservices.lib.filemanager.pdf.convert.ImageConverter;
@@ -55,7 +55,7 @@ public class Converter {
 
 		}
 		// catch-all ... should never actually get here
-		MessageKeys messagekey = MessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE;
+		MessageKeysEnum messagekey = MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE;
 		String filename = parts.getName() + "." + parts.getExtension();
 		LOGGER.error("Attempting to convert unsupported file type. " + messagekey.getKey() + ": " + messagekey.getMessage());
 		throw new PdfConverterException(MessageSeverity.ERROR, messagekey.getKey(), messagekey.getMessage(), filename);

@@ -16,9 +16,9 @@ import com.google.common.base.Strings;
 import gov.va.ascent.framework.messages.Message;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
-import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 public class FilenameValidatorTest {
@@ -29,7 +29,6 @@ public class FilenameValidatorTest {
 	private static final String FILENAME_LONG = Strings.repeat("-", FileManagerProperties.MAX_OS_FILENAME_LENGTH - 4) + ".pdf";
 
 	private FilenameValidator filenameValidator = new FilenameValidator();
-	private FileDto dto;
 	private ImplArgDto<ImplDto> arg;
 	private List<Message> messages;
 
@@ -97,14 +96,14 @@ public class FilenameValidatorTest {
 		messages = filenameValidator.validate(arg);
 		assertNotNull(messages);
 		assertTrue(messages.size() > 0);
-		assertTrue(messages.get(0).getKey().equals(MessageKeys.FILE_DTO_NULL.getKey()));
+		assertTrue(messages.get(0).getKey().equals(MessageKeysEnum.FILE_DTO_NULL.getKey()));
 
 		dto.setFilename("./bad.file");
 		arg = new ImplArgDto<>(FileManagerUtils.makeImplDto(dto));
 		messages = filenameValidator.validate(arg);
 		assertNotNull(messages);
 		assertTrue(messages.size() > 0);
-		assertTrue(messages.get(0).getKey().equals(MessageKeys.FILE_NAME_MALFORMED.getKey()));
+		assertTrue(messages.get(0).getKey().equals(MessageKeysEnum.FILE_NAME_MALFORMED.getKey()));
 	}
 
 }

@@ -10,7 +10,7 @@ import java.text.MessageFormat;
 import org.junit.Test;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 
 public class PdfStamperExceptionTest {
 
@@ -20,24 +20,24 @@ public class PdfStamperExceptionTest {
 
 	@Test
 	public final void testPdfStamperExceptionMessageSeverityStringStringStringArray() {
-		pse = new PdfStamperException(MessageSeverity.ERROR, MessageKeys.FILE_CONTENT_NOT_CONVERTIBLE.getKey(),
-				MessageKeys.FILE_CONTENT_NOT_CONVERTIBLE.getMessage(), FILENAME);
+		pse = new PdfStamperException(MessageSeverity.ERROR, MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getKey(),
+				MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getMessage(), FILENAME);
 		assertNotNull(pse);
 		assertEquals(MessageSeverity.ERROR, pse.getMessageSeverity());
-		assertEquals(MessageKeys.FILE_CONTENT_NOT_CONVERTIBLE.getKey(), pse.getKey());
-		assertEquals(MessageFormat.format(MessageKeys.FILE_CONTENT_NOT_CONVERTIBLE.getMessage(), FILENAME), pse.getMessage());
+		assertEquals(MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getKey(), pse.getKey());
+		assertEquals(MessageFormat.format(MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getMessage(), FILENAME), pse.getMessage());
 		assertNull(pse.getCause());
 	}
 
 	@Test
 	public final void testPdfStamperExceptionThrowableMessageSeverityStringStringStringArray() {
 		IllegalArgumentException iae = new IllegalArgumentException();
-		pse = new PdfStamperException(iae, MessageSeverity.ERROR, MessageKeys.FILE_CONTENT_NOT_CONVERTIBLE.getKey(),
-				MessageKeys.FILE_CONTENT_NOT_CONVERTIBLE.getMessage(), FILENAME);
+		pse = new PdfStamperException(iae, MessageSeverity.ERROR, MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getKey(),
+				MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getMessage(), FILENAME);
 		assertNotNull(pse);
 		assertEquals(MessageSeverity.ERROR, pse.getMessageSeverity());
-		assertEquals(MessageKeys.FILE_CONTENT_NOT_CONVERTIBLE.getKey(), pse.getKey());
-		assertEquals(MessageFormat.format(MessageKeys.FILE_CONTENT_NOT_CONVERTIBLE.getMessage(), FILENAME), pse.getMessage());
+		assertEquals(MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getKey(), pse.getKey());
+		assertEquals(MessageFormat.format(MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getMessage(), FILENAME), pse.getMessage());
 		assertTrue(iae.getClass().equals(pse.getCause().getClass()));
 	}
 }

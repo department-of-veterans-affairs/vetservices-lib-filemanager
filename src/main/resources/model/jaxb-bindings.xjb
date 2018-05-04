@@ -15,7 +15,7 @@
 		XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
 
 	<jaxb:globalBindings fixedAttributeAsConstantProperty="true">
-		<xjc:superClass name="gov.va.ascent.framework.transfer.AbstractTransferObject" />
+		<xjc:superClass name="gov.va.ascent.framework.transfer.AbstractServiceTransferObject" />
 		<xjc:simple/>
 		<jaxb:javaType name="java.util.Date" xmlType="xs:dateTime"
 			parseMethod="gov.va.ascent.framework.transfer.jaxb.adapters.DateAdapter.parseDateTime" printMethod="gov.va.ascent.framework.transfer.jaxb.adapters.DateAdapter.printDateTime" />
@@ -36,4 +36,16 @@
 		</jaxb:bindings>
 	</jaxb:bindings>
 
+	<!--
+		The following bindings solve enum member naming problems for benefits form names.
+		The pattern is to precede the form name with "VBA_".
+	-->
+	<jaxb:bindings schemaLocation="v1/filemanager-api.xsd">
+		<jaxb:bindings node="//xs:simpleType[@name='FormsEnum']/xs:restriction/xs:enumeration[@value='526']">
+			<jaxb:typesafeEnumMember name="VBA_526"/>
+		</jaxb:bindings>
+		<jaxb:bindings node="//xs:simpleType[@name='FormsEnum']/xs:restriction/xs:enumeration[@value='526EZ']">
+			<jaxb:typesafeEnumMember name="VBA_526EZ"/>
+		</jaxb:bindings>
+	</jaxb:bindings>
 </jaxb:bindings>

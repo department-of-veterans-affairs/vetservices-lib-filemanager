@@ -10,7 +10,7 @@ import com.lowagie.text.pdf.PdfReader;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.MimeTypeDetector;
 
 /**
@@ -42,7 +42,7 @@ public class PdfIntegrityChecker {
 				isreadable = true;
 
 			} else {
-				MessageKeys msg = MessageKeys.PDF_UNREADABLE;
+				MessageKeysEnum msg = MessageKeysEnum.PDF_UNREADABLE;
 				throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
 			}
 		} finally {
@@ -72,8 +72,8 @@ public class PdfIntegrityChecker {
 		} catch (Throwable e) { // NOSONAR squid:S1166
 			if (e.getClass().isAssignableFrom(InvalidPdfException.class)) {
 				LOGGER.info("PDF file " + filename + " is unreadable.");
-				throw new FileManagerException(MessageSeverity.ERROR, MessageKeys.PDF_UNREADABLE.getKey(),
-						MessageKeys.PDF_UNREADABLE.getMessage(), filename);
+				throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(),
+						MessageKeysEnum.PDF_UNREADABLE.getMessage(), filename);
 			}
 		}
 		return reader;
@@ -89,12 +89,12 @@ public class PdfIntegrityChecker {
 // NOSONAR TODO Need to find a better way to do this - will have to wait for the rest of the capabilities to be coded
 // NOSONAR	protected final void isLocked(PdfReader pdfReader, String filename) throws FileManagerException {
 // NOSONAR		boolean islocked = false;
-// NOSONAR		MessageKeys msg = MessageKeys.PDF_LOCKED;
+// NOSONAR		MessageKeysEnum msg = MessageKeysEnum.PDF_LOCKED;
 // NOSONAR
 // NOSONAR		try {
 // NOSONAR			islocked = pdfReader.isEncrypted() || pdfReader.is128Key() || pdfReader.isMetadataEncrypted();
 // NOSONAR		} catch (Throwable e) { // NOSONAR - intentional
-// NOSONAR			msg = MessageKeys.PDF_CONTENT_INVALID;
+// NOSONAR			msg = MessageKeysEnum.PDF_CONTENT_INVALID;
 // NOSONAR			islocked = true;
 // NOSONAR		}
 // NOSONAR		if (islocked) {
@@ -112,12 +112,12 @@ public class PdfIntegrityChecker {
 	 */
 	protected final void isTampered(PdfReader pdfReader, String filename) throws FileManagerException {
 		boolean istampered = false;
-		MessageKeys msg = MessageKeys.PDF_TAMPERED;
+		MessageKeysEnum msg = MessageKeysEnum.PDF_TAMPERED;
 
 		try {
 			istampered = pdfReader.isTampered();
 		} catch (Throwable e) { // NOSONAR - intentional
-			msg = MessageKeys.PDF_CONTENT_INVALID;
+			msg = MessageKeysEnum.PDF_CONTENT_INVALID;
 			istampered = true;
 		}
 		if (istampered) {

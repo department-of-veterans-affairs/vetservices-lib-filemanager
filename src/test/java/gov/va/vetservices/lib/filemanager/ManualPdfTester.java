@@ -18,8 +18,8 @@ import org.junit.Test;
 
 import com.lowagie.text.pdf.PdfReader;
 
-import gov.va.vetservices.lib.filemanager.api.stamper.StampData;
 import gov.va.vetservices.lib.filemanager.pdf.stamp.Stamper;
+import gov.va.vetservices.lib.filemanager.pdf.stamp.dto.StampDataDto;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 
 /**
@@ -43,8 +43,8 @@ public class ManualPdfTester extends AbstractFileHandler {
 	@Test
 	public final void test() {
 		Stamper stamper = new Stamper();
-		StampData stampData = new StampData();
-		stampData.setStampText("Test header for stamping.");
+		StampDataDto stampDataDto = new StampDataDto();
+		stampDataDto.setStampText("Test header for stamping.");
 		MimeType mimetype = null;
 		try {
 			mimetype = new MimeType("application/pdf");
@@ -93,7 +93,7 @@ public class ManualPdfTester extends AbstractFileHandler {
 					System.out.println(".. permissions:" + permissions);
 					int cryptoMode = pdfReader.getCryptoMode();
 					System.out.println(".. cryptoMode:" + cryptoMode);
-					HashMap info = pdfReader.getInfo();
+					HashMap<?, ?> info = pdfReader.getInfo();
 					System.out.println(".. info:" + info);
 					byte[] metadata = pdfReader.getMetadata();
 					System.out.println(".. metadata:" + metadata); // new String(metadata));
@@ -107,7 +107,7 @@ public class ManualPdfTester extends AbstractFileHandler {
 					System.out.println(".. set page content succeeded");
 					byte[] pageContent = pdfReader.getPageContent(1);
 					System.out.println(".. pagecontent: " + new String(pageContent));
-					byte[] pdf = stamper.stamp(stampData, bytes);
+					byte[] pdf = stamper.stamp(stampDataDto, bytes);
 					super.saveFile(pdf, file.getName());
 				} catch (Throwable e) {
 					System.out.println("** ERROR " + e.getClass().getSimpleName() + ": " + e.getMessage());

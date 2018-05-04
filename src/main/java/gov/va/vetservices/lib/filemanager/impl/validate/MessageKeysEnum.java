@@ -11,10 +11,12 @@ import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
  *
  * @author aburkholder
  */
-public enum MessageKeys {
+public enum MessageKeysEnum {
 
 	/** FileDto was null */
 	FILE_DTO_NULL("filemanager.file.dto.null", "File data transfer object cannot be null."),
+	/** The form associated with the file was not specified */
+	FORM_NOT_SPECIFIED("filemanager.form.not.specified", "The Benefits form associated with the file was not specified."),
 	/** Filename was null or empty */
 	FILE_NAME_NULL_OR_EMPTY("filemanager.file.name.null.or.empty", "File name cannot be null or empty."),
 	/** Filename starts or ends with one of {@link FileManagerUtils.ILLEGAL_FILE_START_CHARS} */
@@ -67,7 +69,7 @@ public enum MessageKeys {
 	 * @param key the message key
 	 * @param message the explanatory message
 	 */
-	MessageKeys(String key, String message) {
+	MessageKeysEnum(String key, String message) {
 		this.key = key;
 		this.message = message;
 	}

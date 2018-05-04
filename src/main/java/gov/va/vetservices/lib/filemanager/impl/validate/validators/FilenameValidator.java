@@ -12,7 +12,7 @@ import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.impl.validate.Validator;
 
 /**
@@ -51,21 +51,21 @@ public class FilenameValidator implements Validator<ImplDto> {
 
 		} else if (implDto.getFileDto() == null) {
 
-			addError(implDto, MessageKeys.FILE_DTO_NULL);
+			addError(implDto, MessageKeysEnum.FILE_DTO_NULL);
 
 		} else if (StringUtils.isBlank(implDto.getFileDto().getFilename()) || StringUtils.isBlank(implDto.getFileParts().getName())
 				|| StringUtils.isBlank(implDto.getFileParts().getExtension())) {
 
-			addError(implDto, MessageKeys.FILE_NAME_NULL_OR_EMPTY);
+			addError(implDto, MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY);
 
 		} else if (implDto.getFileDto().getFilename().length() > FileManagerProperties.MAX_OS_FILENAME_LENGTH) {
 
-			addError(implDto, MessageKeys.FILE_NAME_TOO_LONG);
+			addError(implDto, MessageKeysEnum.FILE_NAME_TOO_LONG);
 
 		} else if (StringUtils.startsWithAny(implDto.getFileParts().getName(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)
 				|| StringUtils.endsWithAny(implDto.getFileParts().getName(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)) {
 
-			addError(implDto, MessageKeys.FILE_NAME_MALFORMED);
+			addError(implDto, MessageKeysEnum.FILE_NAME_MALFORMED);
 
 		}
 
@@ -76,9 +76,9 @@ public class FilenameValidator implements Validator<ImplDto> {
 	 * Adds a {@link MessageSeverity#ERROR} message to the {@link ImplDto}.
 	 *
 	 * @param implDto the ImplDto
-	 * @param messageKey the {@link MessageKeys} enumeration for key and message
+	 * @param messageKey the {@link MessageKeysEnum} enumeration for key and message
 	 */
-	private void addError(ImplDto implDto, MessageKeys messageKey) {
+	private void addError(ImplDto implDto, MessageKeysEnum messageKey) {
 		implDto.addMessage(MessageSeverity.ERROR, messageKey.getKey(), messageKey.getMessage());
 	}
 

@@ -9,9 +9,9 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import gov.va.vetservices.lib.filemanager.api.stamper.FontName;
-import gov.va.vetservices.lib.filemanager.api.stamper.StampData;
 import gov.va.vetservices.lib.filemanager.exception.PdfStamperException;
+import gov.va.vetservices.lib.filemanager.pdf.font.FontNameEnum;
+import gov.va.vetservices.lib.filemanager.pdf.stamp.dto.StampDataDto;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 
 public class StamperTest extends AbstractFileHandler {
@@ -24,13 +24,13 @@ public class StamperTest extends AbstractFileHandler {
 	public final void testStamp() throws IOException {
 		byte[] bytes = super.readFile(Paths.get(pdfPath));
 		Stamper stamper = new Stamper();
-		StampData stampData = new StampData();
-		stampData.setFontName(FontName.HELVETICA);
-		stampData.setFontSizeInPoints(12);
-		stampData.setStampText(STAMP_TEXT);
+		StampDataDto stampDataDto = new StampDataDto();
+		stampDataDto.setFontName(FontNameEnum.HELVETICA);
+		stampDataDto.setFontSizeInPoints(12);
+		stampDataDto.setStampText(STAMP_TEXT);
 
 		try {
-			byte[] stamped = stamper.stamp(stampData, bytes);
+			byte[] stamped = stamper.stamp(stampDataDto, bytes);
 			assertNotNull(stamped);
 
 		} catch (PdfStamperException e) {
@@ -43,13 +43,13 @@ public class StamperTest extends AbstractFileHandler {
 	public final void testStamp_Bad() {
 		byte[] bytes = new byte[] { 0 };
 		Stamper stamper = new Stamper();
-		StampData stampData = new StampData();
-		stampData.setFontName(FontName.HELVETICA);
-		stampData.setFontSizeInPoints(12);
-		stampData.setStampText(STAMP_TEXT);
+		StampDataDto stampDataDto = new StampDataDto();
+		stampDataDto.setFontName(FontNameEnum.HELVETICA);
+		stampDataDto.setFontSizeInPoints(12);
+		stampDataDto.setStampText(STAMP_TEXT);
 
 		try {
-			byte[] stamped = stamper.stamp(stampData, bytes);
+			byte[] stamped = stamper.stamp(stampDataDto, bytes);
 			fail("Exception should have been thrown, stampped is " + stamped);
 
 		} catch (Throwable e) {

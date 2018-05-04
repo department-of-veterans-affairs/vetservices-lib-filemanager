@@ -34,26 +34,26 @@ public class InterrogateFile {
 	 * @param fileDto the file to interrogate
 	 * @return ServiceResponse with {@code null} messages if the file can be converted
 	 */
-	public FileManagerResponse canConvertToPdf(ImplDto validatorDto) {
+	public FileManagerResponse canConvertToPdf(ImplDto implDto) {
 		FileManagerResponse response = new FileManagerResponse();
 
 		List<Message> messages = null;
 
 		// validate file name
-		if ((messages = filenameValidator.validate((new ImplArgDto<ImplDto>(validatorDto)))) != null) {
+		if ((messages = filenameValidator.validate((new ImplArgDto<ImplDto>(implDto)))) != null) {
 			response.addMessages(messages);
 		}
 
 		// validate byte array
-		if ((messages = bytearrayValidator.validate((new ImplArgDto<byte[]>(validatorDto.getFileDto().getFilebytes())))) != null) {
+		if ((messages = bytearrayValidator.validate((new ImplArgDto<byte[]>(implDto.getFileDto().getFilebytes())))) != null) {
 			response.addMessages(messages);
 		} else {
 			// validate file type
-			if ((messages = filetypeValidator.validate((new ImplArgDto<ImplDto>(validatorDto)))) != null) {
+			if ((messages = filetypeValidator.validate((new ImplArgDto<ImplDto>(implDto)))) != null) {
 				response.addMessages(messages);
 			} else {
 				// validate can be converted
-				if ((messages = conversionValidator.validate((new ImplArgDto<ImplDto>(validatorDto)))) != null) {
+				if ((messages = conversionValidator.validate((new ImplArgDto<ImplDto>(implDto)))) != null) {
 					response.addMessages(messages);
 				}
 			}

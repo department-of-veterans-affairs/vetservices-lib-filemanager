@@ -24,8 +24,8 @@ public class FileManagerException extends Exception {
 	 * Create an exception that can be thrown to callers outside of this library.
 	 *
 	 * @param severity the {@link MessageSeverity}
-	 * @param key the MessageKeys key
-	 * @param message the MessageKeys message
+	 * @param key the MessageKeysEnum key
+	 * @param message the MessageKeysEnum message
 	 * @param replaceableArgs any replaceable atguments for use in the message (or nothing)
 	 */
 	public FileManagerException(final MessageSeverity severity, final String key, final String message,
@@ -38,8 +38,8 @@ public class FileManagerException extends Exception {
 	 *
 	 * @param cause the root cause of this exception
 	 * @param severity the {@link MessageSeverity}
-	 * @param key the MessageKeys key
-	 * @param message the MessageKeys message
+	 * @param key the MessageKeysEnum key
+	 * @param message the MessageKeysEnum message
 	 * @param replaceableArgs any replaceable arguments for use in the message (or nothing)
 	 */
 	public FileManagerException(final Throwable cause, final MessageSeverity severity, final String key, final String message,
@@ -52,7 +52,7 @@ public class FileManagerException extends Exception {
 	/**
 	 * This constructor provides a means for subclasses to pass message and cause to the {@link Exception} superclass
 	 *
-	 * @param message the MessageKeys message
+	 * @param message the MessageKeysEnum message
 	 * @param cause the root cause of this exception
 	 */
 	protected FileManagerException(String message, Throwable cause) {

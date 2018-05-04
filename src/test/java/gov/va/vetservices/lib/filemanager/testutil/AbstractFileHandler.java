@@ -30,7 +30,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 /**
@@ -275,8 +275,8 @@ public abstract class AbstractFileHandler {
 			Path pathOnly = Paths.get("/", filepath.subpath(0, filepath.getNameCount() - 1).toString());
 			if (!createOutputPath(pathOnly)) {
 				LOGGER.error("Could not create directory: " + pathOnly);
-				throw new FileManagerException(MessageSeverity.ERROR, MessageKeys.FILEMANAGER_ISSUE.getKey(),
-						MessageKeys.FILEMANAGER_ISSUE.getMessage());
+				throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.FILEMANAGER_ISSUE.getKey(),
+						MessageKeysEnum.FILEMANAGER_ISSUE.getMessage());
 			}
 
 			try {

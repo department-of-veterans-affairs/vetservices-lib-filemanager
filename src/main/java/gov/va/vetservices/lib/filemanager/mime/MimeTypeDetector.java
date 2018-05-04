@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.detectors.AbstractDetector;
 import gov.va.vetservices.lib.filemanager.mime.detectors.FilenameDetector;
 import gov.va.vetservices.lib.filemanager.mime.detectors.JMimeMagicDetector;
@@ -68,8 +68,8 @@ public class MimeTypeDetector {
 		// make a best guess
 		bestGuess = AbstractDetector.selfCheck(tikaDetected, jmimeDetected);
 		if (bestGuess == null) {
-			throw new FileManagerException(MessageSeverity.ERROR, MessageKeys.FILE_TYPE_UNVERIFIABLE.getKey(),
-					MessageFormat.format(MessageKeys.FILE_TYPE_UNVERIFIABLE.getMessage(), parts, parts.getExtension()));
+			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.FILE_TYPE_UNVERIFIABLE.getKey(),
+					MessageFormat.format(MessageKeysEnum.FILE_TYPE_UNVERIFIABLE.getMessage(), parts, parts.getExtension()));
 		}
 
 		// throw exception if filename extension is different than the detected type
@@ -95,8 +95,8 @@ public class MimeTypeDetector {
 			String filename = parts.getName() + AbstractDetector.SEPARATOR + parts.getExtension();
 			LOGGER.error("MIME type detection mismatch. File: " + filename + "; Type by filename extension: " + derivedtype
 					+ "; Type by magic byte detection: " + detectedType);
-			throw new FileManagerException(MessageSeverity.ERROR, MessageKeys.FILE_EXTENSION_CONTENT_MISMATCH.getKey(),
-					MessageKeys.FILE_EXTENSION_CONTENT_MISMATCH.getMessage(), filename, detectedType.getBaseType(),
+			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.FILE_EXTENSION_CONTENT_MISMATCH.getKey(),
+					MessageKeysEnum.FILE_EXTENSION_CONTENT_MISMATCH.getMessage(), filename, detectedType.getBaseType(),
 					derivedtype.getBaseType());
 		}
 	}
@@ -111,8 +111,8 @@ public class MimeTypeDetector {
 		if (!ConvertibleTypesEnum.hasMimeType(mimetype)) {
 			String filename = parts.getName() + AbstractDetector.SEPARATOR + parts.getExtension();
 			LOGGER.error("Files of type " + mimetype + " are not supported. ");
-			throw new FileManagerException(MessageSeverity.ERROR, MessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE.getKey(),
-					MessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE.getMessage(), filename);
+			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE.getKey(),
+					MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE.getMessage(), filename);
 		}
 	}
 }

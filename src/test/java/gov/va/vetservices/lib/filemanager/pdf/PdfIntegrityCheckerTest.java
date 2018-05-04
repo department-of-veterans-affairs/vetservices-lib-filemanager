@@ -17,7 +17,7 @@ import org.junit.Test;
 import com.lowagie.text.pdf.PdfReader;
 
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 
 public class PdfIntegrityCheckerTest extends AbstractFileHandler {
@@ -27,7 +27,7 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 	private Path goodPdfPath = Paths.get("files/application/pdf/IS_text-doc.pdf");
 	private Path corruptPdfPath = Paths.get("files/application/pdf/BAD_corrupted-pdf.pdf");
 	private Path tamperedPdfPath = Paths.get("files/application/pdf/IS_signed-tampered.pdf");
-	private Path encryptedPdfPath = Paths.get("files/application/pdf/NOT_encrypted-cert.pdf");
+//	private Path encryptedPdfPath = Paths.get("files/application/pdf/NOT_encrypted-cert.pdf");
 
 	@Test
 	public final void testPdfIntegrityChecker() {
@@ -54,7 +54,7 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 			fail("Unexpected error " + e.getMessage());
 		} catch (FileManagerException e) {
 			e.printStackTrace();
-			assertTrue(MessageKeys.PDF_UNREADABLE.getKey().equals(e.getKey()));
+			assertTrue(MessageKeysEnum.PDF_UNREADABLE.getKey().equals(e.getKey()));
 		} finally {
 			if (pdfReader != null) {
 				pdfReader.close();
@@ -72,7 +72,7 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 
 		} catch (FileManagerException e) {
 			e.printStackTrace();
-			assertTrue(MessageKeys.PDF_UNREADABLE.getKey().equals(e.getKey()));
+			assertTrue(MessageKeysEnum.PDF_UNREADABLE.getKey().equals(e.getKey()));
 		} finally {
 			if (pdfReader != null) {
 				pdfReader.close();
@@ -87,7 +87,7 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 
 		} catch (FileManagerException e) {
 			e.printStackTrace();
-			assertTrue(MessageKeys.PDF_UNREADABLE.getKey().equals(e.getKey()));
+			assertTrue(MessageKeysEnum.PDF_UNREADABLE.getKey().equals(e.getKey()));
 		} finally {
 			if (pdfReader != null) {
 				pdfReader.close();
@@ -102,7 +102,7 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 
 		} catch (FileManagerException e) {
 			e.printStackTrace();
-			assertTrue(MessageKeys.PDF_UNREADABLE.getKey().equals(e.getKey()));
+			assertTrue(MessageKeysEnum.PDF_UNREADABLE.getKey().equals(e.getKey()));
 		} finally {
 			if (pdfReader != null) {
 				pdfReader.close();
@@ -131,8 +131,8 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 //		} catch (FileManagerException e) {
 //			e.printStackTrace();
 //			assertTrue(
-//					MessageKeys.PDF_LOCKED.getKey().equals(e.getKey()) || MessageKeys.PDF_CONTENT_INVALID.getKey().equals(e.getKey())
-//							|| MessageKeys.PDF_UNREADABLE.getKey().equals(e.getKey()));
+//					MessageKeysEnum.PDF_LOCKED.getKey().equals(e.getKey()) || MessageKeysEnum.PDF_CONTENT_INVALID.getKey().equals(e.getKey())
+//							|| MessageKeysEnum.PDF_UNREADABLE.getKey().equals(e.getKey()));
 //		} finally {
 //			if (pdfReader != null) {
 //				pdfReader.close();
@@ -155,8 +155,8 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 //		} catch (FileManagerException e) {
 //			e.printStackTrace();
 //			assertTrue(
-//					MessageKeys.PDF_LOCKED.getKey().equals(e.getKey()) || MessageKeys.PDF_CONTENT_INVALID.getKey().equals(e.getKey())
-//							|| MessageKeys.PDF_UNREADABLE.getKey().equals(e.getKey()));
+//					MessageKeysEnum.PDF_LOCKED.getKey().equals(e.getKey()) || MessageKeysEnum.PDF_CONTENT_INVALID.getKey().equals(e.getKey())
+//							|| MessageKeysEnum.PDF_UNREADABLE.getKey().equals(e.getKey()));
 //		} finally {
 //			if (pdfReader != null) {
 //				pdfReader.close();
@@ -183,7 +183,7 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 			fail("Unexpected error " + e.getMessage());
 		} catch (FileManagerException e) {
 			e.printStackTrace();
-			assertTrue(MessageKeys.PDF_UNREADABLE.getKey().equals(e.getKey()));
+			assertTrue(MessageKeysEnum.PDF_UNREADABLE.getKey().equals(e.getKey()));
 		}
 	}
 
@@ -206,7 +206,7 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 		} catch (FileManagerException e) {
 			e.printStackTrace();
 			assertTrue(!readable);
-			assertTrue(MessageKeys.PDF_UNREADABLE.getKey().equals(e.getKey()));
+			assertTrue(MessageKeysEnum.PDF_UNREADABLE.getKey().equals(e.getKey()));
 		}
 
 	}
@@ -231,8 +231,8 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 			assertTrue(e.getClass().getSimpleName().equals("InvalidPdfException"));
 		} catch (FileManagerException e) {
 			e.printStackTrace();
-			assertTrue(MessageKeys.PDF_TAMPERED.getKey().equals(e.getKey())
-					|| MessageKeys.PDF_CONTENT_INVALID.getKey().equals(e.getKey()));
+			assertTrue(MessageKeysEnum.PDF_TAMPERED.getKey().equals(e.getKey())
+					|| MessageKeysEnum.PDF_CONTENT_INVALID.getKey().equals(e.getKey()));
 		} finally {
 			if (pdfReader != null) {
 				pdfReader.close();
@@ -254,9 +254,9 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 			assertTrue(e.getClass().getSimpleName().equals("InvalidPdfException"));
 		} catch (FileManagerException e) {
 			e.printStackTrace();
-			assertTrue(
-					MessageKeys.PDF_TAMPERED.getKey().equals(e.getKey()) || MessageKeys.PDF_CONTENT_INVALID.getKey().equals(e.getKey())
-							|| MessageKeys.PDF_UNREADABLE.getKey().equals(e.getKey()));
+			assertTrue(MessageKeysEnum.PDF_TAMPERED.getKey().equals(e.getKey())
+					|| MessageKeysEnum.PDF_CONTENT_INVALID.getKey().equals(e.getKey())
+					|| MessageKeysEnum.PDF_UNREADABLE.getKey().equals(e.getKey()));
 		} finally {
 			if (pdfReader != null) {
 				pdfReader.close();

@@ -25,7 +25,7 @@ import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AbstractConverterTest {
@@ -107,7 +107,7 @@ public class AbstractConverterTest {
 	@Test
 	public final void testDoThrowException() {
 		Exception exception = new Exception();
-		MessageKeys messageKey = MessageKeys.CONVERSION_PROCESSING;
+		MessageKeysEnum messageKey = MessageKeysEnum.CONVERSION_PROCESSING;
 
 		try {
 			testConverter.doThrowException(exception, "filename.txt");

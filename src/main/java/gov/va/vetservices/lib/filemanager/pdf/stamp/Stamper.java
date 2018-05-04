@@ -17,12 +17,12 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.api.stamper.StampData;
 import gov.va.vetservices.lib.filemanager.exception.PdfStamperException;
 import gov.va.vetservices.lib.filemanager.pdf.font.PdfFontFactory;
+import gov.va.vetservices.lib.filemanager.pdf.stamp.dto.StampDataDto;
 
 /**
- * Writes {@link StampData} information into the header area of a PDF.
+ * Writes {@link StampDataDto} information into the header area of a PDF.
  *
  * @author aburkholder
  */
@@ -30,14 +30,14 @@ public class Stamper {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Stamper.class);
 
 	/**
-	 * Write {@link StampData} information into the header area of a PDF.
+	 * Write {@link StampDataDto} information into the header area of a PDF.
 	 *
-	 * @param stampData the StampData text and font info
+	 * @param stampDataDto the StampDataDto text and font info
 	 * @param bytes the PDF
 	 * @return byte[] the stamped PDF
 	 * @throws PdfStamperException if the PDF cannot be stamped
 	 */
-	public final byte[] stamp(final StampData stampData, final byte[] bytes) throws PdfStamperException {
+	public final byte[] stamp(final StampDataDto stampDataDto, final byte[] bytes) throws PdfStamperException {
 		final ByteArrayOutputStream pdf = new ByteArrayOutputStream();
 
 		PdfReader pdfReader = null;
@@ -48,11 +48,11 @@ public class Stamper {
 			final ColumnText columnText = new ColumnText(null);
 			for (int pageNum = 1; pageNum <= pdfReader.getNumberOfPages(); pageNum++) {
 				final Rectangle rect = pdfReader.getPageSize(pageNum);
-				final Chunk textAsChunk = new Chunk(stampData.getStampText(), PdfFontFactory.getFont(stampData.getFontName()));
+				final Chunk textAsChunk = new Chunk(stampDataDto.getStampText(), PdfFontFactory.getFont(stampDataDto.getFontName()));
 				textAsChunk.setBackground(new Color(255, 255, 255), 5f, 5f, 25f, 10f);
 
 				ColumnText.showTextAligned(pdfStamper.getOverContent(pageNum), PdfContentByte.ALIGN_LEFT, new Phrase(textAsChunk), 5f,
-						rect.getHeight() - stampData.getFontSizeInPoints(), 0, 0, 0);
+						rect.getHeight() - stampDataDto.getFontSizeInPoints(), 0, 0, 0);
 			}
 			while (true) {
 				if (!ColumnText.hasMoreText(columnText.go())) {
@@ -60,8 +60,8 @@ public class Stamper {
 				}
 			}
 		} catch (final DocumentException | IOException e) {
-			LOGGER.debug(MessageSeverity.ERROR.toString() + " " + "MessageKeys.ENUM.key" + ": " + "MessageKeys.ENUM.message", e);
-			throw new PdfStamperException(e, MessageSeverity.ERROR, "MessageKeys.ENUM.key", "MessageKeys.ENUM.message");
+			LOGGER.debug(MessageSeverity.ERROR.toString() + " " + "MessageKeysEnum.ENUM.key" + ": " + "MessageKeysEnum.ENUM.message", e);
+			throw new PdfStamperException(e, MessageSeverity.ERROR, "MessageKeysEnum.ENUM.key", "MessageKeysEnum.ENUM.message");
 		} finally {
 			close(pdfStamper, pdfReader);
 		}

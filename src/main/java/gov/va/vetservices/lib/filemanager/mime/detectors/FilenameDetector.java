@@ -18,7 +18,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 
 public class FilenameDetector extends AbstractDetector {
@@ -77,8 +77,8 @@ public class FilenameDetector extends AbstractDetector {
 
 		mimetype = detectWithExtension(parts);
 		if (mimetype == null) {
-			throw new FileManagerException(MessageSeverity.ERROR, MessageKeys.FILE_TYPE_UNVERIFIABLE.getKey(),
-					MessageFormat.format(MessageKeys.FILE_TYPE_UNVERIFIABLE.getMessage(), parts, "UNKNOWN"));
+			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.FILE_TYPE_UNVERIFIABLE.getKey(),
+					MessageFormat.format(MessageKeysEnum.FILE_TYPE_UNVERIFIABLE.getMessage(), parts, "UNKNOWN"));
 		}
 
 		return mimetype;

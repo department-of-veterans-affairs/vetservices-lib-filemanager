@@ -23,7 +23,7 @@ import org.xml.sax.SAXException;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
@@ -85,11 +85,11 @@ public class TikaDetector extends AbstractDetector {
 		MimeType mimetype = null;
 
 		if (bytes == null) {
-			MessageKeys msg = MessageKeys.FILE_BYTES_NULL_OR_EMPTY;
+			MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY;
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
 		}
 		if (parts == null) {
-			MessageKeys msg = MessageKeys.FILE_NAME_NULL_OR_EMPTY;
+			MessageKeysEnum msg = MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY;
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
 		}
 
@@ -103,13 +103,13 @@ public class TikaDetector extends AbstractDetector {
 
 		} catch (IOException e) { // NOSONAR - sonar doesn't see the exception being thrown
 			LOGGER.debug("File " + filename + " is unreadable.");
-			MessageKeys msg = MessageKeys.FILE_BYTES_UNREADABLE;
+			MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_UNREADABLE;
 			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), filename));
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
 
 		} catch (MimeTypeParseException e) { // NOSONAR - sonar doesn't see the exception being thrown
 			LOGGER.debug("MIME type '" + mimetype + "' cannot be converted to PDF.");
-			MessageKeys msg = MessageKeys.FILE_CONTENT_NOT_CONVERTIBLE;
+			MessageKeysEnum msg = MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE;
 			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), filename));
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
 		}

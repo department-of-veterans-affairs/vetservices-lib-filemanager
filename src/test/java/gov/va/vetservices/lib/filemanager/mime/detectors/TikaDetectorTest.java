@@ -21,7 +21,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
@@ -78,7 +78,7 @@ public class TikaDetectorTest extends AbstractFileHandler {
 
 				} catch (FileManagerException e) {
 					assertNotNull(e);
-					if (MessageKeys.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
+					if (MessageKeysEnum.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
 						e.printStackTrace();
 						fail("Something went wrong: " + e.getKey() + ": " + e.getMessage());
 					}
@@ -109,7 +109,7 @@ public class TikaDetectorTest extends AbstractFileHandler {
 
 			} catch (FileManagerException e) {
 				assertNotNull(e);
-				if (MessageKeys.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
+				if (MessageKeysEnum.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
 					e.printStackTrace();
 					fail("Something went wrong: " + e.getKey() + ": " + e.getMessage());
 				}
@@ -139,15 +139,15 @@ public class TikaDetectorTest extends AbstractFileHandler {
 
 		} catch (FileManagerException e) {
 			assertNotNull(e);
-			if (MessageKeys.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
+			if (MessageKeysEnum.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
 				e.printStackTrace();
 				fail("Something went wrong: " + e.getKey() + ": " + e.getMessage());
 			}
 			System.out.println("Threw " + e.getClass().getSimpleName() + " - " + e.getKey() + ": " + e.getMessage());
 			assertTrue(!StringUtils.isBlank(e.getKey()));
-			assertTrue(MessageKeys.FILE_BYTES_NULL_OR_EMPTY.getKey().equals(e.getKey())
-					|| MessageKeys.FILE_BYTES_UNREADABLE.getKey().equals(e.getKey())
-					|| MessageKeys.FILE_NAME_NULL_OR_EMPTY.getKey().equals(e.getKey()));
+			assertTrue(MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY.getKey().equals(e.getKey())
+					|| MessageKeysEnum.FILE_BYTES_UNREADABLE.getKey().equals(e.getKey())
+					|| MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY.getKey().equals(e.getKey()));
 		}
 	}
 }

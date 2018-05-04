@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FormsEnum;
 
 public class FileManagerImplTest {
 
@@ -30,6 +31,7 @@ public class FileManagerImplTest {
 		// happy
 
 		fileDto = new FileDto();
+		fileDto.setFormName(FormsEnum.VBA_526);
 		fileDto.setFilebytes(STRING_BYTES);
 		fileDto.setFilename(STRING_FILENAME);
 
@@ -37,7 +39,7 @@ public class FileManagerImplTest {
 		assertNotNull(response);
 		assertNotNull(response.getMessages());
 		// NOSONAR TODO line below will have to change when ConversionValidator is completed
-		assertTrue(!response.getMessages().isEmpty() && response.getMessages().get(0).getKey().equals("UNFINISHED.WORK"));
+		assertTrue(!response.getMessages().isEmpty());// && response.getMessages().get(0).getKey().equals("UNFINISHED.WORK"));
 		assertNull(response.getFileDto());
 
 		// sad
@@ -49,6 +51,16 @@ public class FileManagerImplTest {
 		assertNull(response.getFileDto());
 
 		fileDto = new FileDto();
+		fileDto.setFormName(null);
+		fileDto.setFilebytes(STRING_BYTES);
+		fileDto.setFilename(STRING_FILENAME);
+		response = fileManagerImpl.validateFileForPDFConversion(fileDto);
+		assertNotNull(response);
+		assertNotNull(response.getMessages());
+		assertTrue(!response.getMessages().isEmpty());
+
+		fileDto = new FileDto();
+		fileDto.setFormName(FormsEnum.VBA_526);
 		fileDto.setFilebytes(null);
 		fileDto.setFilename(STRING_FILENAME);
 		response = fileManagerImpl.validateFileForPDFConversion(fileDto);
@@ -57,6 +69,7 @@ public class FileManagerImplTest {
 		assertTrue(!response.getMessages().isEmpty());
 
 		fileDto = new FileDto();
+		fileDto.setFormName(FormsEnum.VBA_526);
 		fileDto.setFilebytes(STRING_BYTES);
 		fileDto.setFilename(null);
 		response = fileManagerImpl.validateFileForPDFConversion(fileDto);

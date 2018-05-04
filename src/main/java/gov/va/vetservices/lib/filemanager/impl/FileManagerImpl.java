@@ -1,13 +1,16 @@
 package gov.va.vetservices.lib.filemanager.impl;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang3.StringUtils;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.api.FileManager;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FormsEnum;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 /**
@@ -35,10 +38,10 @@ public class FileManagerImpl implements FileManager {
 
 		validateInputs(fileDto, response);
 		if (response.getMessages().isEmpty()) {
-			ImplDto validatorDto = FileManagerUtils.makeImplDto(fileDto);
+			ImplDto implDto = FileManagerUtils.makeImplDto(fileDto);
 
 			// determine if the file can be converted to PDF
-			response = interrogateFile.canConvertToPdf(validatorDto);
+			response = interrogateFile.canConvertToPdf(implDto);
 		}
 
 		return response;
@@ -55,14 +58,18 @@ public class FileManagerImpl implements FileManager {
 	@Override
 	public FileManagerResponse convertToPdf(FileDto fileDto) {
 		ConvertFile convertFile = new ConvertFile();
+		StampPdf stampPdf = new StampPdf();
 		FileManagerResponse response = new FileManagerResponse();
 
 		validateInputs(fileDto, response);
 		if (response.getMessages().isEmpty()) {
-			ImplDto validatorDto = FileManagerUtils.makeImplDto(fileDto);
+			ImplDto implDto = FileManagerUtils.makeImplDto(fileDto);
 
-			// converted the file to PDF
-			convertFile.doConversion(validatorDto);
+			// convert the file to PDF
+			response = convertFile.doConversion(implDto);
+
+			// stamp the PDF, if required
+			stampPdf.doStamp(implDto, response);
 		}
 
 		return response;
@@ -76,13 +83,21 @@ public class FileManagerImpl implements FileManager {
 	 */
 	private void validateInputs(FileDto fileDto, FileManagerResponse response) {
 		if (fileDto == null) {
-			response.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_DTO_NULL.getKey(), MessageKeys.FILE_DTO_NULL.getMessage());
-		} else if (StringUtils.isBlank(fileDto.getFilename())) {
-			response.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_NAME_NULL_OR_EMPTY.getKey(),
-					MessageKeys.FILE_NAME_NULL_OR_EMPTY.getMessage());
-		} else if ((fileDto.getFilebytes() == null) || (fileDto.getFilebytes().length < 1)) {
-			response.addMessage(MessageSeverity.ERROR, MessageKeys.FILE_BYTES_NULL_OR_EMPTY.getKey(),
-					MessageKeys.FILE_BYTES_NULL_OR_EMPTY.getMessage());
+			response.addMessage(MessageSeverity.ERROR, MessageKeysEnum.FILE_DTO_NULL.getKey(),
+					MessageKeysEnum.FILE_DTO_NULL.getMessage());
+		} else {
+			if ((fileDto.getFormName() == null) || !Arrays.asList(FormsEnum.values()).contains(fileDto.getFormName())) {
+				response.addMessage(MessageSeverity.ERROR, MessageKeysEnum.FORM_NOT_SPECIFIED.getKey(),
+						MessageKeysEnum.FORM_NOT_SPECIFIED.getMessage());
+			}
+			if (StringUtils.isBlank(fileDto.getFilename())) {
+				response.addMessage(MessageSeverity.ERROR, MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY.getKey(),
+						MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY.getMessage());
+			}
+			if ((fileDto.getFilebytes() == null) || (fileDto.getFilebytes().length < 1)) {
+				response.addMessage(MessageSeverity.ERROR, MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY.getKey(),
+						MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY.getMessage());
+			}
 		}
 	}
 }

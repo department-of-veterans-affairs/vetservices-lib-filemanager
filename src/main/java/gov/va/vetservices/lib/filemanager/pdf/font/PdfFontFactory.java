@@ -3,10 +3,8 @@ package gov.va.vetservices.lib.filemanager.pdf.font;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 
-import gov.va.vetservices.lib.filemanager.api.stamper.FontName;
-
 /**
- * Get the iText {@link Font} for the Stamper's {@link FontName}.
+ * Get the iText {@link Font} for the Stamper's {@link FontNameEnum}.
  *
  * @author aburkholder
  */
@@ -20,12 +18,12 @@ public class PdfFontFactory {
 	}
 
 	/**
-	 * Gets the iText {@link Font} object from the iText Font Factory for the enumerated {@link FontName}.
+	 * Gets the iText {@link Font} object from the iText Font Factory for the enumerated {@link FontNameEnum}.
 	 *
-	 * @param fontName the FontName
+	 * @param fontNameEnum the FontNameEnum
 	 * @return Font the equivalent iText font object
 	 */
-	public static Font getFont(final FontName fontName) {
-		return FontFactory.getFont(fontName.toString());
+	public static Font getFont(final FontNameEnum fontNameEnum) {
+		return FontFactory.getFont(fontNameEnum.toString());
 	}
 }

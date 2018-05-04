@@ -1,32 +1,34 @@
-package gov.va.vetservices.lib.filemanager.api.stamper;
+package gov.va.vetservices.lib.filemanager.pdf.stamp.dto;
+
+import gov.va.vetservices.lib.filemanager.pdf.font.FontNameEnum;
 
 /**
  * Data that will be used to print onto the header area of the PDF.
  *
  * @author aburkholder
  */
-public class StampData {
+public class StampDataDto {
 
-	private FontName fontName = FontName.COURIER;
+	private FontNameEnum fontNameEnum = FontNameEnum.COURIER;
 	private int fontSizeInPoints = 10;
 	private String stampText;
 
 	/**
-	 * Returns the {@link FontName} enumeration.
+	 * Returns the {@link FontNameEnum} enumeration.
 	 *
-	 * @return FontName the font name
+	 * @return FontNameEnum the font name
 	 */
-	public FontName getFontName() {
-		return fontName;
+	public FontNameEnum getFontName() {
+		return fontNameEnum;
 	}
 
 	/**
-	 * Set the {@link FontName} enumeration. Default value is {@code FontName.COURIER}.
+	 * Set the {@link FontNameEnum} enumeration. Default value is {@code FontNameEnum.COURIER}.
 	 *
-	 * @param fontName the font name to set
+	 * @param fontNameEnum the font name to set
 	 */
-	public void setFontName(FontName fontName) {
-		this.fontName = fontName;
+	public void setFontName(FontNameEnum fontNameEnum) {
+		this.fontNameEnum = fontNameEnum;
 	}
 
 	/**

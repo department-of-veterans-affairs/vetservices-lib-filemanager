@@ -6,7 +6,7 @@ package gov.va.vetservices.lib.filemanager.exception;
 import java.text.MessageFormat;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 
 /**
  * Allow bubbling of exceptions withing FileManager back to the interface implementation,
@@ -21,8 +21,8 @@ public class PdfStamperException extends FileManagerException {
 	 * Create an exception for problems with the PDF stamping process.
 	 *
 	 * @param severity the severity
-	 * @param key the {@link MessageKeys} key
-	 * @param message the MessageKeys {@link java.text.MessageFormat} explanatory message
+	 * @param key the {@link MessageKeysEnum} key
+	 * @param message the MessageKeysEnum {@link java.text.MessageFormat} explanatory message
 	 * @param replaceableArgs any arguments to processed into the message string
 	 */
 	public PdfStamperException(final MessageSeverity severity, final String key, final String message,
@@ -35,8 +35,8 @@ public class PdfStamperException extends FileManagerException {
 	 *
 	 * @param cause the root cause behind this exception
 	 * @param severity the severity
-	 * @param key the {@link MessageKeys} key
-	 * @param message the MessageKeys {@link java.text.MessageFormat} explanatory message
+	 * @param key the {@link MessageKeysEnum} key
+	 * @param message the MessageKeysEnum {@link java.text.MessageFormat} explanatory message
 	 * @param replaceableArgs any arguments to processed into the message string
 	 */
 	public PdfStamperException(final Throwable cause, final MessageSeverity severity, final String key, final String message,

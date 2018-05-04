@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeys;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
@@ -51,7 +51,7 @@ public class DetectorAbstractDetectorTest {
 		} catch (FileManagerException e) {
 			// will never get here, but in case the test changes, here's the logic
 			assertNotNull(e);
-			if (MessageKeys.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
+			if (MessageKeysEnum.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
 				e.printStackTrace();
 				fail("Something went wrong: " + e.getKey() + ": " + e.getMessage());
 			}
