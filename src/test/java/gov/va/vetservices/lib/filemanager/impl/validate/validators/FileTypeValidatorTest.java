@@ -19,6 +19,8 @@ import org.junit.Test;
 
 import gov.va.ascent.framework.messages.Message;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerRequest;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
@@ -35,6 +37,8 @@ public class FileTypeValidatorTest extends AbstractFileHandler {
 	private static final String imageDwgMimeRaw = "image/vnddwg";
 //	private static final Path imageUnsupportedDoc = Paths.get("files/application/msword/IS_Test.docx");
 	private static final String imageDocMimeRaw = "application/msword";
+	private static final String claimId = "11111";
+	private static final String docTypeId = "123";
 
 	private FileTypeValidator fileConvertibleValidator = new FileTypeValidator();
 	private ImplArgDto<ImplDto> arg;
@@ -42,11 +46,16 @@ public class FileTypeValidatorTest extends AbstractFileHandler {
 
 	@Test
 	public final void testValidate() {
+		FileManagerRequest request = new FileManagerRequest();
+		request.setClaimId(claimId);
+		request.setDocTypeId(docTypeId);
+		request.setProcessType(ProcessType.CLAIMS_526);
 		FileDto dto = new FileDto();
 		dto.setFilebytes(bytesTxt);
 		dto.setFilename(filenameTxt);
+		request.setFileDto(dto);
 
-		arg = new ImplArgDto<>(FileManagerUtils.makeImplDto(dto));
+		arg = new ImplArgDto<>(FileManagerUtils.makeImplDto(request));
 		messages = fileConvertibleValidator.validate(arg);
 		assertNull(messages);
 
@@ -67,7 +76,7 @@ public class FileTypeValidatorTest extends AbstractFileHandler {
 					dto = new FileDto();
 					dto.setFilebytes(readBytes);
 					dto.setFilename(file.getName());
-					arg = new ImplArgDto<>(FileManagerUtils.makeImplDto(dto));
+					arg = new ImplArgDto<>(FileManagerUtils.makeImplDto(request));
 					messages = fileConvertibleValidator.validate(arg);
 
 					if ((messages != null) && (file.getName().contains(TestingConstants.TEST_FILE_PREFIX_CORRUPT)
@@ -100,10 +109,15 @@ public class FileTypeValidatorTest extends AbstractFileHandler {
 			e.printStackTrace();
 			fail("Could not read file: " + imageGoodPng.toString());
 		}
+		FileManagerRequest request = new FileManagerRequest();
+		request.setClaimId(claimId);
+		request.setDocTypeId(docTypeId);
+		request.setProcessType(ProcessType.CLAIMS_526);
 		FileDto fileDto = new FileDto();
 		fileDto.setFilebytes(bytes);
 		fileDto.setFilename(imageGoodPng.getFileName().toString());
-		ImplDto implDto = FileManagerUtils.makeImplDto(fileDto);
+		request.setFileDto(fileDto);
+		ImplDto implDto = FileManagerUtils.makeImplDto(request);
 		MimeType detectedMimetype = ConvertibleTypesEnum.PNG.getMimeType();
 
 		boolean convertible = fileConvertibleValidator.isImageConvertible(implDto, detectedMimetype);
@@ -116,20 +130,18 @@ public class FileTypeValidatorTest extends AbstractFileHandler {
 			e.printStackTrace();
 			fail("Could not read file: " + imageUnsupportedDwg.toString());
 		}
-		fileDto = new FileDto();
 		fileDto.setFilebytes(bytes);
 		fileDto.setFilename(imageUnsupportedDwg.getFileName().toString());
-		implDto = FileManagerUtils.makeImplDto(fileDto);
+		implDto = FileManagerUtils.makeImplDto(request);
 		detectedMimetype = getMimeType(imageDwgMimeRaw);
 
 		convertible = fileConvertibleValidator.isImageConvertible(implDto, detectedMimetype);
 		assertTrue(!convertible);
 
 		// not an image - always returns true
-		fileDto = new FileDto();
 		fileDto.setFilebytes(bytesTxt);
 		fileDto.setFilename(filenameTxt);
-		implDto = FileManagerUtils.makeImplDto(fileDto);
+		implDto = FileManagerUtils.makeImplDto(request);
 		detectedMimetype = ConvertibleTypesEnum.TXT.getMimeType();
 
 		convertible = fileConvertibleValidator.isImageConvertible(implDto, detectedMimetype);
@@ -149,33 +161,35 @@ public class FileTypeValidatorTest extends AbstractFileHandler {
 		assertTrue(!convertible);
 
 		// null bytes
+		FileManagerRequest request = new FileManagerRequest();
+		request.setClaimId(claimId);
+		request.setDocTypeId(docTypeId);
+		request.setProcessType(ProcessType.CLAIMS_526);
 		FileDto fileDto = new FileDto();
 		fileDto.setFilename("null");
-		implDto = FileManagerUtils.makeImplDto(fileDto);
+		request.setFileDto(fileDto);
+		implDto = FileManagerUtils.makeImplDto(request);
 		convertible = fileConvertibleValidator.isImageConvertible(implDto, detectedMimetype);
 		assertTrue(!convertible);
 
 		// empty bytes
-		fileDto = new FileDto();
 		fileDto.setFilebytes(new byte[] {});
 		fileDto.setFilename("empty");
-		implDto = FileManagerUtils.makeImplDto(fileDto);
+		implDto = FileManagerUtils.makeImplDto(request);
 		convertible = fileConvertibleValidator.isImageConvertible(implDto, detectedMimetype);
 		assertTrue(!convertible);
 
 		// invalid bytes
-		fileDto = new FileDto();
 		fileDto.setFilebytes(new byte[] { 0 });
 		fileDto.setFilename("byte-char-zero");
-		implDto = FileManagerUtils.makeImplDto(fileDto);
+		implDto = FileManagerUtils.makeImplDto(request);
 		convertible = fileConvertibleValidator.isImageConvertible(implDto, detectedMimetype);
 		assertTrue(!convertible);
 
 		// bytes that are not an image
-		fileDto = new FileDto();
 		fileDto.setFilebytes(bytesTxt);
 		fileDto.setFilename(filenameTxt);
-		implDto = FileManagerUtils.makeImplDto(fileDto);
+		implDto = FileManagerUtils.makeImplDto(request);
 		convertible = fileConvertibleValidator.isImageConvertible(implDto, detectedMimetype);
 		assertTrue(!convertible);
 
@@ -187,10 +201,9 @@ public class FileTypeValidatorTest extends AbstractFileHandler {
 			e.printStackTrace();
 			fail("Could not read file: " + imageGoodPng.toString());
 		}
-		fileDto = new FileDto();
 		fileDto.setFilebytes(bytes);
 		fileDto.setFilename(imageGoodPng.getFileName().toString());
-		implDto = FileManagerUtils.makeImplDto(fileDto);
+		implDto = FileManagerUtils.makeImplDto(request);
 		detectedMimetype = null;
 		convertible = fileConvertibleValidator.isImageConvertible(implDto, detectedMimetype);
 		assertTrue(convertible);
@@ -208,10 +221,15 @@ public class FileTypeValidatorTest extends AbstractFileHandler {
 
 	@Test
 	public final void testIsExtensionSupported() {
+		FileManagerRequest request = new FileManagerRequest();
+		request.setClaimId(claimId);
+		request.setDocTypeId(docTypeId);
+		request.setProcessType(ProcessType.CLAIMS_526);
 		FileDto dto = new FileDto();
 		dto.setFilebytes(bytesTxt);
 		dto.setFilename("test.txt");
-		ImplDto implDto = FileManagerUtils.makeImplDto(dto);
+		request.setFileDto(dto);
+		ImplDto implDto = FileManagerUtils.makeImplDto(request);
 		boolean issupported = fileConvertibleValidator.isExtensionSupported(implDto);
 		assertTrue(issupported);
 	}
@@ -219,28 +237,37 @@ public class FileTypeValidatorTest extends AbstractFileHandler {
 	@Test
 	public final void testIsExtensionSupported_Bad() {
 		// empty file extension
+		FileManagerRequest request = new FileManagerRequest();
+		request.setClaimId(claimId);
+		request.setDocTypeId(docTypeId);
+		request.setProcessType(ProcessType.CLAIMS_526);
 		FileDto dto = new FileDto();
 		dto.setFilebytes(new byte[] {});
 		dto.setFilename("test.");
-		ImplDto implDto = FileManagerUtils.makeImplDto(dto);
+		request.setFileDto(dto);
+		ImplDto implDto = FileManagerUtils.makeImplDto(request);
 		boolean issupported = fileConvertibleValidator.isExtensionSupported(implDto);
 		assertTrue(!issupported);
 
 		// unsupported file extension
-		dto = new FileDto();
 		dto.setFilebytes(bytesTxt);
 		dto.setFilename("test.chat");
-		implDto = FileManagerUtils.makeImplDto(dto);
+		implDto = FileManagerUtils.makeImplDto(request);
 		issupported = fileConvertibleValidator.isExtensionSupported(implDto);
 		assertTrue(!issupported);
 	}
 
 	@Test
 	public final void testIsMimetypeValid() {
+		FileManagerRequest request = new FileManagerRequest();
+		request.setClaimId(claimId);
+		request.setDocTypeId(docTypeId);
+		request.setProcessType(ProcessType.CLAIMS_526);
 		FileDto dto = new FileDto();
 		dto.setFilebytes(bytesTxt);
 		dto.setFilename(filenameTxt);
-		ImplDto implDto = FileManagerUtils.makeImplDto(dto);
+		request.setFileDto(dto);
+		ImplDto implDto = FileManagerUtils.makeImplDto(request);
 		MimeType mimetype = fileConvertibleValidator.isMimetypeValid(implDto);
 		assertNotNull(mimetype);
 		assertTrue(ConvertibleTypesEnum.TXT.getMimeType().match(mimetype));
@@ -262,8 +289,13 @@ public class FileTypeValidatorTest extends AbstractFileHandler {
 		assertTrue(implDto.getMessages().size() > 0);
 
 		// null bytes
+		FileManagerRequest request = new FileManagerRequest();
+		request.setClaimId(claimId);
+		request.setDocTypeId(docTypeId);
+		request.setProcessType(ProcessType.CLAIMS_526);
 		FileDto dto = new FileDto();
-		implDto = FileManagerUtils.makeImplDto(dto);
+		request.setFileDto(dto);
+		implDto = FileManagerUtils.makeImplDto(request);
 		mimetype = fileConvertibleValidator.isMimetypeValid(implDto);
 		assertNull(mimetype);
 		assertTrue(implDto.getMessages().size() > 0);

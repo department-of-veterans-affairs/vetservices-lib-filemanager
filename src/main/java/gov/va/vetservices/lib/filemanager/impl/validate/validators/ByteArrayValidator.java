@@ -1,8 +1,11 @@
 package gov.va.vetservices.lib.filemanager.impl.validate.validators;
 
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.messages.MessageSeverity;
@@ -17,9 +20,14 @@ import gov.va.vetservices.lib.filemanager.impl.validate.Validator;
  *
  * @author aburkholder
  */
+@Component(ByteArrayValidator.BEAN_NAME)
 public class ByteArrayValidator implements Validator<byte[]> {
 
-	private int maxBytes = Integer.parseInt(FileManagerProperties.DEFAULT_FILE_MAX_BYTES);
+	public static final String BEAN_NAME = "byteArrayValidator";
+
+	@Autowired
+	@Qualifier(FileManagerProperties.BEAN_NAME)
+	private FileManagerProperties properties;
 
 	/**
 	 * <p>
@@ -29,25 +37,37 @@ public class ByteArrayValidator implements Validator<byte[]> {
 	 * If validation succeeds, {@code null} is returned, otherwise a list of messages is returned.
 	 * <p>
 	 * JavaDoc from {@link Validator}:<br/>
-	 * {@inheritDoc AbstractValidator#validate(java.lang.Object)}
+	 * {@inheritDoc Validator#validate(ImplArgDto)}
 	 * <p>
 	 */
 	@Override
 	public List<Message> validate(ImplArgDto<byte[]> toValidate) {
+		if ((toValidate == null) || (toValidate.getValue() == null) || (toValidate.getValue().length < 1)) {
+			throw new IllegalArgumentException("Byte array cannot be null.");
+		}
+
 		byte[] bytes = toValidate.getValue();
 
 		Message message = null;
 
 		if ((bytes == null) || (bytes.length < 1)) {
-			message = new Message(MessageSeverity.ERROR, MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY.getKey(),
-					MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY.getMessage());
+			MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY;
+			message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
 
-		} else if (bytes.length > maxBytes) {
-			message = new Message(MessageSeverity.ERROR, MessageKeysEnum.FILE_BYTES_SIZE.getKey(),
-					MessageFormat.format(MessageKeysEnum.FILE_BYTES_SIZE.getMessage(), maxBytes));
+		} else if (bytes.length > maxFileBytes()) {
+			MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_SIZE;
+			message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
 		}
 
 		return message == null ? null : Arrays.asList(new Message[] { message });
 	}
 
+	/**
+	 * Get the maximum number of bytes allowed for file content.
+	 *
+	 * @return int the number of bytes
+	 */
+	protected int maxFileBytes() {
+		return properties.getMaxFileBytes();
+	}
 }

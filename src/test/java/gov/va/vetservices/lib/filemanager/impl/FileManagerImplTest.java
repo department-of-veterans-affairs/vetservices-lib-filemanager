@@ -3,18 +3,25 @@ package gov.va.vetservices.lib.filemanager.impl;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerRequest;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FormsEnum;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
+//import gov.va.vetservices.lib.filemanager.api.v1.transfer.DocTypeId;
+import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 
 public class FileManagerImplTest {
 
 	private final static byte[] STRING_BYTES = "This is a test.".getBytes();
 	private final static String STRING_FILENAME = "test.txt";
+
+	private static final String claimId = "11111";
+	private static final String docTypeId = "123";
 
 	private FileManagerImpl fileManagerImpl = new FileManagerImpl();
 	FileManagerResponse response;
@@ -30,12 +37,24 @@ public class FileManagerImplTest {
 
 		// happy
 
+		FileManagerRequest request = new FileManagerRequest();
+		request.setClaimId(claimId);
+		request.setDocTypeId(docTypeId);
+		request.setProcessType(ProcessType.CLAIMS_526);
 		fileDto = new FileDto();
-		fileDto.setFormName(FormsEnum.VBA_526);
 		fileDto.setFilebytes(STRING_BYTES);
 		fileDto.setFilename(STRING_FILENAME);
+		request.setFileDto(fileDto);
 
-		response = fileManagerImpl.validateFileForPDFConversion(fileDto);
+		try {
+			response = fileManagerImpl.validateFileForPDFConversion(request);
+		} catch (FileManagerException e) {
+			e.printStackTrace();
+			if (e.getCause() != null) {
+				e.getCause().printStackTrace();
+			}
+			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
 		assertNotNull(response);
 		assertNotNull(response.getMessages());
 		// NOSONAR TODO line below will have to change when ConversionValidator is completed
@@ -44,35 +63,49 @@ public class FileManagerImplTest {
 
 		// sad
 
-		response = fileManagerImpl.validateFileForPDFConversion(null);
+		try {
+			response = fileManagerImpl.validateFileForPDFConversion(null);
+		} catch (FileManagerException e) {
+			e.printStackTrace();
+			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
 		assertNotNull(response);
 		assertNotNull(response.getMessages());
 		assertTrue(!response.getMessages().isEmpty());
 		assertNull(response.getFileDto());
 
-		fileDto = new FileDto();
-		fileDto.setFormName(null);
 		fileDto.setFilebytes(STRING_BYTES);
 		fileDto.setFilename(STRING_FILENAME);
-		response = fileManagerImpl.validateFileForPDFConversion(fileDto);
+		try {
+			response = fileManagerImpl.validateFileForPDFConversion(request);
+		} catch (FileManagerException e) {
+			e.printStackTrace();
+			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
 		assertNotNull(response);
 		assertNotNull(response.getMessages());
 		assertTrue(!response.getMessages().isEmpty());
 
-		fileDto = new FileDto();
-		fileDto.setFormName(FormsEnum.VBA_526);
 		fileDto.setFilebytes(null);
 		fileDto.setFilename(STRING_FILENAME);
-		response = fileManagerImpl.validateFileForPDFConversion(fileDto);
+		try {
+			response = fileManagerImpl.validateFileForPDFConversion(request);
+		} catch (FileManagerException e) {
+			e.printStackTrace();
+			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
 		assertNotNull(response);
 		assertNotNull(response.getMessages());
 		assertTrue(!response.getMessages().isEmpty());
 
-		fileDto = new FileDto();
-		fileDto.setFormName(FormsEnum.VBA_526);
 		fileDto.setFilebytes(STRING_BYTES);
 		fileDto.setFilename(null);
-		response = fileManagerImpl.validateFileForPDFConversion(fileDto);
+		try {
+			response = fileManagerImpl.validateFileForPDFConversion(request);
+		} catch (FileManagerException e) {
+			e.printStackTrace();
+			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
 		assertNotNull(response);
 		assertNotNull(response.getMessages());
 		assertTrue(!response.getMessages().isEmpty());
@@ -84,17 +117,33 @@ public class FileManagerImplTest {
 
 		// Happy
 
+		FileManagerRequest request = new FileManagerRequest();
+		request.setClaimId(claimId);
+		request.setDocTypeId(docTypeId);
+		request.setProcessType(ProcessType.CLAIMS_526);
 		fileDto = new FileDto();
 		fileDto.setFilebytes(STRING_BYTES);
 		fileDto.setFilename(null);
-		FileManagerResponse response = fileManagerImpl.convertToPdf(fileDto);
+		request.setFileDto(fileDto);
+		FileManagerResponse response = null;
+		try {
+			response = fileManagerImpl.convertToPdf(request);
+		} catch (FileManagerException e) {
+			e.printStackTrace();
+			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
 		assertNotNull(response);
 		assertTrue((response.getMessages() != null) && !response.getMessages().isEmpty());
 		assertNull(response.getFileDto());
 
 		// Sad
 
-		response = fileManagerImpl.convertToPdf(null);
+		try {
+			response = fileManagerImpl.convertToPdf(null);
+		} catch (FileManagerException e) {
+			e.printStackTrace();
+			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
 		assertNotNull(response);
 		assertTrue((response.getMessages() != null) && !response.getMessages().isEmpty());
 		assertNull(response.getFileDto());

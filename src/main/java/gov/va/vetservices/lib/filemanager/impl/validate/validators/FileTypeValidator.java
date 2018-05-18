@@ -8,6 +8,7 @@ import javax.activation.MimeType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
@@ -34,8 +35,10 @@ import gov.va.vetservices.lib.filemanager.pdf.PdfIntegrityChecker;
  * @author aburkholder
  */
 @java.lang.SuppressWarnings("squid:S1166")
+@Component(FileTypeValidator.BEAN_NAME)
 public class FileTypeValidator implements Validator<ImplDto> {
 
+	public static final String BEAN_NAME = "fileTypeValidator";
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileTypeValidator.class);
 
 	private static final String IMAGE = "image";
@@ -55,13 +58,16 @@ public class FileTypeValidator implements Validator<ImplDto> {
 	 * parameter.
 	 * <p>
 	 * JavaDoc from {@link Validator}:<br/>
-	 * {@inheritDoc AbstractValidator#validate(java.lang.Object)}
+	 * {@inheritDoc Validator#validate(ImplArgDto)}
 	 * <p>
 	 *
 	 * @throws FileManagerException
 	 */
 	@Override
 	public List<Message> validate(ImplArgDto<ImplDto> toValidate) {
+		if ((toValidate == null) || (toValidate.getValue() == null)) {
+			throw new IllegalArgumentException("Impl Dto cannot be null.");
+		}
 		ImplDto implDto = toValidate.getValue();
 
 		MimeType detectedMimetype = null;
@@ -74,12 +80,12 @@ public class FileTypeValidator implements Validator<ImplDto> {
 		if (convertible && (detectedMimetype != null) && ConvertibleTypesEnum.PDF.getMimeType().match(detectedMimetype)) {
 			try {
 				if (!pdfIntegrityChecker.isReadable(implDto.getFileDto().getFilebytes(), implDto.getFileDto().getFilename())) {
-					implDto.addMessage(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(),
-							MessageFormat.format(MessageKeysEnum.PDF_UNREADABLE.getMessage(), implDto.getFileDto().getFilename()));
+					implDto.addMessage(new Message(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(),
+							MessageFormat.format(MessageKeysEnum.PDF_UNREADABLE.getMessage(), implDto.getFileDto().getFilename())));
 				}
 			} catch (FileManagerException e) { // squid:S1166
 				LOGGER.debug(e.getMessageSeverity().toString() + " " + e.getKey() + ": " + e.getMessage());
-				implDto.addMessage(e.getMessageSeverity(), e.getKey(), e.getMessage());
+				implDto.addMessage(new Message(e.getMessageSeverity(), e.getKey(), e.getMessage()));
 			}
 		}
 
@@ -107,8 +113,9 @@ public class FileTypeValidator implements Validator<ImplDto> {
 				isValid = mimetype != null;
 			}
 			if (!isValid) {
-				implDto.addMessage(MessageSeverity.ERROR, MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE.getKey(), MessageFormat
-						.format(MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE.getMessage(), implDto.getFileDto().getFilename()));
+				implDto.addMessage(new Message(MessageSeverity.ERROR, MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE.getKey(),
+						MessageFormat.format(MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE.getMessage(),
+								implDto.getFileDto().getFilename())));
 			}
 		}
 
@@ -140,7 +147,8 @@ public class FileTypeValidator implements Validator<ImplDto> {
 		} else if ((implDto.getFileDto() == null) || (implDto.getFileDto().getFilebytes() == null)
 				|| (implDto.getFileDto().getFilebytes().length < 1)) {
 
-			implDto.addMessage(MessageSeverity.ERROR, MessageKeysEnum.FILE_DTO_NULL.getKey(), MessageKeysEnum.FILE_DTO_NULL.getMessage());
+			implDto.addMessage(new Message(MessageSeverity.ERROR, MessageKeysEnum.FILE_DTO_NULL.getKey(),
+					MessageKeysEnum.FILE_DTO_NULL.getMessage()));
 
 		} else {
 			try {
@@ -148,7 +156,7 @@ public class FileTypeValidator implements Validator<ImplDto> {
 				detectedMimetype = mimeTypeDetector.detectMimeType(implDto.getFileDto().getFilebytes(), implDto.getFileParts());
 			} catch (FileManagerException e) { // squid:S1166
 				LOGGER.debug(e.getMessageSeverity().toString() + " " + e.getKey() + ": " + e.getMessage());
-				implDto.addMessage(e.getMessageSeverity(), e.getKey(), e.getMessage());
+				implDto.addMessage(new Message(e.getMessageSeverity(), e.getKey(), e.getMessage()));
 			}
 		}
 
@@ -182,19 +190,22 @@ public class FileTypeValidator implements Validator<ImplDto> {
 				LOGGER.error(
 						"iText error while performing Image.getInstance(..) on bytes for file " + implDto.getFileDto().getFilename(),
 						e);
-				implDto.addMessage(MessageSeverity.ERROR, MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getKey(), MessageFormat
-						.format(MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getMessage(), implDto.getFileDto().getFilename()));
+				implDto.addMessage(
+						new Message(MessageSeverity.ERROR, MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getKey(), MessageFormat.format(
+								MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getMessage(), implDto.getFileDto().getFilename())));
 			} catch (final Throwable e) { // NOSONAR - intent is to catch everything // squid:S1166
 				isValid = false;
 				LOGGER.debug(
 						MessageSeverity.ERROR.toString() + " " + MessageKeysEnum.IMAGE_ITEXT_NOT_CONVERTIBLE.getKey() + ": "
 								+ MessageKeysEnum.IMAGE_ITEXT_NOT_CONVERTIBLE.getMessage(),
 						implDto.getFileDto().getFilename(), e.getMessage());
-				implDto.addMessage(MessageSeverity.ERROR, MessageKeysEnum.IMAGE_ITEXT_NOT_CONVERTIBLE.getKey(), MessageFormat.format(
-						MessageKeysEnum.IMAGE_ITEXT_NOT_CONVERTIBLE.getMessage(), implDto.getFileDto().getFilename(), e.getMessage()));
+				implDto.addMessage(new Message(MessageSeverity.ERROR, MessageKeysEnum.IMAGE_ITEXT_NOT_CONVERTIBLE.getKey(),
+						MessageFormat.format(MessageKeysEnum.IMAGE_ITEXT_NOT_CONVERTIBLE.getMessage(),
+								implDto.getFileDto().getFilename(), e.getMessage())));
 			}
 		}
 
 		return isValid;
 	}
+
 }

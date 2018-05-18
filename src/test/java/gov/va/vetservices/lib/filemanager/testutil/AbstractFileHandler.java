@@ -341,6 +341,9 @@ public abstract class AbstractFileHandler {
 	 */
 	protected List<File> listFilesByMimePath(MimeType mimetype) {
 		List<File> files = null;
+		if (mimetype == null) {
+			return files;
+		}
 
 		// using hasMimeType() eliminates primary/* and other non-relevant directory search attempts
 //		if (ConvertibleTypesEnum.hasMimeType(mimetype)) {

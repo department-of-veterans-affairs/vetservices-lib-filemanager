@@ -3,7 +3,8 @@ package gov.va.vetservices.lib.filemanager.util;
 import org.apache.commons.lang3.StringUtils;
 
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerRequest;
+import gov.va.vetservices.lib.filemanager.impl.dto.DocMetadataDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 
@@ -11,7 +12,6 @@ import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
  * Static utilities to help with file processing
  *
  * @author aburkholder
- *
  */
 public class FileManagerUtils {
 
@@ -49,17 +49,27 @@ public class FileManagerUtils {
 	 * @param fileDto
 	 * @return ImplDto
 	 */
-	public static final ImplDto makeImplDto(FileDto fileDto) {
+	public static final ImplDto makeImplDto(FileManagerRequest request) {
 		ImplDto implDto = new ImplDto();
-		if (fileDto != null) { // should never happen, but check anyway
-			implDto.setFileDto(fileDto);
-			implDto.setFileParts(getFileParts(fileDto.getFilename()));
+		if (request != null) {
+			// metadata
+			DocMetadataDto metadata = new DocMetadataDto();
+			metadata.setProcessType(request.getProcessType());
+			metadata.setDocTypeId(request.getDocTypeId());
+			metadata.setClaimId(request.getClaimId());
+			implDto.setDocMetadataDto(metadata);
+			// file Dto
+			if (request.getFileDto() != null) { // should never happen, but avoid null pointers
+				implDto.setFileDto(request.getFileDto());
+				implDto.setFileParts(getFileParts(request.getFileDto().getFilename()));
+			}
 		}
 		return implDto;
 	}
 
 	/**
-	 * If filename is not null or empty, returns a populated {@link FilePartsDto} (though it is possible for the members of FilePartsDto to
+	 * If filename is not null or empty, returns a populated {@link FilePartsDto} (though it is possible for the members of
+	 * FilePartsDto to
 	 * be {@code null} or empty). Otherwise returns {@code null}
 	 *
 	 * @param filename

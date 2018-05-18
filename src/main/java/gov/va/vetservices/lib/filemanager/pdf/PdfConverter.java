@@ -22,8 +22,8 @@ import gov.va.vetservices.lib.filemanager.pdf.convert.TextConverter;
  *
  * @author aburkholder
  */
-public class Converter {
-	private static final Logger LOGGER = LoggerFactory.getLogger(Converter.class);
+public class PdfConverter {
+	private static final Logger LOGGER = LoggerFactory.getLogger(PdfConverter.class);
 
 	private static final String IMAGE = "image";
 	private static final String TEXT = "text";

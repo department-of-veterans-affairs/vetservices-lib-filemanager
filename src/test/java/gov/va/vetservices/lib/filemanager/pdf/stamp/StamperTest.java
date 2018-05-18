@@ -9,28 +9,33 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
 import gov.va.vetservices.lib.filemanager.exception.PdfStamperException;
+import gov.va.vetservices.lib.filemanager.impl.dto.DocMetadataDto;
 import gov.va.vetservices.lib.filemanager.pdf.font.FontNameEnum;
 import gov.va.vetservices.lib.filemanager.pdf.stamp.dto.StampDataDto;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 
 public class StamperTest extends AbstractFileHandler {
 
-	private static final String STAMP_TEXT = "This is some test stamp text.";
-
+	private final String claimId = "1111";
 	private final String pdfPath = "files/application/pdf/IS_text-doc.pdf";
 
 	@Test
 	public final void testStamp() throws IOException {
 		byte[] bytes = super.readFile(Paths.get(pdfPath));
 		Stamper stamper = new Stamper();
+		DocMetadataDto metadata = new DocMetadataDto();
+		metadata.setClaimId(claimId);
+		metadata.setDocTypeId("123");
+		metadata.setProcessType(ProcessType.CLAIMS_526);
 		StampDataDto stampDataDto = new StampDataDto();
 		stampDataDto.setFontName(FontNameEnum.HELVETICA);
 		stampDataDto.setFontSizeInPoints(12);
-		stampDataDto.setStampText(STAMP_TEXT);
+		stampDataDto.setStampsEnum(StampsEnum.CLAIM);
 
 		try {
-			byte[] stamped = stamper.stamp(stampDataDto, bytes);
+			byte[] stamped = stamper.stamp(metadata, stampDataDto, bytes);
 			assertNotNull(stamped);
 
 		} catch (PdfStamperException e) {
@@ -42,14 +47,18 @@ public class StamperTest extends AbstractFileHandler {
 	@Test
 	public final void testStamp_Bad() {
 		byte[] bytes = new byte[] { 0 };
+		DocMetadataDto metadata = new DocMetadataDto();
+		metadata.setClaimId(claimId);
+		metadata.setDocTypeId("123");
+		metadata.setProcessType(ProcessType.CLAIMS_526);
 		Stamper stamper = new Stamper();
 		StampDataDto stampDataDto = new StampDataDto();
 		stampDataDto.setFontName(FontNameEnum.HELVETICA);
 		stampDataDto.setFontSizeInPoints(12);
-		stampDataDto.setStampText(STAMP_TEXT);
+		stampDataDto.setStampsEnum(StampsEnum.CLAIM);
 
 		try {
-			byte[] stamped = stamper.stamp(stampDataDto, bytes);
+			byte[] stamped = stamper.stamp(metadata, stampDataDto, bytes);
 			fail("Exception should have been thrown, stampped is " + stamped);
 
 		} catch (Throwable e) {

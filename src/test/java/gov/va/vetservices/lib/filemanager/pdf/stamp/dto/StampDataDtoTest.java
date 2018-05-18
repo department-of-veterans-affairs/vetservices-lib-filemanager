@@ -6,12 +6,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import gov.va.vetservices.lib.filemanager.pdf.font.FontNameEnum;
-import gov.va.vetservices.lib.filemanager.pdf.stamp.dto.StampDataDto;
+import gov.va.vetservices.lib.filemanager.pdf.stamp.StampsEnum;
 
 public class StampDataDtoTest {
 
 	private static final String COURIER = "COURIER";
-	private static final String STAMP_TEXT = "This is some test stamp text.";
 
 	StampDataDto stampDataDto = new StampDataDto();
 
@@ -30,10 +29,10 @@ public class StampDataDtoTest {
 	}
 
 	@Test
-	public final void testGetStampText() {
-		stampDataDto.setStampText(STAMP_TEXT);
-		assertNotNull(stampDataDto.getStampText());
-		assertTrue(STAMP_TEXT.equals(stampDataDto.getStampText()));
+	public final void testGetStampsEnum() {
+		stampDataDto.setStampsEnum(StampsEnum.CLAIM);
+		assertNotNull(stampDataDto.getStampsEnum());
+		assertTrue(StampsEnum.CLAIM.equals(stampDataDto.getStampsEnum()));
 	}
 
 }

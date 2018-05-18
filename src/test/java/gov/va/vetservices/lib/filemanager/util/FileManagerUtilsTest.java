@@ -13,6 +13,8 @@ import org.bouncycastle.util.Arrays;
 import org.junit.Test;
 
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerRequest;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
@@ -23,6 +25,8 @@ public class FileManagerUtilsTest {
 	private static final String FILE_RELATIVE = "README.txt";
 
 	private static final String BLANK_STRING = "   ";
+	private static final String CLAIM_ID = "11111";
+	private static final String DOCTYPE_ID = "123";
 
 	@Test
 	public final void testFileManagerUtils() {
@@ -84,13 +88,24 @@ public class FileManagerUtilsTest {
 
 	@Test
 	public final void testMakeImplDto() {
+		FileManagerRequest request = new FileManagerRequest();
+		request.setClaimId(CLAIM_ID);
+		request.setDocTypeId(DOCTYPE_ID);
+		request.setProcessType(ProcessType.CLAIMS_526);
 		FileDto fdto = new FileDto();
 		fdto.setFilename("test filename.txt");
 		fdto.setFilebytes(new byte[] { 33, 34, 35, 36 });
+		request.setFileDto(fdto);
 
-		ImplDto implDto = FileManagerUtils.makeImplDto(fdto);
+		ImplDto implDto = FileManagerUtils.makeImplDto(request);
 
 		assertNotNull("ImplDto is unexpectedly null.", implDto);
+
+		assertNotNull("implDto.docMetadataDto is null.", implDto.getDocMetadataDto());
+		assertTrue("ClaimId does not match.", CLAIM_ID.equals(implDto.getDocMetadataDto().getClaimId()));
+		assertTrue("ProcessType does not match.", ProcessType.CLAIMS_526.equals(implDto.getDocMetadataDto().getProcessType()));
+		assertTrue("DocTypeId does not match.", DOCTYPE_ID.equals(implDto.getDocMetadataDto().getDocTypeId()));
+
 		assertNotNull("ImplDto.fileDto is null.", implDto.getFileDto());
 		assertEquals("Filenames do not match.", implDto.getFileDto().getFilename(), fdto.getFilename());
 		assertTrue("Filebytes do not match.", Arrays.areEqual(implDto.getFileDto().getFilebytes(), fdto.getFilebytes()));

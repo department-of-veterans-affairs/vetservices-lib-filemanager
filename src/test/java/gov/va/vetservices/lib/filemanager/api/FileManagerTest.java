@@ -4,7 +4,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerRequest;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 
 public class FileManagerTest {
@@ -12,12 +12,12 @@ public class FileManagerTest {
 	class TestFileManager implements FileManager {
 
 		@Override
-		public FileManagerResponse validateFileForPDFConversion(FileDto fileDto) {
+		public FileManagerResponse validateFileForPDFConversion(FileManagerRequest request) {
 			return new FileManagerResponse();
 		}
 
 		@Override
-		public FileManagerResponse convertToPdf(FileDto file) {
+		public FileManagerResponse convertToPdf(FileManagerRequest request) {
 			return new FileManagerResponse();
 		}
 

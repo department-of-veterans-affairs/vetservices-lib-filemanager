@@ -18,6 +18,7 @@ import com.lowagie.text.pdf.PdfStamper;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.exception.PdfStamperException;
+import gov.va.vetservices.lib.filemanager.impl.dto.DocMetadataDto;
 import gov.va.vetservices.lib.filemanager.pdf.font.PdfFontFactory;
 import gov.va.vetservices.lib.filemanager.pdf.stamp.dto.StampDataDto;
 
@@ -31,24 +32,37 @@ public class Stamper {
 
 	/**
 	 * Write {@link StampDataDto} information into the header area of a PDF.
+	 * All arguments are required.
+	 * <p>
+	 * If any element of any argument is empty or null, there will be NullPointerExceptions.
 	 *
 	 * @param stampDataDto the StampDataDto text and font info
 	 * @param bytes the PDF
 	 * @return byte[] the stamped PDF
+	 * @throws IllegalArgumentException if any argument is {@code null} or empty
 	 * @throws PdfStamperException if the PDF cannot be stamped
 	 */
-	public final byte[] stamp(final StampDataDto stampDataDto, final byte[] bytes) throws PdfStamperException {
+	public final byte[] stamp(final DocMetadataDto metadata, final StampDataDto stampDataDto, final byte[] bytes)
+			throws PdfStamperException {
+
 		final ByteArrayOutputStream pdf = new ByteArrayOutputStream();
+
+		if ((metadata == null) || (stampDataDto == null) || (bytes == null) || (bytes.length < 1)) {
+			LOGGER.error("Arguments cannot be null.");
+			throw new IllegalArgumentException(
+					"Arguments to " + this.getClass().getSimpleName() + ".stamp(..) cannot be null or empty.");
+		}
 
 		PdfReader pdfReader = null;
 		PdfStamper pdfStamper = null;
 		try {
 			pdfReader = new PdfReader(bytes);
 			pdfStamper = new PdfStamper(pdfReader, pdf);
+			String stampText = stampDataDto.getStampsEnum().getStampText(metadata.getProcessType(), metadata.getClaimId());
 			final ColumnText columnText = new ColumnText(null);
 			for (int pageNum = 1; pageNum <= pdfReader.getNumberOfPages(); pageNum++) {
 				final Rectangle rect = pdfReader.getPageSize(pageNum);
-				final Chunk textAsChunk = new Chunk(stampDataDto.getStampText(), PdfFontFactory.getFont(stampDataDto.getFontName()));
+				final Chunk textAsChunk = new Chunk(stampText, PdfFontFactory.getFont(stampDataDto.getFontName()));
 				textAsChunk.setBackground(new Color(255, 255, 255), 5f, 5f, 25f, 10f);
 
 				ColumnText.showTextAligned(pdfStamper.getOverContent(pageNum), PdfContentByte.ALIGN_LEFT, new Phrase(textAsChunk), 5f,
@@ -60,7 +74,8 @@ public class Stamper {
 				}
 			}
 		} catch (final DocumentException | IOException e) {
-			LOGGER.debug(MessageSeverity.ERROR.toString() + " " + "MessageKeysEnum.ENUM.key" + ": " + "MessageKeysEnum.ENUM.message", e);
+			LOGGER.debug(MessageSeverity.ERROR.toString() + " " + "MessageKeysEnum.ENUM.key" + ": " + "MessageKeysEnum.ENUM.message",
+					e);
 			throw new PdfStamperException(e, MessageSeverity.ERROR, "MessageKeysEnum.ENUM.key", "MessageKeysEnum.ENUM.message");
 		} finally {
 			close(pdfStamper, pdfReader);
@@ -79,20 +94,14 @@ public class Stamper {
 			if (pdfStamper != null) {
 				pdfStamper.close();
 			}
-			// checkstyle complaining about catching generic exception - this is by design though, hence disabling the rule.
-			// CHECKSTYLE:OFF
 		} catch (final Exception e) { // NOSONAR - intentionally catching generic exception
-			// CHECKSTYLE:ON
 			LOGGER.error("pdfStamper.close() failed", e);
 		}
 		try {
 			if (pdfReader != null) {
 				pdfReader.close();
 			}
-			// checkstyle complaining about catching generic exception - this is by design though, hence disabling the rule.
-			// CHECKSTYLE:OFF
 		} catch (final Exception e) { // NOSONAR - intentionally catching generic exception
-			// CHECKSTYLE:ON
 			LOGGER.error("pdfReader.close() failed", e);
 		}
 	}

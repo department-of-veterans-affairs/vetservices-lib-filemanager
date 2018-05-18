@@ -1,16 +1,20 @@
 package gov.va.vetservices.lib.filemanager.impl;
 
-import java.util.Arrays;
+import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.api.FileManager;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerRequest;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FormsEnum;
+import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
+import gov.va.vetservices.lib.filemanager.impl.validate.validators.SimpleRequestValidator;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 /**
@@ -25,6 +29,8 @@ import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
  */
 public class FileManagerImpl implements FileManager {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileManagerImpl.class);
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -32,16 +38,29 @@ public class FileManagerImpl implements FileManager {
 	 * FileManager.FileDto)
 	 */
 	@Override
-	public FileManagerResponse validateFileForPDFConversion(FileDto fileDto) {
+	public FileManagerResponse validateFileForPDFConversion(FileManagerRequest request) throws FileManagerException {
 		InterrogateFile interrogateFile = new InterrogateFile();
 		FileManagerResponse response = new FileManagerResponse();
+		response.setDoNotCacheResponse(true);
 
-		validateInputs(fileDto, response);
-		if (response.getMessages().isEmpty()) {
-			ImplDto implDto = FileManagerUtils.makeImplDto(fileDto);
+		try {
 
-			// determine if the file can be converted to PDF
-			response = interrogateFile.canConvertToPdf(implDto);
+			simpleInputValidation(request, response);
+
+			if (response.getMessages().isEmpty()) {
+				ImplDto implDto = FileManagerUtils.makeImplDto(request);
+
+				// determine if the file can be converted to PDF
+				response = interrogateFile.canConvertToPdf(implDto);
+			}
+
+		} catch (Throwable e) { // NOSONAR - catch everything here
+			if (!FileManagerException.class.isAssignableFrom(e.getClass())) {
+				MessageKeysEnum key = MessageKeysEnum.UNEXPECTED_ERROR;
+				LOGGER.error("Unexpected " + e.getClass().getSimpleName()
+						+ " exception in vetservices-lib-filemanager. Please solve thsi issue at its source.", e);
+				throw new FileManagerException(MessageSeverity.FATAL, key.getKey(), key.getMessage());
+			}
 		}
 
 		return response;
@@ -56,48 +75,52 @@ public class FileManagerImpl implements FileManager {
 	 * - Method is sourced from wss PDFServiceImpl.convertPDF(..) & PDFGenerate.generateBody()
 	 */
 	@Override
-	public FileManagerResponse convertToPdf(FileDto fileDto) {
+	public FileManagerResponse convertToPdf(FileManagerRequest request) throws FileManagerException {
 		ConvertFile convertFile = new ConvertFile();
-		StampPdf stampPdf = new StampPdf();
+		StampFile stampFile = new StampFile();
 		FileManagerResponse response = new FileManagerResponse();
+		response.setDoNotCacheResponse(true);
 
-		validateInputs(fileDto, response);
-		if (response.getMessages().isEmpty()) {
-			ImplDto implDto = FileManagerUtils.makeImplDto(fileDto);
+		try {
 
-			// convert the file to PDF
-			response = convertFile.doConversion(implDto);
+			simpleInputValidation(request, response);
 
-			// stamp the PDF, if required
-			stampPdf.doStamp(implDto, response);
+			if (response.getMessages().isEmpty()) {
+				ImplDto implDto = FileManagerUtils.makeImplDto(request);
+
+				// convert the file to PDF
+				response = convertFile.convertToPdf(implDto);
+
+				if (!response.hasErrors()) {
+					// stamp the PDF, if required
+					stampFile.stampPdf(implDto, response);
+				}
+			}
+
+		} catch (Throwable e) { // NOSONAR - catch everything here
+			if (!FileManagerException.class.isAssignableFrom(e.getClass())) {
+				MessageKeysEnum key = MessageKeysEnum.UNEXPECTED_ERROR;
+				LOGGER.error("Unexpected " + e.getClass().getSimpleName()
+						+ " exception in vetservices-lib-filemanager. Please solve thsi issue at its source.", e);
+				throw new FileManagerException(MessageSeverity.FATAL, key.getKey(), key.getMessage());
+			}
 		}
 
 		return response;
 	}
 
 	/**
-	 * Add error messages onto the response if there are any issues with the FileDto object / contents.
+	 * Add error messages onto the response if any required objects are not provided.
 	 *
-	 * @param fileDto the FileDto
+	 * @param request the FileManagerRequest
 	 * @param response the File Manager Response
 	 */
-	private void validateInputs(FileDto fileDto, FileManagerResponse response) {
-		if (fileDto == null) {
-			response.addMessage(MessageSeverity.ERROR, MessageKeysEnum.FILE_DTO_NULL.getKey(),
-					MessageKeysEnum.FILE_DTO_NULL.getMessage());
-		} else {
-			if ((fileDto.getFormName() == null) || !Arrays.asList(FormsEnum.values()).contains(fileDto.getFormName())) {
-				response.addMessage(MessageSeverity.ERROR, MessageKeysEnum.FORM_NOT_SPECIFIED.getKey(),
-						MessageKeysEnum.FORM_NOT_SPECIFIED.getMessage());
-			}
-			if (StringUtils.isBlank(fileDto.getFilename())) {
-				response.addMessage(MessageSeverity.ERROR, MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY.getKey(),
-						MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY.getMessage());
-			}
-			if ((fileDto.getFilebytes() == null) || (fileDto.getFilebytes().length < 1)) {
-				response.addMessage(MessageSeverity.ERROR, MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY.getKey(),
-						MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY.getMessage());
-			}
+	private void simpleInputValidation(FileManagerRequest request, FileManagerResponse response) {
+		ImplArgDto<FileManagerRequest> arg = new ImplArgDto<FileManagerRequest>(request);
+		List<Message> messages = (new SimpleRequestValidator()).validate(arg);
+
+		if ((messages != null) && !messages.isEmpty()) {
+			response.addMessages(messages);
 		}
 	}
 }

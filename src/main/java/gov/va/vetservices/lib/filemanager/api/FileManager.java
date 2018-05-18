@@ -1,34 +1,35 @@
 package gov.va.vetservices.lib.filemanager.api;
 
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerRequest;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
+import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 
 /**
  * The public interface for operations contained in this artifact.
  *
  * @author aburkholder
  */
-// NOSONAR TODO Dev notes:
-// See the IMPL class for TO-DO dev notes
 public interface FileManager {
 
 	/**
 	 * Evaluate the suitability of a file for conversion to PDF.
-	 * The type of file may be subject to change over time,
-	 * but is currently limited to specific image types, text files, and PDF files.
+	 * Supported file types may change over time, with added (or removed) capabilities.
+	 * <p>
+	 * If no messages are on the response, the file can be converted.
 	 *
-	 * @param fileDto the {@code FileDto} to validate
-	 * @return boolean {@code true} if validation passes
+	 * @param request the {@code FileManagerRequest} to validate
+	 * @return FileManagerResponse the response with any messages
 	 */
-	public FileManagerResponse validateFileForPDFConversion(FileDto fileDto);
+	public FileManagerResponse validateFileForPDFConversion(FileManagerRequest request) throws FileManagerException;
 
 	/**
-	 * Convert a file to PDF. Note that the file should have been previously validated by the
+	 * Convert a file to PDF, and stamp its header area. Note that the file should have been previously validated by the
 	 * {@link #validateFileForPDFConversion(FileDto)} method.
 	 *
-	 * @param file the file in form of byte array to be converted
+	 * @param request the {@code FileManagerRequest} containing the byte array to be converted
 	 * @return FileManagerResponse the response with messages and PDF if successful
 	 */
-	public FileManagerResponse convertToPdf(FileDto fileDto);
+	public FileManagerResponse convertToPdf(FileManagerRequest request) throws FileManagerException;
 
 }

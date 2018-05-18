@@ -18,7 +18,10 @@ import org.junit.Test;
 
 import com.lowagie.text.pdf.PdfReader;
 
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
+import gov.va.vetservices.lib.filemanager.impl.dto.DocMetadataDto;
 import gov.va.vetservices.lib.filemanager.pdf.stamp.Stamper;
+import gov.va.vetservices.lib.filemanager.pdf.stamp.StampsEnum;
 import gov.va.vetservices.lib.filemanager.pdf.stamp.dto.StampDataDto;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 
@@ -30,6 +33,9 @@ import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
  * @author aburkholder
  */
 public class ManualPdfTester extends AbstractFileHandler {
+
+	private static final String claimId = "11111";
+	private static final String docTypeId = "123";
 
 	@Before
 	public void setUp() throws Exception {
@@ -44,7 +50,7 @@ public class ManualPdfTester extends AbstractFileHandler {
 	public final void test() {
 		Stamper stamper = new Stamper();
 		StampDataDto stampDataDto = new StampDataDto();
-		stampDataDto.setStampText("Test header for stamping.");
+		stampDataDto.setStampsEnum(StampsEnum.CLAIM);
 		MimeType mimetype = null;
 		try {
 			mimetype = new MimeType("application/pdf");
@@ -107,7 +113,12 @@ public class ManualPdfTester extends AbstractFileHandler {
 					System.out.println(".. set page content succeeded");
 					byte[] pageContent = pdfReader.getPageContent(1);
 					System.out.println(".. pagecontent: " + new String(pageContent));
-					byte[] pdf = stamper.stamp(stampDataDto, bytes);
+
+					DocMetadataDto docMetadata = new DocMetadataDto();
+					docMetadata.setClaimId(claimId);
+					docMetadata.setDocTypeId(docTypeId);
+					docMetadata.setProcessType(ProcessType.CLAIMS_526);
+					byte[] pdf = stamper.stamp(docMetadata, stampDataDto, bytes);
 					super.saveFile(pdf, file.getName());
 				} catch (Throwable e) {
 					System.out.println("** ERROR " + e.getClass().getSimpleName() + ": " + e.getMessage());

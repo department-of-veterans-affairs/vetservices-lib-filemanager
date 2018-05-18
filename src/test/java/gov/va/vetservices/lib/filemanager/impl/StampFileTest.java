@@ -8,20 +8,20 @@ import org.junit.Test;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 
-public class StampPdfTest {
+public class StampFileTest {
 
-	StampPdf stampPdf;
+	StampFile stampFile;
 
 	@Before
 	public void setUp() throws Exception {
-		stampPdf = new StampPdf();
-		assertNotNull(stampPdf);
+		stampFile = new StampFile();
+		assertNotNull(stampFile);
 	}
 
 	@Test
 	public final void testDoStamp() {
 		try {
-			stampPdf.doStamp(new ImplDto(), new FileManagerResponse());
+			stampFile.stampPdf(new ImplDto(), new FileManagerResponse());
 		} catch (Throwable e) {
 			// NOSONAR TODO finish tests when code is written
 			e.printStackTrace();

@@ -8,8 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.detectors.AbstractDetector;
 import gov.va.vetservices.lib.filemanager.mime.detectors.FilenameDetector;
@@ -28,6 +28,11 @@ public class MimeTypeDetector {
 	private final FilenameDetector filenameDetector = new FilenameDetector();
 	private final TikaDetector tikaDetector = new TikaDetector();
 	private final JMimeMagicDetector jmimemagicDetector = new JMimeMagicDetector();
+
+	/** Determines if the TikaDetector should be operational (true) or not (false) */
+	public final boolean ENABLE_TIKA = true;
+	/** Determines if the JMimeMagicDetector should be operational (true) or not (false) */
+	public final boolean ENABLE_JMIMEMAGIC = false;
 
 	/**
 	 * Determine if a file extension is supported by FileManager.

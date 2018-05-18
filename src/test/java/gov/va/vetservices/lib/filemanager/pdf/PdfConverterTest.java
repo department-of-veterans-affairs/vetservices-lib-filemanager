@@ -28,7 +28,7 @@ import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ConverterTest extends AbstractFileHandler {
+public class PdfConverterTest extends AbstractFileHandler {
 
 	private static final String BYTES_RESPONSE = "Success!";
 	private static final String[] FILENAME_PREFIXES = { "IS_", "NOT_", "BAD_" };
@@ -40,11 +40,11 @@ public class ConverterTest extends AbstractFileHandler {
 	@Mock
 	private TextConverter textConverter = new TextConverter();
 
-	Converter converter;
+	PdfConverter converter;
 
 	@Before
 	public void setUp() throws Exception {
-		converter = new Converter();
+		converter = new PdfConverter();
 		assertNotNull(converter);
 	}
 

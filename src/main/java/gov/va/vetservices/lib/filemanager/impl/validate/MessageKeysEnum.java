@@ -1,5 +1,13 @@
 package gov.va.vetservices.lib.filemanager.impl.validate;
 
+import java.text.MessageFormat;
+import java.util.EnumSet;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
@@ -13,23 +21,33 @@ import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
  */
 public enum MessageKeysEnum {
 
+	/** Some unanticipated runtime exception that is not properly caught and dealt with */
+	UNEXPECTED_ERROR("filemanager.unexpected.error", "FileManager library encountered an unexpected error. Please investigate."),
+	/** FileManagerRequest was null */
+	REQUEST_NULL("filemanager.request.null", "File Manager Request cannot be null."),
 	/** FileDto was null */
 	FILE_DTO_NULL("filemanager.file.dto.null", "File data transfer object cannot be null."),
+	/** The process type associated with the file was not specified */
+	PROCESSTYPE_NOT_SPECIFIED("filemanager.process.type.not.specified",
+			"The process type associated with the file was not specified."),
+	/** The docTypeId associated with the file was not specified */
+	DOCTYPEID_NULL_OR_EMPTY("filemanager.doc.type.id.null.or.empty",
+			"The document type ID associated with the file was not specified."),
 	/** The form associated with the file was not specified */
-	FORM_NOT_SPECIFIED("filemanager.form.not.specified", "The Benefits form associated with the file was not specified."),
+	CLAIMID_NULL_OR_EMPTY("filemanager.claim.id.null.or.empty", "The Claim ID cannnot be null or empty for claims-related requests."),
 	/** Filename was null or empty */
 	FILE_NAME_NULL_OR_EMPTY("filemanager.file.name.null.or.empty", "File name cannot be null or empty."),
 	/** Filename starts or ends with one of {@link FileManagerUtils.ILLEGAL_FILE_START_CHARS} */
 	FILE_NAME_MALFORMED("filemanager.file.name.nmalformed",
 			"File name is malformed. Filenames cannot begin or end with any of " + FileManagerProperties.FILE_NAME_ILLEGAL_CHARS),
-	/** Filename was too long */
-	FILE_NAME_TOO_LONG("filemanager.file.name.length", "File name must be less than " + maxFilenameLength() + " characters."),
+	/** Filename was too long - dev note: arg is automatically replaced in getMessage() */
+	FILE_NAME_TOO_LONG("filemanager.file.name.length", "File name must be less than {0} characters"),
 	/** Byte array was null or empty */
-	FILE_BYTES_NULL_OR_EMPTY("filemanager.file.bytes.null.or.empty", "File content cannot be null or empty array."),
+	FILE_BYTES_NULL_OR_EMPTY("filemanager.file.bytes.null.or.empty", "File content cannot be null or empty."),
 	/** Byte array cannot be read. <b>Args:</b> {@code filename} */
 	FILE_BYTES_UNREADABLE("filemanager.file.bytes.unreadable",
 			"Content of {0} cannot be read due to corrupted file or an unexpected issue."),
-	/** Byte array is too large. <b>Args:</b> {@code maxSizeMB} */
+	/** Byte array is too large. - dev note: arg is automatically replaced in getMessage() */
 	FILE_BYTES_SIZE("filemanager.file.bytes.size", "File size exceeds maximum allowable size of {0}."),
 	/** Filename extension is not convertible to PDF. <b>Args:</b> {@code filename} */
 	FILE_EXTENSION_NOT_CONVERTIBLE("filemanager.file.extension.not.convertible",
@@ -60,6 +78,33 @@ public enum MessageKeysEnum {
 	/** Internal FileManager issues that cannot be resolved at runtime */
 	FILEMANAGER_ISSUE("filemanager.internal.issue", "Internal issue occurred. Please check the application logs.");
 
+	/**
+	 * This is a hack to inject the spring-managed FileManagerProperties bean
+	 * into the enumerations on this enum. Lovin' spring, oh yeah.
+	 *
+	 * @author aburkholder
+	 */
+	@Component
+	public static class FileManagerPropertiesInjector {
+		/** The spring-managed component to inject into the enumerations */
+		@Autowired
+		private FileManagerProperties fileManagerProperties;
+
+		/**
+		 * Put a reference to the FileManagerProperties component
+		 * into the enumerations.
+		 */
+		@PostConstruct
+		public void postConstruct() {
+			for (MessageKeysEnum mke : EnumSet.allOf(MessageKeysEnum.class)) {
+				mke.setFileManagerProperties(fileManagerProperties);
+			}
+		}
+	}
+
+	/** the local reference into which the injector puts the FileManagerProperties component reference */
+	private FileManagerProperties fileManagerProperties;
+
 	private String key;
 	private String message;
 
@@ -83,13 +128,8 @@ public enum MessageKeysEnum {
 		return FileManagerProperties.CONVERTIBLE_FILE_EXTENSIONS_STRING;
 	}
 
-	/**
-	 * The maximum file length allowed in bytes.
-	 *
-	 * @return String
-	 */
-	private static String maxFilenameLength() {
-		return FileManagerProperties.DEFAULT_FILENAME_MAX_LENGTH;
+	private void setFileManagerProperties(FileManagerProperties fileManagerProperties) {
+		this.fileManagerProperties = fileManagerProperties;
 	}
 
 	/**
@@ -107,6 +147,11 @@ public enum MessageKeysEnum {
 	 * @return String the message
 	 */
 	public String getMessage() {
+		if (this.equals(MessageKeysEnum.FILE_NAME_TOO_LONG)) {
+			return MessageFormat.format(this.message, fileManagerProperties.getMaxFilenameLen());
+		} else if (this.equals(MessageKeysEnum.FILE_BYTES_SIZE)) {
+			return MessageFormat.format(this.message, fileManagerProperties.getMaxFileMegaBytes());
+		}
 		return message;
 	}
 

@@ -11,6 +11,8 @@ import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
  * <p>
  * Configuration properties that can be overridden by the application.
  * <p>
+ * There are public KEY_** constants that resolve to the property names for FileManager configuration.
+ * <p>
  * Include the property in your application config, as declared in the
  * {@code Value} annotation of each private member in this class.
  *
@@ -21,7 +23,7 @@ public class FileManagerProperties {
 
 	public static final String BEAN_NAME = "fileManagerProperties";
 
-	/* KEY constants */
+	/* KEY constants. These resolve to the property names that configure FileManager */
 
 	/** Constant key for max Operating System (Windows/Linux/macOS) file size in bytes */
 	public static final String KEY_FILE_MAX_BYTES = "filemanager.config.file.max.bytes";
@@ -35,35 +37,34 @@ public class FileManagerProperties {
 	/* DEFAULT constants */
 
 	/** Constant for the default value of {@value #KEY_FILE_MAX_BYTES} */
-	public static final String DEFAULT_FILE_MAX_BYTES = "26214400";
+	protected static final String DEFAULT_FILE_MAX_BYTES = "26214400";
 	/** Constant for the default value of {@value #KEY_FILE_MAX_TEXT_MB} */
-	public static final String DEFAULT_FILE_MAX_TEXT_MB = "25 MB";
+	protected static final String DEFAULT_FILE_MAX_TEXT_MB = "25 MB";
 	/** Constant for the default value of {@value #KEY_FILE_MAX_TEXT_MB} */
-	public static final String DEFAULT_FILENAME_MAX_LENGTH = "255";
-	/** Constant for file extensions that are supported for conversion to PDF */
-	public static final String CONVERTIBLE_FILE_EXTENSIONS_STRING = Arrays.toString(ConvertibleTypesEnum.values());
+	protected static final String DEFAULT_FILENAME_MAX_LENGTH = "255";
 
 	/* SUPPORTING constants */
 
 	/** Array of characters that are not allowed at the beginning of a file names: {@code . / \ :} */
-	public static final String[] FILE_NAME_ILLEGAL_CHARS = { "/", "\\", ":", "." }; // NOSONAR - will be used
-	/** Maximum length of a file name, constrained by lowest size allowed on common operating systems */
-	public static final int MAX_OS_FILENAME_LENGTH = 255;
+	public static final String[] FILE_NAME_ILLEGAL_CHARS = { "/", "\\", ":" }; // NOSONAR - will be usedok
+	/** Constant for file extensions that are supported for conversion to PDF */
+	public static final String CONVERTIBLE_FILE_EXTENSIONS_STRING = Arrays.toString(ConvertibleTypesEnum.values());
 	/** Maximum length of absolute file path, constrained by lowest size allowed on common operating systems */
 	public static final int MAX_OS_FILEPATH_LENGTH = 4096;
 
 	/* MEMBERS FOR EXPOSED CONSTANTS */
 
-//	@Value("${" + KEY_FILE_MAX_BYTES + ":" + DEFAULT_FILE_MAX_BYTES + "}")
+	// KEY_FILE_MAX_BYTES + ":" + DEFAULT_FILE_MAX_BYTES
 	@Value("${filemanager.config.file.max.bytes:26214400}")
 	private int maxFileBytes;
 
-//	@Value("${" + KEY_FILE_MAX_TEXT_MB + ":" + DEFAULT_FILE_MAX_TEXT_MB + "}")
+	// KEY_FILE_MAX_TEXT_MB + ":" + DEFAULT_FILE_MAX_TEXT_MB
 	@Value("${filemanager.config.file.max.text.megabytes:25 MB}")
 	private String maxFileMegaBytes;
 
+	// KEY_FILENAME_MAX_LENGTH + ":" + DEFAULT_FILENAME_MAX_LENGTH
 	@Value("${filemanager.config.filname.max.length:255}")
-	private String maxFilenameLen;
+	private int maxFilenameLen;
 
 	/**
 	 * <p>
@@ -101,7 +102,7 @@ public class FileManagerProperties {
 	 *
 	 * @return the maxFilenameLen
 	 */
-	public String getMaxFilenameLen() {
+	public int getMaxFilenameLen() {
 		return maxFilenameLen;
 	}
 }

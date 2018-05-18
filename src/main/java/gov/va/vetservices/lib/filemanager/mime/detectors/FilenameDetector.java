@@ -16,11 +16,16 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 
+/**
+ * Detect MIME type based on the file name (specifically, the extension).
+ *
+ * @author aburkholder
+ */
 public class FilenameDetector extends AbstractDetector {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilenameDetector.class);
@@ -29,6 +34,9 @@ public class FilenameDetector extends AbstractDetector {
 
 	private static Properties props;
 
+	/**
+	 * Instantiate the detector. This constructor retrieves a full list of MIME types from {@value #PROPS_CLASSPATH}.
+	 */
 	public FilenameDetector() {
 		if (props == null) {
 			getProps();

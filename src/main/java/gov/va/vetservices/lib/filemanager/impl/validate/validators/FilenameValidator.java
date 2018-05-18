@@ -1,17 +1,20 @@
-/**
- *
- */
 package gov.va.vetservices.lib.filemanager.impl.validate.validators;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.messages.MessageSeverity;
+import gov.va.ascent.framework.util.Defense;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
-import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
+import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.impl.validate.Validator;
 
@@ -23,7 +26,22 @@ import gov.va.vetservices.lib.filemanager.impl.validate.Validator;
  *
  * @author aburkholder
  */
+@Component(FilenameValidator.BEAN_NAME)
 public class FilenameValidator implements Validator<ImplDto> {
+
+	public static final String BEAN_NAME = "filenameValidator";
+
+	@Autowired
+	@Qualifier("fileManagerProperties")
+	FileManagerProperties fileManagerProperties;
+
+	/**
+	 * Make sure instantiation prerequisites are fulfilled.
+	 */
+	@PostConstruct
+	public void postConstruct() {
+		Defense.isNull(fileManagerProperties, "FileManagerProperties cannot be null");
+	}
 
 	/**
 	 * <p>
@@ -34,12 +52,12 @@ public class FilenameValidator implements Validator<ImplDto> {
 	 * parameter.
 	 * <p>
 	 * JavaDoc from {@link Validator}:<br/>
-	 * {@inheritDoc AbstractValidator#validate(java.lang.Object)}
+	 * {@inheritDoc Validator#validate(ImplArgDto)}
 	 * <p>
 	 */
 	@Override
 	public List<Message> validate(ImplArgDto<ImplDto> toValidate) {  // NOSONAR - shut up complaint about cyclomatic complexity
-		if (toValidate == null) {
+		if ((toValidate == null) || (toValidate.getValue() == null)) {
 			throw new IllegalArgumentException("Impl Dto cannot be null.");
 		}
 
@@ -58,13 +76,15 @@ public class FilenameValidator implements Validator<ImplDto> {
 
 			addError(implDto, MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY);
 
-		} else if (implDto.getFileDto().getFilename().length() > FileManagerProperties.MAX_OS_FILENAME_LENGTH) {
+		} else if (StringUtils.isBlank(implDto.getFileDto().getFilename())
+				|| (implDto.getFileDto().getFilename().length() > fileManagerProperties.getMaxFilenameLen())) {
 
 			addError(implDto, MessageKeysEnum.FILE_NAME_TOO_LONG);
 
 		} else if (StringUtils.startsWithAny(implDto.getFileParts().getName(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)
 				|| StringUtils.endsWithAny(implDto.getFileParts().getName(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)) {
 
+			// NOSONAR TODO need to add character filter validations from wss web and service regex validations
 			addError(implDto, MessageKeysEnum.FILE_NAME_MALFORMED);
 
 		}
@@ -79,7 +99,7 @@ public class FilenameValidator implements Validator<ImplDto> {
 	 * @param messageKey the {@link MessageKeysEnum} enumeration for key and message
 	 */
 	private void addError(ImplDto implDto, MessageKeysEnum messageKey) {
-		implDto.addMessage(MessageSeverity.ERROR, messageKey.getKey(), messageKey.getMessage());
+		implDto.addMessage(new Message(MessageSeverity.ERROR, messageKey.getKey(), messageKey.getMessage()));
 	}
 
 }

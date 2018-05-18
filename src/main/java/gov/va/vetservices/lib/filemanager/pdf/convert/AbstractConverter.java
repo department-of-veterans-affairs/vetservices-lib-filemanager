@@ -15,11 +15,17 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfWriter;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 
+/**
+ * Method signatures and base implementation for file type converters.
+ * Currently defines one conversion to get a PDF file.
+ *
+ * @author aburkholder
+ */
 public abstract class AbstractConverter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConverter.class);
 

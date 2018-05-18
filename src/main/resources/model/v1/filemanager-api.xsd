@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<xs:schema version="1.0"
-	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xmlns:ascent="http://www.va.gov/ascent/framework/schema/v1"
 	xmlns="http://gov.va.vetservices/lib/filemanager/model/v1"
 	targetNamespace="http://gov.va.vetservices/lib/filemanager/model/v1"
 >
+	<xs:annotation>
+		<xs:appinfo>FileManager Library</xs:appinfo>
+		<xs:documentation xml:lang="en">
+			This schema defines the external data transfer objects
+			used to interact with implementations of the
+			gov.va.vetservices.lib.filemanager.FileManager interface.
+		</xs:documentation>
+	</xs:annotation>
+
 
 	<!--************************************************************************************************************************************
 		REQUEST+RESPONSE OBJECTS
@@ -13,12 +21,56 @@
 	<xs:import schemaLocation="../../mvn-copied/xsd/ascent-framework-types.xsd"
 		namespace="http://www.va.gov/ascent/framework/schema/v1" />
 
-	<xs:element name="fileManagerResponse" type="FileManagerResponse" />
+	<xs:element name="fileManagerRequest" type="FileManagerRequest">
+		<xs:annotation>
+			<xs:documentation>Response to a request, including file bytes if appropriate. Errors are found in the getMessages()
+				list. </xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="FileManagerRequest">
+		<xs:complexContent>
+			<xs:extension base="ascent:serviceRequest">
+				<xs:sequence>
+					<xs:element name="processType" type="ProcessType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The kind of VA process to which the document is associated.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="docTypeId" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The VA type ID, as declared by the /docTypes operation of document services.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="claimId" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Any document that is claims-related must include the Claim ID.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="fileDto" type="FileDto" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The original filename as provided by the source uploader. Required.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="fileManagerResponse" type="FileManagerResponse">
+		<xs:annotation>
+			<xs:documentation>Response to a request, including file bytes if appropriate. Errors are found in the getMessages()
+				list. </xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:complexType name="FileManagerResponse">
 		<xs:complexContent>
 			<xs:extension base="ascent:serviceResponse">
 				<xs:sequence>
-					<xs:element name="fileDto" type="FileDto" minOccurs="0" />
+					<xs:element name="fileDto" type="FileDto" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The filename, and bytes if appropriate.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -27,25 +79,61 @@
 	<!--************************************************************************************************************************************
 		MODEL OBJECTS
 		************************************************************************************************************************************* -->
-
 	<xs:complexType name="FileDto">
 		<xs:sequence>
-			<xs:element name="formName" type="FormsEnum" minOccurs="0" />
-			<xs:element name="filename" type="xs:string" minOccurs="0" />
-			<xs:element name="filebytes" type="xs:base64Binary" minOccurs="0" />
+			<xs:element name="filename" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The original filename as provided by the source uploader. Required.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="filebytes" type="xs:base64Binary" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The file itself in the form of a byte array. Required.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 
-	<!-- ***** IMPORTANT *****
-		Any enumeration in "FormsEnum" below must be a valid enum member name.
-		It is *strongly* advised that form names be mapped to a typesafeEnumMember in
-		jaxb-bindings.xjb <jaxb:bindings schemaLocation="v1/filemanager-api.xsd">
-		*********************-->
-	<xs:simpleType name="FormsEnum">
+	<xs:simpleType name="ProcessType">
+		<xs:annotation>
+			<xs:documentation>The kind of VA process to which the document is related.</xs:documentation>
+		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="526" />
-			<xs:enumeration value="526EZ" />
-			<xs:enumeration value="Other" />
+			<xs:enumeration value="claims_526">
+				<xs:annotation>
+					<xs:documentation>The 21-526 Claim document</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="claims_526_supporting">
+				<xs:annotation>
+					<xs:documentation>Supporting documentation for a 21-526 Claim</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="claims_686">
+				<xs:annotation>
+					<xs:documentation>The 21-686c Claim document</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="claims_686_supporting">
+				<xs:annotation>
+					<xs:documentation>Supporting documentation for a 21-686c Claim</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="claims_status_supporting">
+				<xs:annotation>
+					<xs:documentation>Supporting documentation for a claim via Claim Status updates</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="school_attendance_674">
+				<xs:annotation>
+					<xs:documentation>Report of School Attendance 21-674</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="other">
+				<xs:annotation>
+					<xs:documentation>Document that is not claims related</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 

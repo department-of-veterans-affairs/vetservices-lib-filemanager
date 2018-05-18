@@ -36,16 +36,4 @@
 		</jaxb:bindings>
 	</jaxb:bindings>
 
-	<!--
-		The following bindings solve enum member naming problems for benefits form names.
-		The pattern is to precede the form name with "VBA_".
-	-->
-	<jaxb:bindings schemaLocation="v1/filemanager-api.xsd">
-		<jaxb:bindings node="//xs:simpleType[@name='FormsEnum']/xs:restriction/xs:enumeration[@value='526']">
-			<jaxb:typesafeEnumMember name="VBA_526"/>
-		</jaxb:bindings>
-		<jaxb:bindings node="//xs:simpleType[@name='FormsEnum']/xs:restriction/xs:enumeration[@value='526EZ']">
-			<jaxb:typesafeEnumMember name="VBA_526EZ"/>
-		</jaxb:bindings>
-	</jaxb:bindings>
 </jaxb:bindings>
