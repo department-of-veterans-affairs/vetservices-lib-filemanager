@@ -16,6 +16,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 import gov.va.ascent.framework.config.AscentCommonSpringProfiles;
+import gov.va.ascent.framework.util.Defense;
 import gov.va.vetservices.lib.filemanager.FileManagerConfig;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerRequest;
@@ -26,7 +27,7 @@ import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles({ AscentCommonSpringProfiles.PROFILE_REMOTE_CLIENT_IMPLS,
-		AscentCommonSpringProfiles.PROFILE_REMOTE_CLIENT_SIMULATORS })
+	AscentCommonSpringProfiles.PROFILE_REMOTE_CLIENT_SIMULATORS })
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class })
 @ContextConfiguration(inheritLocations = false, classes = { FileManagerConfig.class })
 public class InterrogateFileTest {
@@ -50,7 +51,7 @@ public class InterrogateFileTest {
 
 	@Before
 	public void setUp() {
-		assertNotNull(interrogateFile);
+		Defense.notNull(interrogateFile);
 	}
 
 	@Test

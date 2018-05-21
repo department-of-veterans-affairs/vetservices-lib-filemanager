@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -47,7 +48,8 @@ public class FilenameValidatorTest {
 	private List<Message> messages;
 
 	@Autowired
-	private FilenameValidator filenameValidator = new FilenameValidator();
+	@Qualifier(FilenameValidator.BEAN_NAME)
+	private FilenameValidator filenameValidator;
 
 //	@Autowired
 //	FileManagerProperties fileManagerProperties;

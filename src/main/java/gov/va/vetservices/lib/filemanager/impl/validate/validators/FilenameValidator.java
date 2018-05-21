@@ -40,7 +40,7 @@ public class FilenameValidator implements Validator<ImplDto> {
 	 */
 	@PostConstruct
 	public void postConstruct() {
-		Defense.isNull(fileManagerProperties, "FileManagerProperties cannot be null");
+		Defense.notNull(fileManagerProperties, "FileManagerProperties cannot be null");
 	}
 
 	/**

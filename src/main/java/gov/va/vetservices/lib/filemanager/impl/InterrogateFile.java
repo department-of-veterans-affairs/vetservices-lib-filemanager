@@ -35,27 +35,27 @@ public class InterrogateFile {
 	public static final String BEAN_NAME = "interrogateFile";
 
 	@Autowired
-	@Qualifier("filenameValidator")
+	@Qualifier(FilenameValidator.BEAN_NAME)
 	FilenameValidator filenameValidator;
 
 	@Autowired
-	@Qualifier("bytearrayValidator")
+	@Qualifier(ByteArrayValidator.BEAN_NAME)
 	ByteArrayValidator bytearrayValidator;
 
 	@Autowired
-	@Qualifier("filetypeValidator")
+	@Qualifier(FileTypeValidator.BEAN_NAME)
 	FileTypeValidator filetypeValidator;
 
 	@Autowired
-	@Qualifier("conversionValidator")
+	@Qualifier(ConversionValidator.BEAN_NAME)
 	ConversionValidator conversionValidator;
 
 	@PostConstruct
 	public void postconstruct() {
-		Defense.isNull(filenameValidator, "filenameValidator cannot be null");
-		Defense.isNull(bytearrayValidator, "bytearrayValidator cannot be null");
-		Defense.isNull(filetypeValidator, "filetypeValidator cannot be null");
-		Defense.isNull(conversionValidator, "conversionValidator cannot be null");
+		Defense.notNull(filenameValidator, "filenameValidator cannot be null");
+		Defense.notNull(bytearrayValidator, "bytearrayValidator cannot be null");
+		Defense.notNull(filetypeValidator, "filetypeValidator cannot be null");
+		Defense.notNull(conversionValidator, "conversionValidator cannot be null");
 	}
 
 	/**
