@@ -69,29 +69,85 @@ public class InterrogateFile {
 	public FileManagerResponse canConvertToPdf(ImplDto implDto) {
 		FileManagerResponse response = new FileManagerResponse();
 
-		List<Message> messages = null;
+		validateFilename(implDto, response);
 
-		// validate file name
-		if ((messages = filenameValidator.validate((new ImplArgDto<ImplDto>(implDto)))) != null) {
-			response.addMessages(messages);
+		if (!response.hasErrors()) {
+			validateByteArray(implDto.getFileDto().getFilebytes(), response);
 		}
 
-		// validate byte array
-		if ((messages = bytearrayValidator.validate((new ImplArgDto<byte[]>(implDto.getFileDto().getFilebytes())))) != null) {
-			response.addMessages(messages);
-		} else {
-			// validate file type
-			if ((messages = filetypeValidator.validate((new ImplArgDto<ImplDto>(implDto)))) != null) {
-				response.addMessages(messages);
-			} else {
-				// validate can be converted
-				if ((messages = conversionValidator.validate((new ImplArgDto<ImplDto>(implDto)))) != null) {
-					response.addMessages(messages);
-				}
-			}
+		if (!response.hasErrors()) {
+			validateFileType(implDto, response);
+		}
+
+		if (!response.hasErrors()) {
+			validateConversion(implDto, response);
 		}
 
 		return response;
 	}
 
+	/**
+	 * Validate the filename for common operating system constraints.
+	 * Any error messages are returned on the response.
+	 *
+	 * @param implDto the DTO with filename to validate
+	 * @param response the response to return to the consumer
+	 * @see FilenameValidator#validate(ImplArgDto)
+	 */
+	private void validateFilename(ImplDto implDto, FileManagerResponse response) {
+		ImplArgDto<ImplDto> arg = new ImplArgDto<>(implDto);
+		List<Message> messages = filenameValidator.validate(arg);
+		addMessagesToResponse(messages, response);
+	}
+
+	/**
+	 * Validate the file bytes for length.
+	 *
+	 * @param bytes the bytes to validate
+	 * @param response the response to return to the consumer
+	 * @see ByteArrayValidator#validate(ImplArgDto)
+	 */
+	private void validateByteArray(byte[] bytes, FileManagerResponse response) {
+		ImplArgDto<byte[]> argDtoBytes = new ImplArgDto<>(bytes);
+		List<Message> messages = bytearrayValidator.validate(argDtoBytes);
+		addMessagesToResponse(messages, response);
+	}
+
+	/**
+	 * Validate the MIME type to ensure it can be converted to PDF.
+	 *
+	 * @param implDto the DTO with filename to validate
+	 * @param response the response to return to the consumer
+	 * @see FileTypeValidator#validate(ImplArgDto)
+	 */
+	private void validateFileType(ImplDto implDto, FileManagerResponse response) {
+		ImplArgDto<ImplDto> arg = new ImplArgDto<>(implDto);
+		List<Message> messages = filetypeValidator.validate(arg);
+		addMessagesToResponse(messages, response);
+	}
+
+	/**
+	 * Validate that the file bytes can be converted to a PDF.
+	 *
+	 * @param implDto the DTO with filename to validate
+	 * @param response the response to return to the consumer
+	 * @see FileTypeValidator#validate(ImplArgDto)
+	 */
+	private void validateConversion(ImplDto implDto, FileManagerResponse response) {
+		ImplArgDto<ImplDto> arg = new ImplArgDto<>(implDto);
+		List<Message> messages = conversionValidator.validate(arg);
+		addMessagesToResponse(messages, response);
+	}
+
+	/**
+	 * Common method to add messages (if any) to the response.
+	 *
+	 * @param messages messages (if any)
+	 * @param response the consumer response
+	 */
+	private void addMessagesToResponse(List<Message> messages, FileManagerResponse response) {
+		if ((messages != null) && !messages.isEmpty()) {
+			response.addMessages(messages);
+		}
+	}
 }

@@ -29,10 +29,11 @@ public class MimeTypeDetector {
 	private final TikaDetector tikaDetector = new TikaDetector();
 	private final JMimeMagicDetector jmimemagicDetector = new JMimeMagicDetector();
 
+	// dev note: these two variables are candidates to externally expose in FileMangerProperties
 	/** Determines if the TikaDetector should be operational (true) or not (false) */
-	public final boolean ENABLE_TIKA = true;
+	private boolean enableTika = true;
 	/** Determines if the JMimeMagicDetector should be operational (true) or not (false) */
-	public final boolean ENABLE_JMIMEMAGIC = false;
+	private boolean enableJMimeMagic = false;
 
 	/**
 	 * Determine if a file extension is supported by FileManager.
@@ -64,15 +65,23 @@ public class MimeTypeDetector {
 		// derived from filename extension, or null
 		MimeType filenameDerived = filenameDetector.detect(bytes, parts);
 
-		// detected from bytes, and from bytes + filename hint
-		MimeType tikaDetected = tikaDetector.detect(bytes, parts);
+		MimeType tikaDetected = null;
+		MimeType jmimeDetected = null;
 
-		// detected from bytes
-		MimeType jmimeDetected = jmimemagicDetector.detect(bytes, parts);
+		if (enableTika) {
+			// detected from bytes, and from bytes + filename hint
+			tikaDetected = tikaDetector.detect(bytes, parts);
+		}
+
+		if (enableJMimeMagic) {
+			// detected from bytes
+			jmimeDetected = jmimemagicDetector.detect(bytes, parts);
+		}
 
 		// make a best guess
 		bestGuess = AbstractDetector.selfCheck(tikaDetected, jmimeDetected);
 		if (bestGuess == null) {
+			// both tika and jmimemagic are turned off
 			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.FILE_TYPE_UNVERIFIABLE.getKey(),
 					MessageFormat.format(MessageKeysEnum.FILE_TYPE_UNVERIFIABLE.getMessage(), parts, parts.getExtension()));
 		}
@@ -119,5 +128,41 @@ public class MimeTypeDetector {
 			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE.getKey(),
 					MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE.getMessage(), filename);
 		}
+	}
+
+	/**
+	 * Determines if the TikaDetector should be operational (default: true)
+	 * 
+	 * @return the enableTika
+	 */
+	public boolean isEnableTika() {
+		return enableTika;
+	}
+
+	/**
+	 * Determines if the TikaDetector should be operational (default: true)
+	 * 
+	 * @param enableTika the enableTika to set
+	 */
+	public void setEnableTika(boolean enableTika) {
+		this.enableTika = enableTika;
+	}
+
+	/**
+	 * Determines if the JMimeMagicDetector should be operational (default: false)
+	 * 
+	 * @return the enableJMimeMagic
+	 */
+	public boolean isEnableJMimeMagic() {
+		return enableJMimeMagic;
+	}
+
+	/**
+	 * Determines if the JMimeMagicDetector should be operational (default: false)
+	 * 
+	 * @param enableJMimeMagic the enableJMimeMagic to set
+	 */
+	public void setEnableJMimeMagic(boolean enableJMimeMagic) {
+		this.enableJMimeMagic = enableJMimeMagic;
 	}
 }

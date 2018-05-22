@@ -107,7 +107,7 @@ public class AbstractConverterTest {
 	@Test
 	public final void testDoThrowException() {
 		Exception exception = new Exception();
-		MessageKeysEnum messageKey = MessageKeysEnum.CONVERSION_PROCESSING;
+		MessageKeysEnum messageKey = MessageKeysEnum.PDF_CONVERSION_PROCESSING;
 
 		try {
 			testConverter.doThrowException(exception, "filename.txt");

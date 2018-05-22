@@ -2,11 +2,17 @@ package gov.va.vetservices.lib.filemanager.impl;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.messages.MessageSeverity;
+import gov.va.ascent.framework.util.Defense;
 import gov.va.vetservices.lib.filemanager.api.FileManager;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerRequest;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
@@ -27,9 +33,21 @@ import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
  * In WSS there is a disconnect between PDFServiceImpl and PdfGenerator.
  * One objective of this class is to combine the best of both for consistent results.
  */
+@Component(FileManagerImpl.BEAN_NAME)
 public class FileManagerImpl implements FileManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileManagerImpl.class);
+
+	public static final String BEAN_NAME = "fileManagerImpl";
+
+	@Autowired
+	@Qualifier(InterrogateFile.BEAN_NAME)
+	InterrogateFile interrogateFile;
+
+	@PostConstruct
+	public void postConstruct() {
+		Defense.notNull(interrogateFile, "interrogateFile cannot be null.");
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -39,9 +57,7 @@ public class FileManagerImpl implements FileManager {
 	 */
 	@Override
 	public FileManagerResponse validateFileForPDFConversion(FileManagerRequest request) throws FileManagerException {
-		InterrogateFile interrogateFile = new InterrogateFile();
 		FileManagerResponse response = new FileManagerResponse();
-		response.setDoNotCacheResponse(true);
 
 		try {
 
@@ -52,6 +68,9 @@ public class FileManagerImpl implements FileManager {
 
 				// determine if the file can be converted to PDF
 				response = interrogateFile.canConvertToPdf(implDto);
+				if ((response != null) && (response.getFileDto() != null) && (response.getFileDto().getFilename() != null)) {
+					response.setSafeDatestampedFilename(FileManagerUtils.getSafeDatestampedFilename(implDto));
+				}
 			}
 
 		} catch (Throwable e) { // NOSONAR - catch everything here
@@ -63,6 +82,7 @@ public class FileManagerImpl implements FileManager {
 			}
 		}
 
+		response.setDoNotCacheResponse(true);
 		return response;
 	}
 
@@ -79,7 +99,6 @@ public class FileManagerImpl implements FileManager {
 		ConvertFile convertFile = new ConvertFile();
 		StampFile stampFile = new StampFile();
 		FileManagerResponse response = new FileManagerResponse();
-		response.setDoNotCacheResponse(true);
 
 		try {
 
@@ -106,6 +125,7 @@ public class FileManagerImpl implements FileManager {
 			}
 		}
 
+		response.setDoNotCacheResponse(true);
 		return response;
 	}
 
@@ -116,7 +136,7 @@ public class FileManagerImpl implements FileManager {
 	 * @param response the File Manager Response
 	 */
 	private void simpleInputValidation(FileManagerRequest request, FileManagerResponse response) {
-		ImplArgDto<FileManagerRequest> arg = new ImplArgDto<FileManagerRequest>(request);
+		ImplArgDto<FileManagerRequest> arg = new ImplArgDto<>(request);
 		List<Message> messages = (new SimpleRequestValidator()).validate(arg);
 
 		if ((messages != null) && !messages.isEmpty()) {

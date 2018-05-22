@@ -8,7 +8,7 @@ import gov.va.vetservices.lib.filemanager.pdf.stamp.dto.StampDataDto;
 
 /**
  * Adds a stamp to the file bytes.
- * 
+ *
  * @author aburkholder
  */
 public class StampFile {
@@ -35,7 +35,7 @@ public class StampFile {
 		}
 
 		Stamper stamper = new Stamper();
-		stamper.stamp(implDto.getDocMetadataDto(), new StampDataDto(), implDto.getFileDto().getFilebytes());
+		stamper.stamp(implDto.getDocMetadataDto(), new StampDataDto(), implDto.getFileDto());
 
 	}
 }

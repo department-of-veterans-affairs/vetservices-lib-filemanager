@@ -2,7 +2,8 @@ package gov.va.vetservices.lib.filemanager.impl.dto;
 
 /**
  * Enumeration of key forms.
- *
+ * 
+ * @deprecated
  * @author aburkholder
  */
 @Deprecated

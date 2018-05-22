@@ -1,12 +1,19 @@
 package gov.va.vetservices.lib.filemanager.util;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import org.apache.commons.lang3.StringUtils;
 
+import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerRequest;
+import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.DocMetadataDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 
 /**
  * Static utilities to help with file processing
@@ -14,6 +21,11 @@ import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
  * @author aburkholder
  */
 public class FileManagerUtils {
+
+	private static final String EMPTY_STRING = "";
+	private static final String SAFE_FILENAME_REGEX = "[^a-z0-9-_]";
+	private static final String SAFE_FILENAME_DATE_FORMAT = "yyyyMMdd";
+	private static final int SAFE_FILENAME_MAX_LEN = 245;
 
 	/**
 	 * Do not instantiate
@@ -132,5 +144,39 @@ public class FileManagerUtils {
 		}
 
 		return separated;
+	}
+
+	/**
+	 * Based on the filename provided in the implDto parameter,
+	 * gets a filename that is limited to a total of {@value #SAFE_FILENAME_MAX_LEN} characters,
+	 * lowercase, containing only characters {@value #SAFE_FILENAME_REGEX}, with the file name
+	 * terminated by the current date.
+	 *
+	 * @param implDto as constructed from the initial request
+	 * @return String the safe filename
+	 * @throws FileManagerException if implDto or fileDto within it are not provided
+	 */
+	public static String getSafeDatestampedFilename(ImplDto implDto) throws FileManagerException {
+		if ((implDto == null) || (implDto.getFileDto() == null) || StringUtils.isBlank(implDto.getFileDto().getFilename())) {
+			MessageKeysEnum key = MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY;
+			throw new FileManagerException(MessageSeverity.ERROR, key.getKey(), key.getMessage());
+		}
+
+		String filename = implDto.getFileDto().getFilename();
+
+		// lowercase
+		filename = filename.toLowerCase(Locale.US);
+		// simple ascii
+		final String today = new SimpleDateFormat(SAFE_FILENAME_DATE_FORMAT, Locale.US).format(new Date());
+		FilePartsDto parts = getFileParts(filename);
+		parts.setName(parts.getName().replaceAll(SAFE_FILENAME_REGEX, EMPTY_STRING));
+		parts.setExtension(parts.getExtension().replaceAll(SAFE_FILENAME_REGEX, EMPTY_STRING));
+		// truncate
+		int extPlusDotLen = parts.getExtension().length() + 1; // +1 for the period
+		int datePlusDashLen = today.length() + 1; // +1 for a dash
+		int maxNameLen = SAFE_FILENAME_MAX_LEN - extPlusDotLen - datePlusDashLen;
+		parts.setName(StringUtils.substring(parts.getName(), 0, maxNameLen - 1) + "-" + today); // -1 because substring is 0-based
+
+		return parts.getName() + "." + parts.getExtension();
 	}
 }

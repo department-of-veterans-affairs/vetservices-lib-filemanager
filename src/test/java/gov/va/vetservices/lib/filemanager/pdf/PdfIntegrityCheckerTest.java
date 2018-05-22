@@ -22,6 +22,8 @@ import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 
 public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 
+	// TODO rework this class
+
 	private PdfIntegrityChecker pdfIntegrityChecker = new PdfIntegrityChecker();
 
 	private Path goodPdfPath = Paths.get("files/application/pdf/IS_text-doc.pdf");
@@ -98,7 +100,7 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 		pdfReader = null;
 		try {
 			pdfReader = pdfIntegrityChecker.newPdfReader(new byte[] { 0 }, "bytes-is-char-zero");
-			assertNull(pdfReader);
+			fail("pdfIntegirtyChecker should have thrown and exception.");
 
 		} catch (FileManagerException e) {
 			e.printStackTrace();

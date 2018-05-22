@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -27,7 +28,7 @@ import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles({ AscentCommonSpringProfiles.PROFILE_REMOTE_CLIENT_IMPLS,
-	AscentCommonSpringProfiles.PROFILE_REMOTE_CLIENT_SIMULATORS })
+		AscentCommonSpringProfiles.PROFILE_REMOTE_CLIENT_SIMULATORS })
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class })
 @ContextConfiguration(inheritLocations = false, classes = { FileManagerConfig.class })
 public class InterrogateFileTest {
@@ -36,13 +37,13 @@ public class InterrogateFileTest {
 	private static final String STRING_FILENAME = "test.txt";
 	private static final String STRING_FILENAME_NO_NAME = ".txt";
 	private static final String STRING_FILENAME_NO_EXT = "test.";
-	private static final String STRING_FILENAME_MALFORMED = "test..txt";
 	private static final String STRING_FILENAME_UNSUPPORTED = "test.chat";
 
 	private static final String claimId = "11111";
 	private static final String docTypeId = "123";
 
 	@Autowired
+	@Qualifier(InterrogateFile.BEAN_NAME)
 	private InterrogateFile interrogateFile;
 
 	FileDto filedto;
@@ -72,9 +73,9 @@ public class InterrogateFileTest {
 
 		response = interrogateFile.canConvertToPdf(implDto);
 		assertNotNull(response);
-		// NOSONAR TODO line below will have to change when ConversionValidator is completed
-		assertTrue(!response.getMessages().isEmpty() && response.getMessages().get(0).getKey().equals("UNFINISHED.WORK"));
 		assertNull(response.getFileDto());
+
+		// NOSONAR TODO changes when ConversionValidator is completed
 
 		// sad
 
@@ -104,14 +105,6 @@ public class InterrogateFileTest {
 
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(STRING_FILENAME_NO_EXT);
-		implDto = FileManagerUtils.makeImplDto(request);
-		response = interrogateFile.canConvertToPdf(implDto);
-		assertNotNull(response);
-		assertTrue(response.getMessages() == null ? false : !response.getMessages().isEmpty());
-		assertNull(response.getFileDto());
-
-		filedto.setFilebytes(STRING_BYTES);
-		filedto.setFilename(STRING_FILENAME_MALFORMED);
 		implDto = FileManagerUtils.makeImplDto(request);
 		response = interrogateFile.canConvertToPdf(implDto);
 		assertNotNull(response);

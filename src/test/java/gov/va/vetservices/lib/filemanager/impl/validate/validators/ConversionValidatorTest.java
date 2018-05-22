@@ -1,6 +1,6 @@
 package gov.va.vetservices.lib.filemanager.impl.validate.validators;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -46,7 +46,7 @@ public class ConversionValidatorTest extends AbstractFileHandler {
 		ImplDto implDto = FileManagerUtils.makeImplDto(request);
 		List<Message> messages = conversionValidator.validate(new ImplArgDto<ImplDto>(implDto));
 		// NOSONAR TODO when code is implemented, fix this test and add bad tests
-		assertNotNull(messages);
+		assertNull(messages);
 	}
 
 }

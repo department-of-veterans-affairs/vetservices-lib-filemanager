@@ -1,5 +1,6 @@
 package gov.va.vetservices.lib.filemanager.impl.validate.validators;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -58,16 +59,14 @@ public class FilenameValidator implements Validator<ImplDto> {
 	@Override
 	public List<Message> validate(ImplArgDto<ImplDto> toValidate) {  // NOSONAR - shut up complaint about cyclomatic complexity
 		if ((toValidate == null) || (toValidate.getValue() == null)) {
-			throw new IllegalArgumentException("Impl Dto cannot be null.");
+			MessageKeysEnum msg = MessageKeysEnum.UNEXPECTED_ERROR;
+			Message message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
+			return Arrays.asList(new Message[] { message });
 		}
 
 		ImplDto implDto = toValidate.getValue();
 
-		if (implDto == null) {
-
-			throw new IllegalArgumentException("Impl Dto cannot be null.");
-
-		} else if (implDto.getFileDto() == null) {
+		if (implDto.getFileDto() == null) {
 
 			addError(implDto, MessageKeysEnum.FILE_DTO_NULL);
 
@@ -81,8 +80,8 @@ public class FilenameValidator implements Validator<ImplDto> {
 
 			addError(implDto, MessageKeysEnum.FILE_NAME_TOO_LONG);
 
-		} else if (StringUtils.startsWithAny(implDto.getFileParts().getName(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)
-				|| StringUtils.endsWithAny(implDto.getFileParts().getName(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)) {
+		} else if (StringUtils.containsAny(implDto.getFileParts().getName(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)
+				|| StringUtils.containsAny(implDto.getFileParts().getName(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)) {
 
 			// NOSONAR TODO need to add character filter validations from wss web and service regex validations
 			addError(implDto, MessageKeysEnum.FILE_NAME_MALFORMED);

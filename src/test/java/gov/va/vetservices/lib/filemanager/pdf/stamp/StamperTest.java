@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
 import gov.va.vetservices.lib.filemanager.exception.PdfStamperException;
 import gov.va.vetservices.lib.filemanager.impl.dto.DocMetadataDto;
@@ -33,9 +34,12 @@ public class StamperTest extends AbstractFileHandler {
 		stampDataDto.setFontName(FontNameEnum.HELVETICA);
 		stampDataDto.setFontSizeInPoints(12);
 		stampDataDto.setStampsEnum(StampsEnum.CLAIM);
+		FileDto fileDto = new FileDto();
+		fileDto.setFilename(Paths.get(pdfPath).getFileName().toString());
+		fileDto.setFilebytes(bytes);
 
 		try {
-			byte[] stamped = stamper.stamp(metadata, stampDataDto, bytes);
+			byte[] stamped = stamper.stamp(metadata, stampDataDto, fileDto);
 			assertNotNull(stamped);
 
 		} catch (PdfStamperException e) {
@@ -56,9 +60,12 @@ public class StamperTest extends AbstractFileHandler {
 		stampDataDto.setFontName(FontNameEnum.HELVETICA);
 		stampDataDto.setFontSizeInPoints(12);
 		stampDataDto.setStampsEnum(StampsEnum.CLAIM);
+		FileDto fileDto = new FileDto();
+		fileDto.setFilename("bad-bytes.pdf");
+		fileDto.setFilebytes(bytes);
 
 		try {
-			byte[] stamped = stamper.stamp(metadata, stampDataDto, bytes);
+			byte[] stamped = stamper.stamp(metadata, stampDataDto, fileDto);
 			fail("Exception should have been thrown, stampped is " + stamped);
 
 		} catch (Throwable e) {

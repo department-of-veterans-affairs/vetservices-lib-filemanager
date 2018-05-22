@@ -7,7 +7,18 @@ import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
+import gov.va.ascent.framework.config.AscentCommonSpringProfiles;
+import gov.va.vetservices.lib.filemanager.FileManagerConfig;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerRequest;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
@@ -15,6 +26,11 @@ import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
 //import gov.va.vetservices.lib.filemanager.api.v1.transfer.DocTypeId;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 
+@RunWith(SpringRunner.class)
+@ActiveProfiles({ AscentCommonSpringProfiles.PROFILE_REMOTE_CLIENT_IMPLS,
+		AscentCommonSpringProfiles.PROFILE_REMOTE_CLIENT_SIMULATORS })
+@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class })
+@ContextConfiguration(inheritLocations = false, classes = { FileManagerConfig.class })
 public class FileManagerImplTest {
 
 	private final static byte[] STRING_BYTES = "This is a test.".getBytes();
@@ -23,8 +39,11 @@ public class FileManagerImplTest {
 	private static final String claimId = "11111";
 	private static final String docTypeId = "123";
 
-	private FileManagerImpl fileManagerImpl = new FileManagerImpl();
-	FileManagerResponse response;
+	@Autowired
+	@Qualifier(FileManagerImpl.BEAN_NAME)
+	private FileManagerImpl fileManagerImpl;
+
+	private FileManagerResponse response;
 
 	@Before
 	public void setUp() {
@@ -32,7 +51,7 @@ public class FileManagerImplTest {
 	}
 
 	@Test
-	public void testValidateFileForPDFConversionTest() {
+	public void testValidateFileForPDFConversion() {
 		FileDto fileDto = null;
 
 		// happy
@@ -56,10 +75,11 @@ public class FileManagerImplTest {
 			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
 		assertNotNull(response);
-		assertNotNull(response.getMessages());
-		// NOSONAR TODO line below will have to change when ConversionValidator is completed
-		assertTrue(!response.getMessages().isEmpty());// && response.getMessages().get(0).getKey().equals("UNFINISHED.WORK"));
+		assertTrue(response.getMessages().isEmpty());
 		assertNull(response.getFileDto());
+		assertNull(response.getSafeDatestampedFilename());
+		assertTrue(response.isDoNotCacheResponse());
+		// NOSONAR TODO changes when ConversionValidator is completed
 
 		// sad
 
@@ -84,7 +104,7 @@ public class FileManagerImplTest {
 		}
 		assertNotNull(response);
 		assertNotNull(response.getMessages());
-		assertTrue(!response.getMessages().isEmpty());
+		assertTrue(response.getMessages().isEmpty());
 
 		fileDto.setFilebytes(null);
 		fileDto.setFilename(STRING_FILENAME);
@@ -112,7 +132,7 @@ public class FileManagerImplTest {
 	}
 
 	@Test
-	public void testConvertToPdfTest() {
+	public void testConvertToPdf() {
 		FileDto fileDto = null;
 
 		// Happy

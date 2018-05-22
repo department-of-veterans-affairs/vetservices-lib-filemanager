@@ -71,6 +71,11 @@ public class ByteArrayValidatorTest {
 
 		// sad
 
+		arg = null;
+		messages = byteArrayValidator.validate(arg);
+		assertNotNull(messages);
+		assertTrue(MessageKeysEnum.UNEXPECTED_ERROR.getKey().equals(messages.get(0).getKey()));
+
 		arg = new ImplArgDto<>(bytesEmpty);
 		messages = byteArrayValidator.validate(arg);
 		assertNotNull(messages);

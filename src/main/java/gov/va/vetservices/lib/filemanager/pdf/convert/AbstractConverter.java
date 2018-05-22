@@ -77,7 +77,7 @@ public abstract class AbstractConverter {
 	 * @throws PdfConverterException the PDF Conversion Processing exception
 	 */
 	protected void doThrowException(Throwable e, String filename) throws PdfConverterException {
-		MessageKeysEnum messageKeys = MessageKeysEnum.CONVERSION_PROCESSING;
+		MessageKeysEnum messageKeys = MessageKeysEnum.PDF_CONVERSION_PROCESSING;
 
 		LOGGER.error(messageKeys.getKey() + ": " + messageKeys.getMessage(), e);
 		throw new PdfConverterException(e, MessageSeverity.ERROR, messageKeys.getKey(), messageKeys.getMessage(), filename,

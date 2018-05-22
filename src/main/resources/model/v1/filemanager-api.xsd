@@ -71,6 +71,11 @@
 							<xs:documentation>The filename, and bytes if appropriate.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:element name="safeDatestampedFilename" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Filename with only [A-Za-z0-9_-] chars, truncated to 126 with yyyyMMdd datestamp on the end.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

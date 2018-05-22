@@ -3,12 +3,15 @@ package gov.va.vetservices.lib.filemanager.impl.validate.validators;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.messages.MessageSeverity;
+import gov.va.ascent.framework.util.Defense;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
@@ -27,7 +30,12 @@ public class ByteArrayValidator implements Validator<byte[]> {
 
 	@Autowired
 	@Qualifier(FileManagerProperties.BEAN_NAME)
-	private FileManagerProperties properties;
+	private FileManagerProperties fileManagerProperties;
+
+	@PostConstruct
+	public void postConstruct() {
+		Defense.notNull(fileManagerProperties);
+	}
 
 	/**
 	 * <p>
@@ -42,13 +50,15 @@ public class ByteArrayValidator implements Validator<byte[]> {
 	 */
 	@Override
 	public List<Message> validate(ImplArgDto<byte[]> toValidate) {
-		if ((toValidate == null) || (toValidate.getValue() == null) || (toValidate.getValue().length < 1)) {
-			throw new IllegalArgumentException("Byte array cannot be null.");
+		Message message = null;
+
+		if (toValidate == null) {
+			MessageKeysEnum msg = MessageKeysEnum.UNEXPECTED_ERROR;
+			message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
+			return Arrays.asList(new Message[] { message });
 		}
 
 		byte[] bytes = toValidate.getValue();
-
-		Message message = null;
 
 		if ((bytes == null) || (bytes.length < 1)) {
 			MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY;
@@ -68,6 +78,6 @@ public class ByteArrayValidator implements Validator<byte[]> {
 	 * @return int the number of bytes
 	 */
 	protected int maxFileBytes() {
-		return properties.getMaxFileBytes();
+		return fileManagerProperties.getMaxFileBytes();
 	}
 }

@@ -12,7 +12,6 @@ public class StampDataDto {
 
 	private FontNameEnum fontNameEnum = FontNameEnum.COURIER;
 	private int fontSizeInPoints = 10;
-//	private String stampText;
 	private StampsEnum stampsEnum;
 
 	/**
@@ -50,24 +49,6 @@ public class StampDataDto {
 	public void setFontSizeInPoints(int fontSizeInPoints) {
 		this.fontSizeInPoints = fontSizeInPoints;
 	}
-
-//	/**
-//	 * Returns the text that will be printed onto the PDF header area.
-//	 *
-//	 * @return the stampText
-//	 */
-//	public String getStampText() {
-//		return stampText;
-//	}
-//
-//	/**
-//	 * Sets the text that will be printed onto the PDF header area.
-//	 *
-//	 * @param stampText the stamp text to set
-//	 */
-//	public void setStampText(String stampText) {
-//		this.stampText = stampText;
-//	}
 
 	/**
 	 * Returns the Stamps enumeration that defines the text to be printed onto the PDF header area.

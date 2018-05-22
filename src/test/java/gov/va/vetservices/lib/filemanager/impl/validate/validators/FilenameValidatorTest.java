@@ -3,7 +3,6 @@ package gov.va.vetservices.lib.filemanager.impl.validate.validators;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -36,7 +35,7 @@ import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 @ActiveProfiles({ AscentCommonSpringProfiles.PROFILE_REMOTE_CLIENT_IMPLS,
 		AscentCommonSpringProfiles.PROFILE_REMOTE_CLIENT_SIMULATORS })
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class })
-@ContextConfiguration(inheritLocations = false, initializers = {}, classes = { FileManagerConfig.class })
+@ContextConfiguration(inheritLocations = false, classes = { FileManagerConfig.class })
 public class FilenameValidatorTest {
 
 	private static final String FILENAME = "test.txt";
@@ -56,8 +55,8 @@ public class FilenameValidatorTest {
 
 	@Before
 	public void setUp() throws Exception {
-		FILENAME_TOO_LONG = Strings.repeat("-", 255); // fileManagerProperties.getMaxFilenameLen()) + ".pdf";
-		FILENAME_LONG = Strings.repeat("-", 256); // fileManagerProperties.getMaxFilenameLen() - 4) + ".pdf";
+		FILENAME_TOO_LONG = Strings.repeat("x", 256 - 4) + ".txt"; // fileManagerProperties.getMaxFilenameLen()) + ".pdf";
+		FILENAME_LONG = Strings.repeat("g", 255 - 4) + ".txt"; // fileManagerProperties.getMaxFilenameLen() - 4) + ".pdf";
 	}
 
 	@After
@@ -99,24 +98,16 @@ public class FilenameValidatorTest {
 		messages = filenameValidator.validate(arg);
 		assertNotNull(messages);
 
-		try {
-			messages = filenameValidator.validate(null);
-			fail("filenameValidator.validate(null) should have thrown exception.");
-		} catch (Throwable e) {
-			e.printStackTrace();
-			assertNotNull(e);
-			assertTrue(IllegalArgumentException.class.equals(e.getClass()));
-		}
+		messages = filenameValidator.validate(null);
+		assertNotNull(messages);
+		assertTrue(messages.size() == 1);
+		assertTrue(MessageKeysEnum.UNEXPECTED_ERROR.getKey().equals(messages.get(0).getKey()));
 
 		arg = new ImplArgDto<>(null);
-		try {
-			messages = filenameValidator.validate(null);
-			fail("filenameValidator.validate(null) should have thrown exception.");
-		} catch (Throwable e) {
-			e.printStackTrace();
-			assertNotNull(e);
-			assertTrue(IllegalArgumentException.class.equals(e.getClass()));
-		}
+		messages = filenameValidator.validate(null);
+		assertNotNull(messages);
+		assertTrue(messages.size() > 0);
+		assertTrue(MessageKeysEnum.UNEXPECTED_ERROR.getKey().equals(messages.get(0).getKey()));
 
 		arg = new ImplArgDto<>(FileManagerUtils.makeImplDto(null));
 		messages = filenameValidator.validate(arg);

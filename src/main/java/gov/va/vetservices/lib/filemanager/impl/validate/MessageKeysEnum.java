@@ -68,13 +68,15 @@ public enum MessageKeysEnum {
 	PDF_LOCKED("filemanager.pdf.locked", "The file {0} is locked with Adobe encryption. Unlock the PDF file."),
 	/** The PDF is locked with Adobe encryption. <b>Args:</b> {@code filename} */
 	PDF_TAMPERED("filemanager.pdf.tampered", "The file {0} is signed and has been tampered with."),
-	/** PDF is unreadable. <b>Args:</b> {@code filename} */
-	PDF_UNREADABLE("filemanager.pdf.unreadable", "The file {0} cannot be read. It may be corrupt or tampered with."),
+	/** PDF is unreadable. <b>Args:</b> {@code filename, reason (corrupt, tampered with, etc)} */
+	PDF_UNREADABLE("filemanager.pdf.unreadable", "The file {0} cannot be read. The file is {1}."),
 	/** The image is not convertible for PDF. <b>Args:</b> {@code filename, itextErrorMessage} */
 	IMAGE_ITEXT_NOT_CONVERTIBLE("filemanager.pdf.image.not.consumable", "The file {0} cannot be used in a PDF. Error: {1}"),
 	/** Problem with internal (iText) processing during conversion. <b>Args:</b> {@code filename, itextErrorMessage} */
-	CONVERSION_PROCESSING("filemanager.pdf.conversion.processing",
+	PDF_CONVERSION_PROCESSING("filemanager.pdf.conversion.processing",
 			"The file {0} cannot be converted to PDF due to internal processing issue. Error: {1}"),
+	/** Problem with internal (iText) processing during stamping. <b>Args:</b> {@code filename, itextErrorMessage} */
+	PDF_STAMPING("filemanager.pdf.stamping", "Could not stamp file {0}. Error: {1}"),
 	/** Internal FileManager issues that cannot be resolved at runtime */
 	FILEMANAGER_ISSUE("filemanager.internal.issue", "Internal issue occurred. Please check the application logs.");
 
@@ -128,7 +130,12 @@ public enum MessageKeysEnum {
 		return FileManagerProperties.CONVERTIBLE_FILE_EXTENSIONS_STRING;
 	}
 
-	private void setFileManagerProperties(FileManagerProperties fileManagerProperties) {
+	/**
+	 * Set the fileManagerProperties value from the FileManagerPropertiesInjector inner class.
+	 *
+	 * @param fileManagerProperties
+	 */
+	private void setFileManagerProperties(FileManagerProperties fileManagerProperties) { // NOSONAR must be outside the injector
 		this.fileManagerProperties = fileManagerProperties;
 	}
 

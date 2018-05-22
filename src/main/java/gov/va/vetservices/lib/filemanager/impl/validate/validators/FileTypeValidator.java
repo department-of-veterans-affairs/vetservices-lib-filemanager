@@ -2,6 +2,7 @@ package gov.va.vetservices.lib.filemanager.impl.validate.validators;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.activation.MimeType;
@@ -66,8 +67,11 @@ public class FileTypeValidator implements Validator<ImplDto> {
 	@Override
 	public List<Message> validate(ImplArgDto<ImplDto> toValidate) {
 		if ((toValidate == null) || (toValidate.getValue() == null)) {
-			throw new IllegalArgumentException("Impl Dto cannot be null.");
+			MessageKeysEnum msg = MessageKeysEnum.UNEXPECTED_ERROR;
+			Message message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
+			return Arrays.asList(new Message[] { message });
 		}
+		
 		ImplDto implDto = toValidate.getValue();
 
 		MimeType detectedMimetype = null;

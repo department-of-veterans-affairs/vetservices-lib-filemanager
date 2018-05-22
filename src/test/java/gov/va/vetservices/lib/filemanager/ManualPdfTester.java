@@ -11,13 +11,19 @@ import java.util.List;
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import com.lowagie.text.pdf.AcroFields;
+import com.lowagie.text.pdf.PRAcroForm;
+import com.lowagie.text.pdf.PdfArray;
+import com.lowagie.text.pdf.PdfDictionary;
+import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfReader;
 
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
 import gov.va.vetservices.lib.filemanager.impl.dto.DocMetadataDto;
 import gov.va.vetservices.lib.filemanager.pdf.stamp.Stamper;
@@ -34,6 +40,8 @@ import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
  */
 public class ManualPdfTester extends AbstractFileHandler {
 
+	private static final boolean printStackTrace = false;
+
 	private static final String claimId = "11111";
 	private static final String docTypeId = "123";
 
@@ -45,7 +53,6 @@ public class ManualPdfTester extends AbstractFileHandler {
 	public void tearDown() throws Exception {
 	}
 
-	@Ignore
 	@Test
 	public final void test() {
 		Stamper stamper = new Stamper();
@@ -55,7 +62,6 @@ public class ManualPdfTester extends AbstractFileHandler {
 		try {
 			mimetype = new MimeType("application/pdf");
 		} catch (MimeTypeParseException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
 		List<File> files = super.listFilesByMimePath(mimetype);
@@ -68,6 +74,7 @@ public class ManualPdfTester extends AbstractFileHandler {
 						+ file.getPath());
 			}
 
+			System.out.println(StringUtils.repeat("-", 80));
 			System.out.println("File: " + file.getName());
 			byte[] bytes;
 			try {
@@ -76,6 +83,8 @@ public class ManualPdfTester extends AbstractFileHandler {
 				try {
 					pdfReader = new PdfReader(bytes);
 					// built in tests
+					int fileLen = pdfReader.getFileLength();
+					System.out.println(".. file length:" + fileLen);
 					boolean is128Key = pdfReader.is128Key();
 					System.out.println(".. is128Key:" + is128Key);
 					boolean isAppendable = pdfReader.isAppendable();
@@ -105,6 +114,49 @@ public class ManualPdfTester extends AbstractFileHandler {
 					System.out.println(".. metadata:" + metadata); // new String(metadata));
 					char pdfVersion = pdfReader.getPdfVersion();
 					System.out.println(".. pdfVersion:" + pdfVersion);
+					AcroFields acroFields = pdfReader.getAcroFields();
+					System.out.println(".. signature names: "
+							+ ((acroFields != null) && (acroFields.getSignatureNames() != null) ? acroFields.getSignatureNames().size()
+									: "null"));
+					if ((acroFields != null) && (acroFields.getSignatureNames() != null)) {
+						for (Object signame : acroFields.getSignatureNames()) {
+							System.out.println("...... " + (signame == null ? "null" : (String) signame));
+						}
+					}
+					PRAcroForm acroForm = pdfReader.getAcroForm();
+					System.out
+							.println(".. acroForm can be in ObjectStream: " + (acroForm == null ? "null" : acroForm.canBeInObjStm()));
+					PdfDictionary dict = pdfReader.getCatalog();
+					System.out.println(".. dictionary key/value pairs: " + (dict == null ? "null" : dict.size()));
+					if (dict != null) {
+						for (Object key : dict.getKeys()) {
+							System.out.println("...... " + ((PdfName) key).toString() + " (type " + ((PdfName) key).type() + "): "
+									+ StringUtils.replace(dict.get((PdfName) key).toString(), "\n", "_"));
+						}
+					}
+					PdfDictionary trailer = pdfReader.getTrailer();
+					System.out.println(".. trailer: key/value pairs: " + (trailer == null ? "null" : trailer.size()));
+					if (trailer != null) {
+						for (Object key : trailer.getKeys()) {
+							System.out.println("...... " + ((PdfName) key).toString() + " (type " + ((PdfName) key).type() + "): "
+									+ StringUtils.replace(trailer.get((PdfName) key).toString(), "\n", "_"));
+						}
+					}
+					int xrefs = pdfReader.getXrefSize();
+					System.out.println(".. xref number: " + xrefs);
+					@SuppressWarnings("unchecked")
+					HashMap<PdfName, PdfArray> namedest = pdfReader.getNamedDestination();
+					System.out.println(".. named Destinations: " + (namedest == null ? "null" : namedest.size()));
+					if (namedest != null) {
+						for (PdfName name : namedest.keySet()) {
+							System.out.println("...... " + name.toString() + ": " + namedest.get(name));
+						}
+					}
+					int numPages = pdfReader.getNumberOfPages();
+					System.out.println(".. number of pages: " + numPages);
+					int simpleViewerPrefs = pdfReader.getSimpleViewerPreferences();
+					System.out.println(".. Simple Viewer Prefs: " + simpleViewerPrefs);
+
 					// attempt to modify
 					// PRIndirectReference addPdfObject = pdfReader.addPdfObject(new PdfObject());
 					pdfReader.setAppendable(true);
@@ -114,29 +166,63 @@ public class ManualPdfTester extends AbstractFileHandler {
 					byte[] pageContent = pdfReader.getPageContent(1);
 					System.out.println(".. pagecontent: " + new String(pageContent));
 
-					DocMetadataDto docMetadata = new DocMetadataDto();
-					docMetadata.setClaimId(claimId);
-					docMetadata.setDocTypeId(docTypeId);
-					docMetadata.setProcessType(ProcessType.CLAIMS_526);
-					byte[] pdf = stamper.stamp(docMetadata, stampDataDto, bytes);
-					super.saveFile(pdf, file.getName());
 				} catch (Throwable e) {
-					System.out.println("** ERROR " + e.getClass().getSimpleName() + ": " + e.getMessage());
+					System.out.println("** pdfReader ERROR " + e.getClass().getSimpleName() + ": "
+							+ StringUtils.substringBefore(e.getMessage(), "\n"));
+					if (printStackTrace) {
+						e.printStackTrace();
+					}
 				} finally {
 					if (pdfReader != null) {
 						try {
 							pdfReader.close();
 						} catch (Throwable e) {
-							System.out.println("** ERROR " + e.getClass().getSimpleName() + ": " + e.getMessage());
+							System.out.println("** Closing pdfReader ERROR " + e.getClass().getSimpleName() + ": "
+									+ StringUtils.substringBefore(e.getMessage(), "\n"));
 						}
 					}
-					bytes = null;
+				}
+				byte[] pdf = null;
+				try {
+					DocMetadataDto docMetadata = new DocMetadataDto();
+					docMetadata.setClaimId(claimId);
+					docMetadata.setDocTypeId(docTypeId);
+					docMetadata.setProcessType(ProcessType.CLAIMS_526);
+					FileDto fileDto = new FileDto();
+					fileDto.setFilename(file.getName());
+					fileDto.setFilebytes(bytes);
+					pdf = stamper.stamp(docMetadata, stampDataDto, fileDto);
+					System.out.println(".. stamped " + file.getName());
+				} catch (Throwable e) {
+					System.out.println("** Stamper ERROR " + e.getClass().getSimpleName() + ": "
+							+ StringUtils.substringBefore(e.getMessage(), "\n"));
+					if (printStackTrace) {
+						e.printStackTrace();
+					}
+				}
+				try {
+					if (pdf != null) {
+						super.saveFile(pdf, file.getName());
+						System.out.println(".. saved " + file.getName());
+					}
+				} catch (Throwable e) {
+					System.out.println("** save ERROR " + e.getClass().getSimpleName() + ": "
+							+ StringUtils.substringBefore(e.getMessage(), "\n"));
+					if (printStackTrace) {
+						e.printStackTrace();
+					}
 				}
 
 			} catch (Throwable e) {
-				System.out.println("** ERROR " + e.getClass().getSimpleName() + ": " + e.getMessage());
+				System.out.println("** readAllBytes ERROR " + e.getClass().getSimpleName() + ": "
+						+ StringUtils.substringBefore(e.getMessage(), "\n"));
+				if (printStackTrace) {
+					e.printStackTrace();
+				}
+			} finally {
+				bytes = null;
 			}
-		}
+		} // end for(){
 		assertTrue(true);
 	}
 
