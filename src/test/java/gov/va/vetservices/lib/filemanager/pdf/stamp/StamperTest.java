@@ -33,7 +33,7 @@ public class StamperTest extends AbstractFileHandler {
 		StampDataDto stampDataDto = new StampDataDto();
 		stampDataDto.setFontName(FontNameEnum.HELVETICA);
 		stampDataDto.setFontSizeInPoints(12);
-		stampDataDto.setStampsEnum(StampsEnum.CLAIM);
+		stampDataDto.setProcessType(ProcessType.CLAIMS_526);
 		FileDto fileDto = new FileDto();
 		fileDto.setFilename(Paths.get(pdfPath).getFileName().toString());
 		fileDto.setFilebytes(bytes);
@@ -59,7 +59,7 @@ public class StamperTest extends AbstractFileHandler {
 		StampDataDto stampDataDto = new StampDataDto();
 		stampDataDto.setFontName(FontNameEnum.HELVETICA);
 		stampDataDto.setFontSizeInPoints(12);
-		stampDataDto.setStampsEnum(StampsEnum.CLAIM);
+		stampDataDto.setProcessType(ProcessType.CLAIMS_526);
 		FileDto fileDto = new FileDto();
 		fileDto.setFilename("bad-bytes.pdf");
 		fileDto.setFilebytes(bytes);

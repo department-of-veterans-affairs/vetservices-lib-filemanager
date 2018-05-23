@@ -60,14 +60,14 @@ public enum StampsEnum {
 	 * @return String the formatted stamp text
 	 * @throws IllegalArgument exception if the processType or claimId are null or empty
 	 */
-	public String getStampText(ProcessType processType, String claimId) {
+	public static String getStampText(ProcessType processType, String claimId) {
 		if (processType == null) {
-			throw new IllegalArgumentException("PDF header stamp requires a Claim ID.");
+			throw new IllegalArgumentException("PDF header stamp requires a ProcessType.");
 		}
 		for (StampsEnum value : StampsEnum.values()) {
 			for (ProcessType process : value.getProcessTypes()) {
 				if (process.equals(processType)) {
-					return getFormattedText(claimId);
+					return value.getFormattedText(claimId);
 				}
 			}
 		}

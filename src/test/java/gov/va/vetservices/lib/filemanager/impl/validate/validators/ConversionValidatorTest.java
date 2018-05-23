@@ -1,6 +1,8 @@
 package gov.va.vetservices.lib.filemanager.impl.validate.validators;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -49,4 +51,15 @@ public class ConversionValidatorTest extends AbstractFileHandler {
 		assertNull(messages);
 	}
 
+	@Test
+	public final void testValidate_Sad() throws IOException {
+		List<Message> messages = conversionValidator.validate(null);
+		assertNotNull(messages);
+		assertTrue(messages.size() > 0);
+
+		messages = conversionValidator.validate(new ImplArgDto<ImplDto>(null));
+		assertNotNull(messages);
+		assertTrue(messages.size() > 0);
+
+	}
 }

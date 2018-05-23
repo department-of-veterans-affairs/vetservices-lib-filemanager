@@ -6,14 +6,17 @@ import java.util.List;
 
 import gov.va.ascent.framework.messages.Message;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
 
 /**
  * A Data Transfer Object used by {@link ImplDto} for transporting data across the layer boundaries between the API and business impls.
  */
 public class ImplDto {
 	protected DocMetadataDto docMetadataDto;
-	protected FileDto fileDto;
+	protected FileDto originalFileDto;
+	protected FileDto pdfFileDto;
 	protected FilePartsDto fileParts;
+	protected ProcessType processType;
 	protected List<Message> messages = new ArrayList<>();
 
 	/**
@@ -35,8 +38,8 @@ public class ImplDto {
 	 *
 	 * @return FileDto the dto
 	 */
-	public FileDto getFileDto() {
-		return fileDto;
+	public FileDto getOriginalFileDto() {
+		return originalFileDto;
 	}
 
 	/**
@@ -44,8 +47,8 @@ public class ImplDto {
 	 *
 	 * @param fileDto the FileDto
 	 */
-	public void setFileDto(FileDto fileDto) {
-		this.fileDto = fileDto;
+	public void setOriginalFileDto(FileDto fileDto) {
+		this.originalFileDto = fileDto;
 	}
 
 	/**
@@ -85,6 +88,34 @@ public class ImplDto {
 	 */
 	public void addMessages(List<Message> messages) {
 		this.messages.addAll(messages);
+	}
+
+	/**
+	 * @return the pdfFileDto
+	 */
+	public FileDto getPdfFileDto() {
+		return pdfFileDto;
+	}
+
+	/**
+	 * @param pdfFileDto the pdfFileDto to set
+	 */
+	public void setPdfFileDto(FileDto pdfFileDto) {
+		this.pdfFileDto = pdfFileDto;
+	}
+
+	/**
+	 * @return the processType
+	 */
+	public ProcessType getProcessType() {
+		return processType;
+	}
+
+	/**
+	 * @param processType the processType to set
+	 */
+	public void setProcessType(ProcessType processType) {
+		this.processType = processType;
 	}
 
 }

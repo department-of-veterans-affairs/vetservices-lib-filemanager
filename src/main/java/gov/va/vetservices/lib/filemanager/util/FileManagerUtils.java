@@ -72,9 +72,10 @@ public class FileManagerUtils {
 			implDto.setDocMetadataDto(metadata);
 			// file Dto
 			if (request.getFileDto() != null) { // should never happen, but avoid null pointers
-				implDto.setFileDto(request.getFileDto());
+				implDto.setOriginalFileDto(request.getFileDto());
 				implDto.setFileParts(getFileParts(request.getFileDto().getFilename()));
 			}
+			implDto.setProcessType(request.getProcessType());
 		}
 		return implDto;
 	}
@@ -88,10 +89,9 @@ public class FileManagerUtils {
 	 * @return FilePartsDto
 	 */
 	public static final FilePartsDto getFileParts(String filename) {
-		FilePartsDto fileParts = null;
+		FilePartsDto fileParts = new FilePartsDto();
 
 		if (StringUtils.isNotBlank(filename)) {
-			fileParts = new FilePartsDto();
 
 			String[] filenames = splitOnLastOf(filename, '.');
 
@@ -147,7 +147,7 @@ public class FileManagerUtils {
 	}
 
 	/**
-	 * Based on the filename provided in the implDto parameter,
+	 * <b>Based on the implDto.getPdfFileDto()</b> filename provided in the implDto parameter,
 	 * gets a filename that is limited to a total of {@value #SAFE_FILENAME_MAX_LEN} characters,
 	 * lowercase, containing only characters {@value #SAFE_FILENAME_REGEX}, with the file name
 	 * terminated by the current date.
@@ -157,12 +157,12 @@ public class FileManagerUtils {
 	 * @throws FileManagerException if implDto or fileDto within it are not provided
 	 */
 	public static String getSafeDatestampedFilename(ImplDto implDto) throws FileManagerException {
-		if ((implDto == null) || (implDto.getFileDto() == null) || StringUtils.isBlank(implDto.getFileDto().getFilename())) {
+		if ((implDto == null) || (implDto.getPdfFileDto() == null) || StringUtils.isBlank(implDto.getPdfFileDto().getFilename())) {
 			MessageKeysEnum key = MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY;
 			throw new FileManagerException(MessageSeverity.ERROR, key.getKey(), key.getMessage());
 		}
 
-		String filename = implDto.getFileDto().getFilename();
+		String filename = implDto.getPdfFileDto().getFilename();
 
 		// lowercase
 		filename = filename.toLowerCase(Locale.US);

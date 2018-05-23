@@ -1,6 +1,7 @@
 package gov.va.vetservices.lib.filemanager.impl;
 
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
+import org.apache.commons.lang3.StringUtils;
+
 import gov.va.vetservices.lib.filemanager.exception.PdfStamperException;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.pdf.stamp.Stamper;
@@ -20,22 +21,30 @@ public class StampFile {
 	 */
 
 	/**
-	 * Stamps the header area of a PDF file with derived text.
+	 * Stamps the header area of a PDF file with derived text.<br/>
+	 * <b>The file to be stamped must be in implDto.getPdfFileDto()</b>.
+	 * The stamped PDF will be returned on the implDto parameter in the same field - implDto.getPdfFileDto().
+	 * <p>
+	 * Error messages are returned on the implDto parameter.
 	 *
 	 * @param implDto the metadata and file
 	 * @param response any messages
 	 * @throws PdfStamperException caught exceptions during stamping
 	 */
-	public void stampPdf(ImplDto implDto, FileManagerResponse response) throws PdfStamperException {
+	public void stampPdf(ImplDto implDto) throws PdfStamperException {
 		if (implDto == null) {
 			throw new IllegalArgumentException("ImplDto is not an optional parameter.");
 		}
-		if (response == null) {
-			throw new IllegalArgumentException("FileManagerResponse is not an optional parameter.");
-		}
 
 		Stamper stamper = new Stamper();
-		stamper.stamp(implDto.getDocMetadataDto(), new StampDataDto(), implDto.getFileDto());
+		StampDataDto stampData = new StampDataDto();
+
+		if (StringUtils.isNotBlank(implDto.getDocMetadataDto().getClaimId())) {
+			stampData.setProcessType(implDto.getProcessType());
+
+			byte[] stampedPdf = stamper.stamp(implDto.getDocMetadataDto(), stampData, implDto.getPdfFileDto());
+			implDto.getPdfFileDto().setFilebytes(stampedPdf);
+		}
 
 	}
 }

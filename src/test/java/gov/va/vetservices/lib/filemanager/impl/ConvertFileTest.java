@@ -51,60 +51,60 @@ public class ConvertFileTest {
 		implDto = FileManagerUtils.makeImplDto(request);
 		assertNotNull(implDto);
 
-		response = convertFile.convertToPdf(implDto);
-		assertNotNull(response);
-		assertTrue(response.getMessages().isEmpty());
-		assertNotNull(response.getFileDto());
+		convertFile.convertToPdf(implDto);
+		assertNotNull(implDto);
+		assertTrue(implDto.getMessages().isEmpty());
+		assertNotNull(implDto.getPdfFileDto());
 
 		// sad
 
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(null);
 		implDto = FileManagerUtils.makeImplDto(request);
-		response = convertFile.convertToPdf(implDto);
-		assertNotNull(response);
-		assertTrue(response.getMessages() == null ? false : !response.getMessages().isEmpty());
-		assertNull(response.getFileDto());
+		convertFile.convertToPdf(implDto);
+		assertNotNull(implDto);
+		assertTrue(!implDto.getMessages().isEmpty());
+		assertNull(implDto.getPdfFileDto());
 
 		filedto.setFilebytes(null);
 		filedto.setFilename(STRING_FILENAME);
 		implDto = FileManagerUtils.makeImplDto(request);
-		response = convertFile.convertToPdf(implDto);
-		assertNotNull(response);
-		assertTrue(response.getMessages() == null ? false : !response.getMessages().isEmpty());
-		assertNull(response.getFileDto());
+		convertFile.convertToPdf(implDto);
+		assertNotNull(implDto);
+		assertTrue(!implDto.getMessages().isEmpty());
+		assertNull(implDto.getPdfFileDto());
 
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(STRING_FILENAME_NO_NAME);
 		implDto = FileManagerUtils.makeImplDto(request);
-		response = convertFile.convertToPdf(implDto);
-		assertNotNull(response);
-		assertTrue(response.getMessages() == null ? true : response.getMessages().isEmpty());
-		assertNotNull(response.getFileDto());
+		convertFile.convertToPdf(implDto);
+		assertNotNull(implDto);
+		assertTrue(implDto.getMessages().isEmpty());
+		assertNotNull(implDto.getPdfFileDto());
 
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(STRING_FILENAME_NO_EXT);
 		implDto = FileManagerUtils.makeImplDto(request);
-		response = convertFile.convertToPdf(implDto);
-		assertNotNull(response);
-		assertTrue(response.getMessages() == null ? false : !response.getMessages().isEmpty());
-		assertNull(response.getFileDto());
+		convertFile.convertToPdf(implDto);
+		assertNotNull(implDto);
+		assertTrue(!implDto.getMessages().isEmpty());
+		assertNull(implDto.getPdfFileDto());
 
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(STRING_FILENAME_MALFORMED);
 		implDto = FileManagerUtils.makeImplDto(request);
-		response = convertFile.convertToPdf(implDto);
-		assertNotNull(response);
-		assertTrue(response.getMessages() == null ? true : response.getMessages().isEmpty());
-		assertNotNull(response.getFileDto());
+		convertFile.convertToPdf(implDto);
+		assertNotNull(implDto);
+		assertTrue(implDto.getMessages().isEmpty());
+		assertNotNull(implDto.getPdfFileDto());
 
 		filedto.setFilebytes(STRING_BYTES);
 		filedto.setFilename(STRING_FILENAME_UNSUPPORTED);
 		implDto = FileManagerUtils.makeImplDto(request);
-		response = convertFile.convertToPdf(implDto);
-		assertNotNull(response);
-		assertTrue(response.getMessages() == null ? false : !response.getMessages().isEmpty());
-		assertNull(response.getFileDto());
+		convertFile.convertToPdf(implDto);
+		assertNotNull(implDto);
+		assertTrue(!implDto.getMessages().isEmpty());
+		assertNull(implDto.getPdfFileDto());
 	}
 
 }

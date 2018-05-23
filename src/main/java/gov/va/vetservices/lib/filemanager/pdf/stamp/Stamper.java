@@ -62,7 +62,7 @@ public class Stamper {
 			pdfReader.setAppendable(true); // make sure we can append
 
 			pdfStamper = new PdfStamper(pdfReader, pdf);
-			String stampText = stampDataDto.getStampsEnum().getStampText(metadata.getProcessType(), metadata.getClaimId());
+			String stampText = StampsEnum.getStampText(stampDataDto.getProcessType(), metadata.getClaimId());
 
 			final ColumnText columnText = new ColumnText(null);
 			for (int pageNum = 1; pageNum <= pdfReader.getNumberOfPages(); pageNum++) {
@@ -78,7 +78,7 @@ public class Stamper {
 					break;
 				}
 			}
-		} catch (final Throwable e) {
+		} catch (final Throwable e) { // NOSONAR intentionally catching everything
 			MessageKeysEnum mke = MessageKeysEnum.PDF_STAMPING;
 			String msg = MessageFormat.format(mke.getMessage(), fileDto.getFilename(),
 					e.getClass().getSimpleName() + " - " + StringUtils.substringBefore(e.getMessage(), "\n"));

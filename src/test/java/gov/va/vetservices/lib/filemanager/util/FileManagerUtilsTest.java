@@ -82,8 +82,15 @@ public class FileManagerUtilsTest {
 		assertTrue(extension.equals(parts.getExtension()));
 
 		// sad
-		assertNull(FileManagerUtils.getFileParts(null));
-		assertNull(FileManagerUtils.getFileParts(BLANK_STRING));
+		parts = FileManagerUtils.getFileParts(null);
+		assertNotNull(parts);
+		assertNull(parts.getName());
+		assertNull(parts.getExtension());
+
+		parts = FileManagerUtils.getFileParts(BLANK_STRING);
+		assertNotNull(parts);
+		assertNull(parts.getName());
+		assertNull(parts.getExtension());
 	}
 
 	@Test
@@ -106,9 +113,9 @@ public class FileManagerUtilsTest {
 		assertTrue("ProcessType does not match.", ProcessType.CLAIMS_526.equals(implDto.getDocMetadataDto().getProcessType()));
 		assertTrue("DocTypeId does not match.", DOCTYPE_ID.equals(implDto.getDocMetadataDto().getDocTypeId()));
 
-		assertNotNull("ImplDto.fileDto is null.", implDto.getFileDto());
-		assertEquals("Filenames do not match.", implDto.getFileDto().getFilename(), fdto.getFilename());
-		assertTrue("Filebytes do not match.", Arrays.areEqual(implDto.getFileDto().getFilebytes(), fdto.getFilebytes()));
+		assertNotNull("ImplDto.fileDto is null.", implDto.getOriginalFileDto());
+		assertEquals("Filenames do not match.", implDto.getOriginalFileDto().getFilename(), fdto.getFilename());
+		assertTrue("Filebytes do not match.", Arrays.areEqual(implDto.getOriginalFileDto().getFilebytes(), fdto.getFilebytes()));
 		assertNotNull("FilePartsDto is null.", implDto.getFileParts());
 		assertFalse("FilePartsDto.name is null or empty.", StringUtils.isBlank(implDto.getFileParts().getName()));
 		assertFalse("FilePartsDto.extension is null or empty.", StringUtils.isBlank(implDto.getFileParts().getExtension()));
@@ -119,7 +126,7 @@ public class FileManagerUtilsTest {
 		ImplDto implDto = FileManagerUtils.makeImplDto(null);
 
 		assertNotNull("ImplDto is unexpectedly null.", implDto);
-		assertNull("ImplDto.fileDto should be null.", implDto.getFileDto());
+		assertNull("ImplDto.fileDto should be null.", implDto.getOriginalFileDto());
 		assertNull("ImplDto.fileParts should be null.", implDto.getFileParts());
 	}
 

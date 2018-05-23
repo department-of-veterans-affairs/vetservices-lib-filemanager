@@ -24,10 +24,10 @@ public class ImplDtoTest {
 	public final void testImplDto() {
 		assertTrue((idto.getMessages() != null) && idto.getMessages().isEmpty());
 
-		idto.setFileDto(new FileDto());
-		assertNotNull(idto.getFileDto());
-		idto.setFileDto(null);
-		assertNull(idto.getFileDto());
+		idto.setOriginalFileDto(new FileDto());
+		assertNotNull(idto.getOriginalFileDto());
+		idto.setOriginalFileDto(null);
+		assertNull(idto.getOriginalFileDto());
 
 		idto.setFileParts(new FilePartsDto());
 		assertNotNull(idto.getFileParts());

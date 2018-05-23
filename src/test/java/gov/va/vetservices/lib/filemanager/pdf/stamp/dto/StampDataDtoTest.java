@@ -5,8 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
 import gov.va.vetservices.lib.filemanager.pdf.font.FontNameEnum;
-import gov.va.vetservices.lib.filemanager.pdf.stamp.StampsEnum;
 
 public class StampDataDtoTest {
 
@@ -30,9 +30,9 @@ public class StampDataDtoTest {
 
 	@Test
 	public final void testGetStampsEnum() {
-		stampDataDto.setStampsEnum(StampsEnum.CLAIM);
-		assertNotNull(stampDataDto.getStampsEnum());
-		assertTrue(StampsEnum.CLAIM.equals(stampDataDto.getStampsEnum()));
+		stampDataDto.setProcessType(ProcessType.CLAIMS_526);
+		assertNotNull(stampDataDto.getProcessType());
+		assertTrue(ProcessType.CLAIMS_526.equals(stampDataDto.getProcessType()));
 	}
 
 }

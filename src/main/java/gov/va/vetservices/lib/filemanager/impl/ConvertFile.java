@@ -1,7 +1,7 @@
 package gov.va.vetservices.lib.filemanager.impl;
 
+import gov.va.ascent.framework.messages.Message;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.pdf.PdfConverter;
@@ -22,31 +22,30 @@ public class ConvertFile {
 	PdfConverter pdfConverter = new PdfConverter();
 
 	/**
-	 * Convert a file from one type to another. Current implementation assumes conversion to PDF.
+	 * Convert a file from one type to another. Current implementation assumes conversion to PDF.<br/>
+	 * <b>The file to be converted must be on implDto.getOriginalFileDto()</b>.
+	 * The converted file is returned on implDto.getPdfFileDto().
 	 * <p>
 	 * It is assumed that the data has already been validated. Unvalidated data may result in runtime exceptions.
-	 * Checked exceptions are returned in the response messages.
+	 * Checked exceptions are returned in the messages on the implDto parameter.
 	 *
 	 * @param implDto the transfer object
 	 * @return FileManagerResponse the response
 	 */
-	public FileManagerResponse convertToPdf(ImplDto implDto) {
-		FileManagerResponse response = new FileManagerResponse();
+	public void convertToPdf(ImplDto implDto) {
 
 		byte[] pdfBytes = null;
 		try {
-			pdfBytes = pdfConverter.convert(implDto.getFileDto().getFilebytes(), implDto.getFileParts());
+			pdfBytes = pdfConverter.convert(implDto.getOriginalFileDto().getFilebytes(), implDto.getFileParts());
 
 			FileDto fdto = new FileDto();
 			fdto.setFilebytes(pdfBytes);
 			fdto.setFilename(implDto.getFileParts().getName() + ".pdf");
 
-			response.setFileDto(fdto);
+			implDto.setPdfFileDto(fdto);
 
 		} catch (FileManagerException e) { // NOSONAR - error is reported, shut up sonar
-			response.addMessage(e.getMessageSeverity(), e.getKey(), e.getMessage());
+			implDto.addMessage(new Message(e.getMessageSeverity(), e.getKey(), e.getMessage()));
 		}
-
-		return response;
 	}
 }

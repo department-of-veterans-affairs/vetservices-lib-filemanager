@@ -28,11 +28,6 @@ import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
  *
  * @author aburkholder
  */
-/*
- * NOSONAR TODO Dev notes:
- * In WSS there is a disconnect between PDFServiceImpl and PdfGenerator.
- * One objective of this class is to combine the best of both for consistent results.
- */
 @Component(FileManagerImpl.BEAN_NAME)
 public class FileManagerImpl implements FileManager {
 
@@ -58,6 +53,7 @@ public class FileManagerImpl implements FileManager {
 	@Override
 	public FileManagerResponse validateFileForPDFConversion(FileManagerRequest request) throws FileManagerException {
 		FileManagerResponse response = new FileManagerResponse();
+		response.setDoNotCacheResponse(true);
 
 		try {
 
@@ -67,22 +63,17 @@ public class FileManagerImpl implements FileManager {
 				ImplDto implDto = FileManagerUtils.makeImplDto(request);
 
 				// determine if the file can be converted to PDF
-				response = interrogateFile.canConvertToPdf(implDto);
-				if ((response != null) && (response.getFileDto() != null) && (response.getFileDto().getFilename() != null)) {
-					response.setSafeDatestampedFilename(FileManagerUtils.getSafeDatestampedFilename(implDto));
+				interrogateFile.canConvertToPdf(implDto);
+
+				if (!implDto.getMessages().isEmpty()) {
+					response.addMessages(implDto.getMessages());
 				}
 			}
 
 		} catch (Throwable e) { // NOSONAR - catch everything here
-			if (!FileManagerException.class.isAssignableFrom(e.getClass())) {
-				MessageKeysEnum key = MessageKeysEnum.UNEXPECTED_ERROR;
-				LOGGER.error("Unexpected " + e.getClass().getSimpleName()
-						+ " exception in vetservices-lib-filemanager. Please solve thsi issue at its source.", e);
-				throw new FileManagerException(MessageSeverity.FATAL, key.getKey(), key.getMessage());
-			}
+			addFileManagerExceptionToResponse(e, response);
 		}
 
-		response.setDoNotCacheResponse(true);
 		return response;
 	}
 
@@ -99,6 +90,7 @@ public class FileManagerImpl implements FileManager {
 		ConvertFile convertFile = new ConvertFile();
 		StampFile stampFile = new StampFile();
 		FileManagerResponse response = new FileManagerResponse();
+		response.setDoNotCacheResponse(true);
 
 		try {
 
@@ -108,24 +100,23 @@ public class FileManagerImpl implements FileManager {
 				ImplDto implDto = FileManagerUtils.makeImplDto(request);
 
 				// convert the file to PDF
-				response = convertFile.convertToPdf(implDto);
+				convertFile.convertToPdf(implDto);
 
-				if (!response.hasErrors()) {
+				if (implDto.getMessages().isEmpty()) {
 					// stamp the PDF, if required
-					stampFile.stampPdf(implDto, response);
+					stampFile.stampPdf(implDto);
+				}
+
+				response.setFileDto(implDto.getPdfFileDto());
+				if ((implDto != null) && (implDto.getPdfFileDto() != null) && (implDto.getPdfFileDto().getFilename() != null)) {
+					response.setSafeDatestampedFilename(FileManagerUtils.getSafeDatestampedFilename(implDto));
 				}
 			}
 
 		} catch (Throwable e) { // NOSONAR - catch everything here
-			if (!FileManagerException.class.isAssignableFrom(e.getClass())) {
-				MessageKeysEnum key = MessageKeysEnum.UNEXPECTED_ERROR;
-				LOGGER.error("Unexpected " + e.getClass().getSimpleName()
-						+ " exception in vetservices-lib-filemanager. Please solve thsi issue at its source.", e);
-				throw new FileManagerException(MessageSeverity.FATAL, key.getKey(), key.getMessage());
-			}
+			addFileManagerExceptionToResponse(e, response);
 		}
 
-		response.setDoNotCacheResponse(true);
 		return response;
 	}
 
@@ -141,6 +132,24 @@ public class FileManagerImpl implements FileManager {
 
 		if ((messages != null) && !messages.isEmpty()) {
 			response.addMessages(messages);
+		}
+	}
+
+	/**
+	 * Add an arbitrary exception to the response.
+	 *
+	 * @param e the Throwable
+	 * @param response the response to be returned to consumer
+	 */
+	protected void addFileManagerExceptionToResponse(Throwable e, FileManagerResponse response) {
+		if (!FileManagerException.class.isAssignableFrom(e.getClass())) {
+			MessageKeysEnum key = MessageKeysEnum.UNEXPECTED_ERROR;
+			LOGGER.error("Unexpected " + e.getClass().getSimpleName()
+					+ " exception in vetservices-lib-filemanager. Please solve thsi issue at its source.", e);
+			response.addMessage(MessageSeverity.FATAL, key.getKey(), key.getMessage());
+		} else {
+			FileManagerException fme = (FileManagerException) e;
+			response.addMessage(fme.getMessageSeverity(), fme.getKey(), fme.getMessage());
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package gov.va.vetservices.lib.filemanager.pdf.stamp.dto;
 
+import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
 import gov.va.vetservices.lib.filemanager.pdf.font.FontNameEnum;
-import gov.va.vetservices.lib.filemanager.pdf.stamp.StampsEnum;
 
 /**
  * Data that will be used to print onto the header area of the PDF.
@@ -12,7 +12,7 @@ public class StampDataDto {
 
 	private FontNameEnum fontNameEnum = FontNameEnum.COURIER;
 	private int fontSizeInPoints = 10;
-	private StampsEnum stampsEnum;
+	private ProcessType processType;
 
 	/**
 	 * Returns the {@link FontNameEnum} enumeration.
@@ -51,21 +51,21 @@ public class StampDataDto {
 	}
 
 	/**
-	 * Returns the Stamps enumeration that defines the text to be printed onto the PDF header area.
-	 *
-	 * @return StampsEnum the stamp enumeration
+	 * Gets the ProcessType from which the stamp text is derived. There is no default for this field.
+	 * 
+	 * @return the processType
 	 */
-	public StampsEnum getStampsEnum() {
-		return stampsEnum;
+	public ProcessType getProcessType() {
+		return processType;
 	}
 
 	/**
-	 * Sets the Stamps enumeration that defines the text to be printed onto the PDF header area.
-	 *
-	 * @param stampsEnum the stamp enumeration to set
+	 * Sets the ProcessType from which the stamp text is derived. There is no default for this field.
+	 * 
+	 * @param processType the processType to set
 	 */
-	public void setStampsEnum(StampsEnum stampsEnum) {
-		this.stampsEnum = stampsEnum;
+	public void setProcessType(ProcessType processType) {
+		this.processType = processType;
 	}
 
 }

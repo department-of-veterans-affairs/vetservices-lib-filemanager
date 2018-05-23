@@ -4,17 +4,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.lowagie.text.Document;
@@ -22,9 +22,9 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -106,7 +106,7 @@ public class AbstractConverterTest {
 
 	@Test
 	public final void testDoThrowException() {
-		Exception exception = new Exception();
+		IllegalArgumentException exception = new IllegalArgumentException("test exception");
 		MessageKeysEnum messageKey = MessageKeysEnum.PDF_CONVERSION_PROCESSING;
 
 		try {
@@ -125,76 +125,18 @@ public class AbstractConverterTest {
 
 	@Test
 	public final void testDoClose() {
-		ByteArrayOutputStream bytesOutputStream = null;
-		Document pdfDocument = null;
-		PdfWriter pdfWriter = null;
+		Document mockPdfDocument = mock(Document.class);
+		PdfWriter mockPdfWriter = mock(PdfWriter.class);
 
-		try {
-			pdfDocument = new Document();
-			bytesOutputStream = new ByteArrayOutputStream();
-			pdfWriter = PdfWriter.getInstance(pdfDocument, bytesOutputStream);
+		doNothing().when(mockPdfDocument).close();
+		doNothing().when(mockPdfWriter).close();
+		testConverter.doClose(mockPdfDocument, mockPdfWriter);
 
-			testConverter.initializePdfDocument(pdfDocument);
+		doThrow(new IllegalArgumentException("test exception")).when(mockPdfDocument).close();
+		doThrow(new IllegalArgumentException("test exception")).when(mockPdfWriter).close();
+		testConverter.doClose(mockPdfDocument, mockPdfWriter);
 
-			testConverter.doClose(pdfDocument, pdfWriter);
-			assertNotNull(pdfDocument);
-			assertTrue(!pdfDocument.isOpen());
-			assertNotNull(pdfWriter);
-
-			byte[] pdfBytes = bytesOutputStream.toByteArray();
-			assertNotNull(pdfBytes);
-			assertTrue(pdfBytes.length > 0);
-
-		} catch (Throwable e) {
-			e.printStackTrace();
-			fail("Unexcpected exception.");
-		}
-	}
-
-	@Test
-	public final void testClose_Bad() throws DocumentException {
-		ByteArrayOutputStream bytesOutputStream = null;
-		Document pdfDocument = null;
-		PdfWriter pdfWriter = null;
-
-//		try {
-		// set up
-		pdfDocument = new Document();
-		bytesOutputStream = new ByteArrayOutputStream();
-		pdfWriter = PdfWriter.getInstance(pdfDocument, bytesOutputStream);
-
-		testConverter.initializePdfDocument(pdfDocument);
-
-		// throw on document
-		Document mockDocument = mock(Document.class);
-		Mockito.doThrow(new RuntimeException("Testing.")).when(mockDocument).close();
-		testConverter.doClose(mockDocument, pdfWriter);
-		// clean up
-		if (pdfDocument != null) {
-			pdfDocument.close();
-		}
-
-		// set up again
-		pdfDocument = new Document();
-		bytesOutputStream = new ByteArrayOutputStream();
-		pdfWriter = PdfWriter.getInstance(pdfDocument, bytesOutputStream);
-
-		testConverter.initializePdfDocument(pdfDocument);
-
-		// throw on pdf writer
-		PdfWriter mockWriter = mock(PdfWriter.class);
-		Mockito.doThrow(new RuntimeException("Testing.")).when(mockWriter).close();
-		testConverter.doClose(pdfDocument, mockWriter);
-		// clean up
-		if (pdfWriter != null) {
-			pdfWriter.close();
-		}
-
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//			fail("Unexcpected exception.");
-//		}
-
+		testConverter.doClose(null, null);
 	}
 
 }

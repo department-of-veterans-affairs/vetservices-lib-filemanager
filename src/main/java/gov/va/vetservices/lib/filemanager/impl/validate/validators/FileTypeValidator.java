@@ -83,9 +83,9 @@ public class FileTypeValidator implements Validator<ImplDto> {
 
 		if (convertible && (detectedMimetype != null) && ConvertibleTypesEnum.PDF.getMimeType().match(detectedMimetype)) {
 			try {
-				if (!pdfIntegrityChecker.isReadable(implDto.getFileDto().getFilebytes(), implDto.getFileDto().getFilename())) {
+				if (!pdfIntegrityChecker.isReadable(implDto.getOriginalFileDto().getFilebytes(), implDto.getOriginalFileDto().getFilename())) {
 					implDto.addMessage(new Message(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(),
-							MessageFormat.format(MessageKeysEnum.PDF_UNREADABLE.getMessage(), implDto.getFileDto().getFilename())));
+							MessageFormat.format(MessageKeysEnum.PDF_UNREADABLE.getMessage(), implDto.getOriginalFileDto().getFilename())));
 				}
 			} catch (FileManagerException e) { // squid:S1166
 				LOGGER.debug(e.getMessageSeverity().toString() + " " + e.getKey() + ": " + e.getMessage());
@@ -119,7 +119,7 @@ public class FileTypeValidator implements Validator<ImplDto> {
 			if (!isValid) {
 				implDto.addMessage(new Message(MessageSeverity.ERROR, MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE.getKey(),
 						MessageFormat.format(MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE.getMessage(),
-								implDto.getFileDto().getFilename())));
+								implDto.getOriginalFileDto().getFilename())));
 			}
 		}
 
@@ -148,8 +148,8 @@ public class FileTypeValidator implements Validator<ImplDto> {
 
 			throw new IllegalArgumentException("Impl Dto cannot be null.");
 
-		} else if ((implDto.getFileDto() == null) || (implDto.getFileDto().getFilebytes() == null)
-				|| (implDto.getFileDto().getFilebytes().length < 1)) {
+		} else if ((implDto.getOriginalFileDto() == null) || (implDto.getOriginalFileDto().getFilebytes() == null)
+				|| (implDto.getOriginalFileDto().getFilebytes().length < 1)) {
 
 			implDto.addMessage(new Message(MessageSeverity.ERROR, MessageKeysEnum.FILE_DTO_NULL.getKey(),
 					MessageKeysEnum.FILE_DTO_NULL.getMessage()));
@@ -157,7 +157,7 @@ public class FileTypeValidator implements Validator<ImplDto> {
 		} else {
 			try {
 				// performs all necessary checks, including extension match and supported types
-				detectedMimetype = mimeTypeDetector.detectMimeType(implDto.getFileDto().getFilebytes(), implDto.getFileParts());
+				detectedMimetype = mimeTypeDetector.detectMimeType(implDto.getOriginalFileDto().getFilebytes(), implDto.getFileParts());
 			} catch (FileManagerException e) { // squid:S1166
 				LOGGER.debug(e.getMessageSeverity().toString() + " " + e.getKey() + ": " + e.getMessage());
 				implDto.addMessage(new Message(e.getMessageSeverity(), e.getKey(), e.getMessage()));
@@ -180,7 +180,7 @@ public class FileTypeValidator implements Validator<ImplDto> {
 	protected boolean isImageConvertible(ImplDto implDto, MimeType detectedMimetype) {
 		boolean isValid = true;
 
-		if ((implDto == null) || (implDto.getFileDto() == null)) {
+		if ((implDto == null) || (implDto.getOriginalFileDto() == null)) {
 			return false;
 		}
 
@@ -188,24 +188,24 @@ public class FileTypeValidator implements Validator<ImplDto> {
 			// see if itext has any issue
 			try {
 				// the document is a valid image type if no exception is thrown.
-				Image.getInstance(implDto.getFileDto().getFilebytes());
+				Image.getInstance(implDto.getOriginalFileDto().getFilebytes());
 			} catch (final IOException | BadElementException e) {
 				isValid = false;
 				LOGGER.error(
-						"iText error while performing Image.getInstance(..) on bytes for file " + implDto.getFileDto().getFilename(),
+						"iText error while performing Image.getInstance(..) on bytes for file " + implDto.getOriginalFileDto().getFilename(),
 						e);
 				implDto.addMessage(
 						new Message(MessageSeverity.ERROR, MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getKey(), MessageFormat.format(
-								MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getMessage(), implDto.getFileDto().getFilename())));
+								MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getMessage(), implDto.getOriginalFileDto().getFilename())));
 			} catch (final Throwable e) { // NOSONAR - intent is to catch everything // squid:S1166
 				isValid = false;
 				LOGGER.debug(
 						MessageSeverity.ERROR.toString() + " " + MessageKeysEnum.IMAGE_ITEXT_NOT_CONVERTIBLE.getKey() + ": "
 								+ MessageKeysEnum.IMAGE_ITEXT_NOT_CONVERTIBLE.getMessage(),
-						implDto.getFileDto().getFilename(), e.getMessage());
+						implDto.getOriginalFileDto().getFilename(), e.getMessage());
 				implDto.addMessage(new Message(MessageSeverity.ERROR, MessageKeysEnum.IMAGE_ITEXT_NOT_CONVERTIBLE.getKey(),
 						MessageFormat.format(MessageKeysEnum.IMAGE_ITEXT_NOT_CONVERTIBLE.getMessage(),
-								implDto.getFileDto().getFilename(), e.getMessage())));
+								implDto.getOriginalFileDto().getFilename(), e.getMessage())));
 			}
 		}
 

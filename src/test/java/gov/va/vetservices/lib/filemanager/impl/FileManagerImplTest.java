@@ -18,6 +18,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 import gov.va.ascent.framework.config.AscentCommonSpringProfiles;
+import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.FileManagerConfig;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerRequest;
@@ -25,6 +26,7 @@ import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
 //import gov.va.vetservices.lib.filemanager.api.v1.transfer.DocTypeId;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles({ AscentCommonSpringProfiles.PROFILE_REMOTE_CLIENT_IMPLS,
@@ -143,7 +145,7 @@ public class FileManagerImplTest {
 		request.setProcessType(ProcessType.CLAIMS_526);
 		fileDto = new FileDto();
 		fileDto.setFilebytes(STRING_BYTES);
-		fileDto.setFilename(null);
+		fileDto.setFilename(STRING_FILENAME);
 		request.setFileDto(fileDto);
 		FileManagerResponse response = null;
 		try {
@@ -153,8 +155,8 @@ public class FileManagerImplTest {
 			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
 		assertNotNull(response);
-		assertTrue((response.getMessages() != null) && !response.getMessages().isEmpty());
-		assertNull(response.getFileDto());
+		assertTrue(response.getMessages().isEmpty());
+		assertNotNull(response.getFileDto());
 
 		// Sad
 
@@ -169,4 +171,19 @@ public class FileManagerImplTest {
 		assertNull(response.getFileDto());
 	}
 
+	@Test
+	public void testAddFileManagerExceptionToResponse() {
+		FileManagerResponse response = new FileManagerResponse();
+
+		MessageKeysEnum mke = MessageKeysEnum.UNEXPECTED_ERROR;
+		FileManagerException fme = new FileManagerException(MessageSeverity.ERROR, mke.getKey(), mke.getMessage());
+		fileManagerImpl.addFileManagerExceptionToResponse(fme, response);
+		assertNotNull(response);
+		assertTrue(response.hasErrors());
+
+		IllegalArgumentException iae = new IllegalArgumentException("test exception");
+		fileManagerImpl.addFileManagerExceptionToResponse(iae, response);
+		assertNotNull(response);
+		assertTrue(response.hasErrors());
+	}
 }

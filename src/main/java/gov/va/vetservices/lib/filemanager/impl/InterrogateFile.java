@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.util.Defense;
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.validators.ByteArrayValidator;
@@ -61,56 +60,51 @@ public class InterrogateFile {
 	/**
 	 * Determines if a file can be converted to a PDF with the technologies currently being used by this library.
 	 * <p>
-	 * Any validation errors that occur are passed in the response messages, otherwise the response messages will be {@code null}.
+	 * Any validation errors that occur are passed in the implDto messages, otherwise the implDto messages will be {@code null}.
 	 *
 	 * @param fileDto the file to interrogate
-	 * @return ServiceResponse with {@code null} messages if the file can be converted
 	 */
-	public FileManagerResponse canConvertToPdf(ImplDto implDto) {
-		FileManagerResponse response = new FileManagerResponse();
+	public void canConvertToPdf(ImplDto implDto) {
 
-		validateFilename(implDto, response);
+		validateFilename(implDto);
 
-		if (!response.hasErrors()) {
-			validateByteArray(implDto.getFileDto().getFilebytes(), response);
+		if (implDto.getMessages().isEmpty()) {
+			validateByteArray(implDto);
 		}
 
-		if (!response.hasErrors()) {
-			validateFileType(implDto, response);
+		if (implDto.getMessages().isEmpty()) {
+			validateFileType(implDto);
 		}
 
-		if (!response.hasErrors()) {
-			validateConversion(implDto, response);
+		if (implDto.getMessages().isEmpty()) {
+			validateConversion(implDto);
 		}
-
-		return response;
 	}
 
 	/**
 	 * Validate the filename for common operating system constraints.
-	 * Any error messages are returned on the response.
+	 * Any error messages are returned on the implDto parameter.
 	 *
 	 * @param implDto the DTO with filename to validate
-	 * @param response the response to return to the consumer
 	 * @see FilenameValidator#validate(ImplArgDto)
 	 */
-	private void validateFilename(ImplDto implDto, FileManagerResponse response) {
+	private void validateFilename(ImplDto implDto) {
 		ImplArgDto<ImplDto> arg = new ImplArgDto<>(implDto);
-		List<Message> messages = filenameValidator.validate(arg);
-		addMessagesToResponse(messages, response);
+		filenameValidator.validate(arg);
 	}
 
 	/**
-	 * Validate the file bytes for length.
+	 * Validate the original file bytes for length. Any error messages will be returned on the implDto parameter.
 	 *
 	 * @param bytes the bytes to validate
-	 * @param response the response to return to the consumer
 	 * @see ByteArrayValidator#validate(ImplArgDto)
 	 */
-	private void validateByteArray(byte[] bytes, FileManagerResponse response) {
-		ImplArgDto<byte[]> argDtoBytes = new ImplArgDto<>(bytes);
+	private void validateByteArray(ImplDto implDto) {
+		ImplArgDto<byte[]> argDtoBytes = new ImplArgDto<>(implDto.getOriginalFileDto().getFilebytes());
 		List<Message> messages = bytearrayValidator.validate(argDtoBytes);
-		addMessagesToResponse(messages, response);
+		if (messages != null) {
+			implDto.addMessages(messages);
+		}
 	}
 
 	/**
@@ -120,10 +114,12 @@ public class InterrogateFile {
 	 * @param response the response to return to the consumer
 	 * @see FileTypeValidator#validate(ImplArgDto)
 	 */
-	private void validateFileType(ImplDto implDto, FileManagerResponse response) {
+	private void validateFileType(ImplDto implDto) {
 		ImplArgDto<ImplDto> arg = new ImplArgDto<>(implDto);
 		List<Message> messages = filetypeValidator.validate(arg);
-		addMessagesToResponse(messages, response);
+		if (messages != null) {
+			implDto.addMessages(messages);
+		}
 	}
 
 	/**
@@ -133,21 +129,11 @@ public class InterrogateFile {
 	 * @param response the response to return to the consumer
 	 * @see FileTypeValidator#validate(ImplArgDto)
 	 */
-	private void validateConversion(ImplDto implDto, FileManagerResponse response) {
+	private void validateConversion(ImplDto implDto) {
 		ImplArgDto<ImplDto> arg = new ImplArgDto<>(implDto);
 		List<Message> messages = conversionValidator.validate(arg);
-		addMessagesToResponse(messages, response);
-	}
-
-	/**
-	 * Common method to add messages (if any) to the response.
-	 *
-	 * @param messages messages (if any)
-	 * @param response the consumer response
-	 */
-	private void addMessagesToResponse(List<Message> messages, FileManagerResponse response) {
-		if ((messages != null) && !messages.isEmpty()) {
-			response.addMessages(messages);
+		if (messages != null) {
+			implDto.addMessages(messages);
 		}
 	}
 }

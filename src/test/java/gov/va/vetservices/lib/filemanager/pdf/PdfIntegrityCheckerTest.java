@@ -6,7 +6,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -22,14 +24,11 @@ import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 
 public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 
-	// TODO rework this class
-
 	private PdfIntegrityChecker pdfIntegrityChecker = new PdfIntegrityChecker();
 
 	private Path goodPdfPath = Paths.get("files/application/pdf/IS_text-doc.pdf");
 	private Path corruptPdfPath = Paths.get("files/application/pdf/BAD_corrupted-pdf.pdf");
 	private Path tamperedPdfPath = Paths.get("files/application/pdf/IS_signed-tampered.pdf");
-//	private Path encryptedPdfPath = Paths.get("files/application/pdf/NOT_encrypted-cert.pdf");
 
 	@Test
 	public final void testPdfIntegrityChecker() {
@@ -115,60 +114,51 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 	// TODO need to find better method of testing non-editable status
 	@Test
 	public final void testIsLocked() {
-		assert (true);
+		String filename = "test.pdf";
+		PdfReader mock = mock(PdfReader.class);
 
-//		PdfReader pdfReader = null;
-//		try {
-//			byte[] lockedBytes = readFile(encryptedPdfPath);
-//
-//			pdfReader = pdfIntegrityChecker.newPdfReader(lockedBytes, encryptedPdfPath.getFileName().toString());
-//			assertNotNull(pdfReader);
-//
-////			pdfIntegrityChecker.isLocked(pdfReader, encryptedPdfPath.getFileName().toString());
-//			fail("isLocked() should have thrown exception.");
-//
-//		} catch (IOException e) {
-//			// from readFile
-//			assertTrue(e.getClass().getSimpleName().equals("InvalidPdfException"));
-//		} catch (FileManagerException e) {
-//			e.printStackTrace();
-//			assertTrue(
-//					MessageKeysEnum.PDF_LOCKED.getKey().equals(e.getKey()) || MessageKeysEnum.PDF_CONTENT_INVALID.getKey().equals(e.getKey())
-//							|| MessageKeysEnum.PDF_UNREADABLE.getKey().equals(e.getKey()));
-//		} finally {
-//			if (pdfReader != null) {
-//				pdfReader.close();
-//			}
-//		}
-//
-//		pdfReader = null;
-//		try {
-//			byte[] corruptBytes = readFile(corruptPdfPath);
-//
-//			pdfReader = pdfIntegrityChecker.newPdfReader(corruptBytes, corruptPdfPath.getFileName().toString());
-//			assertNotNull(pdfReader);
-//
-////			pdfIntegrityChecker.isLocked(pdfReader, corruptPdfPath.getFileName().toString());
-//			fail("isLocked() should have thrown exception.");
-//
-//		} catch (IOException e) {
-//			// from readFile
-//			assertTrue(e.getClass().getSimpleName().equals("InvalidPdfException"));
-//		} catch (FileManagerException e) {
-//			e.printStackTrace();
-//			assertTrue(
-//					MessageKeysEnum.PDF_LOCKED.getKey().equals(e.getKey()) || MessageKeysEnum.PDF_CONTENT_INVALID.getKey().equals(e.getKey())
-//							|| MessageKeysEnum.PDF_UNREADABLE.getKey().equals(e.getKey()));
-//		} finally {
-//			if (pdfReader != null) {
-//				pdfReader.close();
-//			}
-//		}
-	}
+		when(mock.isEncrypted()).thenReturn(true);
+		try {
+			pdfIntegrityChecker.isLocked(mock, filename);
+			fail("Should have thrown exception");
+		} catch (FileManagerException e) {
+			assertNotNull(e);
+			assertTrue(FileManagerException.class.isAssignableFrom(e.getClass()));
+			assertTrue(MessageKeysEnum.PDF_LOCKED.getKey().equals(e.getKey()));
+		}
 
-	@Test
-	public final void testIsLocked_Bad() {
-		assertTrue(true);
+		when(mock.isEncrypted()).thenReturn(false);
+		when(mock.is128Key()).thenReturn(true);
+		try {
+			pdfIntegrityChecker.isLocked(mock, filename);
+			fail("Should have thrown exception");
+		} catch (FileManagerException e) {
+			assertNotNull(e);
+			assertTrue(FileManagerException.class.isAssignableFrom(e.getClass()));
+			assertTrue(MessageKeysEnum.PDF_LOCKED.getKey().equals(e.getKey()));
+		}
+
+		when(mock.isEncrypted()).thenReturn(false);
+		when(mock.is128Key()).thenReturn(false);
+		when(mock.isMetadataEncrypted()).thenReturn(true);
+		try {
+			pdfIntegrityChecker.isLocked(mock, filename);
+			fail("Should have thrown exception");
+		} catch (FileManagerException e) {
+			assertNotNull(e);
+			assertTrue(FileManagerException.class.isAssignableFrom(e.getClass()));
+			assertTrue(MessageKeysEnum.PDF_LOCKED.getKey().equals(e.getKey()));
+		}
+
+		when(mock.isEncrypted()).thenThrow(new IllegalArgumentException("test exception"));
+		try {
+			pdfIntegrityChecker.isLocked(mock, filename);
+			fail("Should have thrown exception");
+		} catch (FileManagerException e) {
+			assertNotNull(e);
+			assertTrue(FileManagerException.class.isAssignableFrom(e.getClass()));
+			assertTrue(MessageKeysEnum.PDF_CONTENT_INVALID.getKey().equals(e.getKey()));
+		}
 	}
 
 	@Test
@@ -215,54 +205,27 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 
 	@Test
 	public final void testIsTampered() {
+		String filename = "test.pdf";
+		PdfReader mock = mock(PdfReader.class);
 
-		PdfReader pdfReader = null;
+		when(mock.isTampered()).thenReturn(true);
 		try {
-			byte[] tamperedBytes = readFile(tamperedPdfPath);
-
-			pdfReader = pdfIntegrityChecker.newPdfReader(tamperedBytes, tamperedPdfPath.getFileName().toString());
-			assertNotNull(pdfReader);
-
-			pdfIntegrityChecker.isTampered(pdfReader, tamperedPdfPath.getFileName().toString());
-			// TODO iText is not correctly confirming tampered status, OR the test file is not tampered.
-			// When this is resolved, turn the AssertNull below into a simple fail() with same message.
-			assertNull("isTampered() should have thrown exception.", null);
-
-		} catch (IOException e) {
-			// from readFile
-			assertTrue(e.getClass().getSimpleName().equals("InvalidPdfException"));
+			pdfIntegrityChecker.isTampered(mock, filename);
+			fail("Should have thrown exception");
 		} catch (FileManagerException e) {
-			e.printStackTrace();
-			assertTrue(MessageKeysEnum.PDF_TAMPERED.getKey().equals(e.getKey())
-					|| MessageKeysEnum.PDF_CONTENT_INVALID.getKey().equals(e.getKey()));
-		} finally {
-			if (pdfReader != null) {
-				pdfReader.close();
-			}
+			assertNotNull(e);
+			assertTrue(FileManagerException.class.isAssignableFrom(e.getClass()));
+			assertTrue(MessageKeysEnum.PDF_TAMPERED.getKey().equals(e.getKey()));
 		}
 
-		pdfReader = null;
+		when(mock.isTampered()).thenThrow(new IllegalArgumentException("test exception"));
 		try {
-			byte[] corruptBytes = readFile(corruptPdfPath);
-
-			pdfReader = pdfIntegrityChecker.newPdfReader(corruptBytes, corruptPdfPath.getFileName().toString());
-			assertNotNull(pdfReader);
-
-			pdfIntegrityChecker.isTampered(pdfReader, corruptPdfPath.getFileName().toString());
-			fail("isTampered() should have thrown exception.");
-
-		} catch (IOException e) {
-			// from readFile
-			assertTrue(e.getClass().getSimpleName().equals("InvalidPdfException"));
+			pdfIntegrityChecker.isTampered(mock, filename);
+			fail("Should have thrown exception");
 		} catch (FileManagerException e) {
-			e.printStackTrace();
-			assertTrue(MessageKeysEnum.PDF_TAMPERED.getKey().equals(e.getKey())
-					|| MessageKeysEnum.PDF_CONTENT_INVALID.getKey().equals(e.getKey())
-					|| MessageKeysEnum.PDF_UNREADABLE.getKey().equals(e.getKey()));
-		} finally {
-			if (pdfReader != null) {
-				pdfReader.close();
-			}
+			assertNotNull(e);
+			assertTrue(FileManagerException.class.isAssignableFrom(e.getClass()));
+			assertTrue(MessageKeysEnum.PDF_CONTENT_INVALID.getKey().equals(e.getKey()));
 		}
 	}
 }

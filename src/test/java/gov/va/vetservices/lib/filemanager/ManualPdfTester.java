@@ -27,7 +27,6 @@ import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
 import gov.va.vetservices.lib.filemanager.impl.dto.DocMetadataDto;
 import gov.va.vetservices.lib.filemanager.pdf.stamp.Stamper;
-import gov.va.vetservices.lib.filemanager.pdf.stamp.StampsEnum;
 import gov.va.vetservices.lib.filemanager.pdf.stamp.dto.StampDataDto;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 
@@ -57,7 +56,7 @@ public class ManualPdfTester extends AbstractFileHandler {
 	public final void test() {
 		Stamper stamper = new Stamper();
 		StampDataDto stampDataDto = new StampDataDto();
-		stampDataDto.setStampsEnum(StampsEnum.CLAIM);
+		stampDataDto.setProcessType(ProcessType.CLAIMS_526);
 		MimeType mimetype = null;
 		try {
 			mimetype = new MimeType("application/pdf");

@@ -66,22 +66,22 @@ public class FilenameValidator implements Validator<ImplDto> {
 
 		ImplDto implDto = toValidate.getValue();
 
-		if (implDto.getFileDto() == null) {
+		if (implDto.getOriginalFileDto() == null) {
 
 			addError(implDto, MessageKeysEnum.FILE_DTO_NULL);
 
-		} else if (StringUtils.isBlank(implDto.getFileDto().getFilename()) || StringUtils.isBlank(implDto.getFileParts().getName())
+		} else if (StringUtils.isBlank(implDto.getOriginalFileDto().getFilename()) || StringUtils.isBlank(implDto.getFileParts().getName())
 				|| StringUtils.isBlank(implDto.getFileParts().getExtension())) {
 
 			addError(implDto, MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY);
 
-		} else if (StringUtils.isBlank(implDto.getFileDto().getFilename())
-				|| (implDto.getFileDto().getFilename().length() > fileManagerProperties.getMaxFilenameLen())) {
+		} else if (StringUtils.isBlank(implDto.getOriginalFileDto().getFilename())
+				|| (implDto.getOriginalFileDto().getFilename().length() > fileManagerProperties.getMaxFilenameLen())) {
 
 			addError(implDto, MessageKeysEnum.FILE_NAME_TOO_LONG);
 
 		} else if (StringUtils.containsAny(implDto.getFileParts().getName(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)
-				|| StringUtils.containsAny(implDto.getFileParts().getName(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)) {
+				|| StringUtils.containsAny(implDto.getFileParts().getExtension(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)) {
 
 			// NOSONAR TODO need to add character filter validations from wss web and service regex validations
 			addError(implDto, MessageKeysEnum.FILE_NAME_MALFORMED);
