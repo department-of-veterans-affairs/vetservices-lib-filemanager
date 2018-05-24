@@ -71,7 +71,7 @@ public class TikaDetector extends AbstractDetector {
 				throw new IllegalArgumentException("Multiple configuration files found at '" + path + "'.");
 			}
 			Resource resource = resources[0];
-			tikaConfig = new TikaConfig(resource.getFile());
+			tikaConfig = new TikaConfig(resource.getInputStream());
 		} catch (TikaException | IOException | SAXException e) {
 			String message = "FATAL ERROR: " + e.getClass().getSimpleName() + " - could not load classpath file '" + path + "': "
 					+ e.getMessage();
