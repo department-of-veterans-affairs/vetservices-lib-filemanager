@@ -69,7 +69,7 @@ public class FileManagerImplTest {
 
 		try {
 			response = fileManagerImpl.validateFileForPDFConversion(request);
-		} catch (FileManagerException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			if (e.getCause() != null) {
 				e.getCause().printStackTrace();
@@ -87,7 +87,7 @@ public class FileManagerImplTest {
 
 		try {
 			response = fileManagerImpl.validateFileForPDFConversion(null);
-		} catch (FileManagerException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
@@ -100,7 +100,7 @@ public class FileManagerImplTest {
 		fileDto.setFilename(STRING_FILENAME);
 		try {
 			response = fileManagerImpl.validateFileForPDFConversion(request);
-		} catch (FileManagerException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
@@ -112,7 +112,7 @@ public class FileManagerImplTest {
 		fileDto.setFilename(STRING_FILENAME);
 		try {
 			response = fileManagerImpl.validateFileForPDFConversion(request);
-		} catch (FileManagerException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
@@ -124,7 +124,7 @@ public class FileManagerImplTest {
 		fileDto.setFilename(null);
 		try {
 			response = fileManagerImpl.validateFileForPDFConversion(request);
-		} catch (FileManagerException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
@@ -150,7 +150,7 @@ public class FileManagerImplTest {
 		FileManagerResponse response = null;
 		try {
 			response = fileManagerImpl.convertToPdf(request);
-		} catch (FileManagerException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
@@ -162,7 +162,7 @@ public class FileManagerImplTest {
 
 		try {
 			response = fileManagerImpl.convertToPdf(null);
-		} catch (FileManagerException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
 		}

@@ -22,7 +22,7 @@ public interface FileManager {
 	 * @param request the {@code FileManagerRequest} to validate
 	 * @return FileManagerResponse the response with any messages
 	 */
-	public FileManagerResponse validateFileForPDFConversion(FileManagerRequest request) throws FileManagerException;
+	public FileManagerResponse validateFileForPDFConversion(FileManagerRequest request);
 
 	/**
 	 * Convert a file to PDF, and stamp its header area. Note that the file should have been previously validated by the
@@ -31,6 +31,6 @@ public interface FileManager {
 	 * @param request the {@code FileManagerRequest} containing the byte array to be converted
 	 * @return FileManagerResponse the response with messages and PDF if successful
 	 */
-	public FileManagerResponse convertToPdf(FileManagerRequest request) throws FileManagerException;
+	public FileManagerResponse convertToPdf(FileManagerRequest request);
 
 }

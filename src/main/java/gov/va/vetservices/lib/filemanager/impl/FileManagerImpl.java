@@ -51,7 +51,7 @@ public class FileManagerImpl implements FileManager {
 	 * FileManager.FileDto)
 	 */
 	@Override
-	public FileManagerResponse validateFileForPDFConversion(FileManagerRequest request) throws FileManagerException {
+	public FileManagerResponse validateFileForPDFConversion(FileManagerRequest request) {
 		FileManagerResponse response = new FileManagerResponse();
 		response.setDoNotCacheResponse(true);
 
@@ -86,7 +86,7 @@ public class FileManagerImpl implements FileManager {
 	 * - Method is sourced from wss PDFServiceImpl.convertPDF(..) & PDFGenerate.generateBody()
 	 */
 	@Override
-	public FileManagerResponse convertToPdf(FileManagerRequest request) throws FileManagerException {
+	public FileManagerResponse convertToPdf(FileManagerRequest request) {
 		ConvertFile convertFile = new ConvertFile();
 		StampFile stampFile = new StampFile();
 		FileManagerResponse response = new FileManagerResponse();
@@ -105,10 +105,13 @@ public class FileManagerImpl implements FileManager {
 				if (implDto.getMessages().isEmpty()) {
 					// stamp the PDF, if required
 					stampFile.stampPdf(implDto);
+				} else {
+					response.setMessages(implDto.getMessages());
 				}
-
+				
 				response.setFileDto(implDto.getPdfFileDto());
-				if ((implDto != null) && (implDto.getPdfFileDto() != null) && (implDto.getPdfFileDto().getFilename() != null)) {
+
+				if (implDto.getPdfFileDto() != null && implDto.getPdfFileDto().getFilename() != null) {
 					response.setSafeDatestampedFilename(FileManagerUtils.getSafeDatestampedFilename(implDto));
 				}
 			}
