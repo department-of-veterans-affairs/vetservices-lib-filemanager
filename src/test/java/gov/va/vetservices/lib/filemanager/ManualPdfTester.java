@@ -45,6 +45,7 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.collection.PdfCollection;
 import com.itextpdf.pdfa.PdfADocument;
 import com.itextpdf.pdfa.checker.PdfA1Checker;
+import com.itextpdf.signatures.SignatureUtil;
 
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
@@ -62,11 +63,14 @@ import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
  */
 public class ManualPdfTester extends AbstractFileHandler {
 
-	private static final boolean readProtectedAnyway = true;
-	private static final boolean printStackTrace = false;
+	/* setting this value true engages iText7 "unethicalReading" to decrypt password protections when possible */
+	private static final boolean READ_PROTECTED_FILES = true;
+	private static final boolean PRINT_STACKTRACES = false;
 
-	private static final String claimId = "11111";
-	private static final String docTypeId = "123";
+	private static final String CLAIM_ID = "11111";
+	private static final String DOC_TYPE_ID = "123";
+
+	private static final String FILES_CLASSPATH_PDF = "application/pdf";
 
 	@Before
 	public void setUp() throws Exception {
@@ -84,7 +88,7 @@ public class ManualPdfTester extends AbstractFileHandler {
 //		stampDataDto.setProcessType(ProcessType.CLAIMS_526);
 //		MimeType mimetype = null;
 //		try {
-//			mimetype = new MimeType("application/pdf");
+//			mimetype = new MimeType(FILES_CLASSPATH_PDF);
 //		} catch (MimeTypeParseException e2) {
 //			e2.printStackTrace();
 //		}
@@ -252,14 +256,7 @@ public class ManualPdfTester extends AbstractFileHandler {
 
 	@Test
 	public final void testTikaItext712() {
-		MimeType mimetype = null;
-		try {
-			mimetype = new MimeType("application/pdf");
-		} catch (final MimeTypeParseException e2) {
-			e2.printStackTrace();
-		}
-		final List<File> files = super.listFilesByMimePath(mimetype);
-		assertTrue("Files for " + mimetype.getPrimaryType() + " is null or empty.", files != null && !files.isEmpty());
+		final List<File> files = getFilesForMimeType(FILES_CLASSPATH_PDF);
 
 		PdfReader pdfReader = null;
 		PdfWriter pdfWriter = null;
@@ -277,8 +274,8 @@ public class ManualPdfTester extends AbstractFileHandler {
 			try {
 				inputstream = Files.newInputStream(file.toPath());
 				pdfReader = new PdfReader(inputstream);
-				pdfReader.setUnethicalReading(readProtectedAnyway);
-				System.out.println("readProtectedAnyway:" + readProtectedAnyway);
+				pdfReader.setUnethicalReading(READ_PROTECTED_FILES);
+				System.out.println("readProtectedAnyway:" + READ_PROTECTED_FILES);
 
 				// PdfReader
 				try {
@@ -309,14 +306,14 @@ public class ManualPdfTester extends AbstractFileHandler {
 				} catch (final Throwable e) {
 					System.out.println("** pdfReader ERROR " + e.getClass().getSimpleName() + ": "
 							+ StringUtils.substringBefore(e.getMessage(), "\n"));
-					if (printStackTrace) {
+					if (PRINT_STACKTRACES) {
 						e.printStackTrace();
 					}
 				}
 
+				// PdfDocument
 				outputstream = new ByteArrayOutputStream();
 				pdfWriter = new PdfWriter(outputstream);
-				// PdfDocument
 				try {
 					pdfDoc = new PdfDocument(pdfReader, pdfWriter);
 					// built in tests
@@ -400,10 +397,24 @@ public class ManualPdfTester extends AbstractFileHandler {
 									+ getTrailer.isString() + "\n........ toString:" + getTrailer.toString()));
 					final PdfVersion getPdfVersion = pdfDoc.getPdfVersion();
 					System.out.println(".. getPdfVersion:" + getPdfVersion.toString());
+					// PdfDocument -> PdfSignatures
+					final SignatureUtil sigutil = new SignatureUtil(pdfDoc);
+					final List<String> signames = sigutil.getSignatureNames();
+					System.out.println(".. getSignatureNames:" + (signames == null ? "null" : signames.size()));
+					if (signames != null && !signames.isEmpty()) {
+						for (final String signame : signames) {
+							System.out.println("...... name:" + signame);
+							System.out.println("........ doesSignatureFieldExist:" + sigutil.doesSignatureFieldExist(signame));
+							System.out.println("........ getTranslatedFieldName:" + sigutil.getTranslatedFieldName(signame));
+							System.out
+									.println("........ signatureCoversWholeDocument:" + sigutil.signatureCoversWholeDocument(signame));
+						}
+					}
+
 				} catch (final Throwable e) {
 					System.out.println("** pdfDocument ERROR " + e.getClass().getSimpleName() + ": "
 							+ StringUtils.substringBefore(e.getMessage(), "\n"));
-					if (printStackTrace) {
+					if (PRINT_STACKTRACES) {
 						e.printStackTrace();
 					}
 				}
@@ -415,8 +426,8 @@ public class ManualPdfTester extends AbstractFileHandler {
 					final StampDataDto stampDataDto = new StampDataDto();
 					stampDataDto.setProcessType(ProcessType.CLAIMS_526);
 					final DocMetadataDto docMetadata = new DocMetadataDto();
-					docMetadata.setClaimId(claimId);
-					docMetadata.setDocTypeId(docTypeId);
+					docMetadata.setClaimId(CLAIM_ID);
+					docMetadata.setDocTypeId(DOC_TYPE_ID);
 					docMetadata.setProcessType(ProcessType.CLAIMS_526);
 					final FileDto fileDto = new FileDto();
 					fileDto.setFilename(file.getName());
@@ -427,7 +438,7 @@ public class ManualPdfTester extends AbstractFileHandler {
 				} catch (final Throwable e) {
 					System.out.println("** Stamper ERROR " + e.getClass().getSimpleName() + ": "
 							+ StringUtils.substringBefore(e.getMessage(), "\n"));
-					if (printStackTrace) {
+					if (PRINT_STACKTRACES) {
 						e.printStackTrace();
 					}
 				}
@@ -439,7 +450,7 @@ public class ManualPdfTester extends AbstractFileHandler {
 				} catch (final Throwable e) {
 					System.out.println("** save ERROR " + e.getClass().getSimpleName() + ": "
 							+ StringUtils.substringBefore(e.getMessage(), "\n"));
-					if (printStackTrace) {
+					if (PRINT_STACKTRACES) {
 						e.printStackTrace();
 					}
 				} finally {
@@ -458,7 +469,7 @@ public class ManualPdfTester extends AbstractFileHandler {
 			} catch (final Throwable e) {
 				System.out.println("** readAllBytes ERROR " + e.getClass().getSimpleName() + ": "
 						+ StringUtils.substringBefore(e.getMessage(), "\n"));
-				if (printStackTrace) {
+				if (PRINT_STACKTRACES) {
 					e.printStackTrace();
 				}
 			}
@@ -469,14 +480,7 @@ public class ManualPdfTester extends AbstractFileHandler {
 //	@Ignore
 	@Test
 	public void testItext217_PdfA_Checker() {
-		MimeType mimetype = null;
-		try {
-			mimetype = new MimeType("application/pdf");
-		} catch (final MimeTypeParseException e2) {
-			e2.printStackTrace();
-		}
-		final List<File> files = super.listFilesByMimePath(mimetype);
-		assertTrue("Files for " + mimetype.getPrimaryType() + " is null or empty.", files != null && !files.isEmpty());
+		final List<File> files = getFilesForMimeType(FILES_CLASSPATH_PDF);
 
 		PdfReader pdfReader = null;
 		PdfWriter pdfWriter = null;
@@ -519,14 +523,14 @@ public class ManualPdfTester extends AbstractFileHandler {
 					} catch (final Throwable e) {
 						System.out.println("** save ERROR " + e.getClass().getSimpleName() + ": "
 								+ StringUtils.substringBefore(e.getMessage(), "\n"));
-						if (printStackTrace) {
+						if (PRINT_STACKTRACES) {
 							e.printStackTrace();
 						}
 					}
 				} catch (final Throwable e) {
 					System.out.println("** pdfDocument ERROR " + e.getClass().getSimpleName() + ": "
 							+ StringUtils.substringBefore(e.getMessage(), "\n"));
-					if (printStackTrace) {
+					if (PRINT_STACKTRACES) {
 						e.printStackTrace();
 					}
 				} finally {
@@ -544,19 +548,22 @@ public class ManualPdfTester extends AbstractFileHandler {
 			} catch (final Throwable e) {
 				System.out.println("** readAllBytes ERROR " + e.getClass().getSimpleName() + ": "
 						+ StringUtils.substringBefore(e.getMessage(), "\n"));
-				if (printStackTrace) {
+				if (PRINT_STACKTRACES) {
 					e.printStackTrace();
 				}
 			}
 		} // end for()
 	}
 
-	/**
-	 * The POM must include pdfbox dependency
-	 */
-	@Test
-	public void testPdfBox() {
-
+	private List<File> getFilesForMimeType(final String classpathDir) {
+		MimeType mimetype = null;
+		try {
+			mimetype = new MimeType(classpathDir);
+		} catch (final MimeTypeParseException e2) {
+			e2.printStackTrace();
+		}
+		final List<File> files = super.listFilesByMimePath(mimetype);
+		assertTrue("Files for " + mimetype.getPrimaryType() + " is null or empty.", files != null && !files.isEmpty());
+		return files;
 	}
-
 }
