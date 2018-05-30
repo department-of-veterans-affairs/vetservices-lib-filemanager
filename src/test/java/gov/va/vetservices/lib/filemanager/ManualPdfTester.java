@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.itextpdf.forms.PdfAcroForm;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.FingerPrint;
@@ -397,6 +398,7 @@ public class ManualPdfTester extends AbstractFileHandler {
 									+ getTrailer.isString() + "\n........ toString:" + getTrailer.toString()));
 					final PdfVersion getPdfVersion = pdfDoc.getPdfVersion();
 					System.out.println(".. getPdfVersion:" + getPdfVersion.toString());
+
 					// PdfDocument -> PdfSignatures
 					final SignatureUtil sigutil = new SignatureUtil(pdfDoc);
 					final List<String> signames = sigutil.getSignatureNames();
@@ -408,7 +410,28 @@ public class ManualPdfTester extends AbstractFileHandler {
 							System.out.println("........ getTranslatedFieldName:" + sigutil.getTranslatedFieldName(signame));
 							System.out
 									.println("........ signatureCoversWholeDocument:" + sigutil.signatureCoversWholeDocument(signame));
+							System.out.println("........ getSignature.getName:" + sigutil.getSignature(signame).getName());
+							System.out.println("........ getSignature.getType:" + sigutil.getSignature(signame).getType().toString());
+							System.out.println(
+									"........ getSignature.getCert:" + (sigutil.getSignature(signame).getCert() == null ? "null"
+											: sigutil.getSignature(signame).getCert().getType()));
+							System.out.println("........ getSignature.getCert.getType:"
+									+ (sigutil.getSignature(signame).getCert() == null ? "null"
+											: sigutil.getSignature(signame).getCert().getType()));
+							System.out.println("........ getSignature.getCert.getValue:"
+									+ (sigutil.getSignature(signame).getCert() == null ? "null"
+											: sigutil.getSignature(signame).getCert().getValue()));
 						}
+					}
+
+					// PdfAcroForm
+					final PdfAcroForm acroform = PdfAcroForm.getAcroForm(pdfDoc, false);
+					System.out
+							.println(".. hasAcroForm:" + (acroform != null && acroform.getFormFields().size() > 0 ? "true" : "false"));
+					if (acroform != null) {
+						System.out.println(".. hasXfaForm:" + acroform.hasXfaForm());
+						System.out.println(".. getFormFields.size:"
+								+ (acroform.getFormFields() == null ? "null" : acroform.getFormFields().size()));
 					}
 
 				} catch (final Throwable e) {
@@ -479,7 +502,7 @@ public class ManualPdfTester extends AbstractFileHandler {
 
 //	@Ignore
 	@Test
-	public void testItext217_PdfA_Checker() {
+	public void testItext712_PdfA_Checker() {
 		final List<File> files = getFilesForMimeType(FILES_CLASSPATH_PDF);
 
 		PdfReader pdfReader = null;
