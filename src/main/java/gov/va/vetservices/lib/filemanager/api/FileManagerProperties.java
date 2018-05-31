@@ -34,35 +34,24 @@ public class FileManagerProperties {
 	/** Constant key for max filename length in bytes */
 	public static final String KEY_FILENAME_MAX_LENGTH = "filemanager.config.filname.max.length";
 
-	/* DEFAULT constants */
-
-	/** Constant for the default value of {@value #KEY_FILE_MAX_BYTES} */
-	protected static final String DEFAULT_FILE_MAX_BYTES = "26214400";
-	/** Constant for the default value of {@value #KEY_FILE_MAX_TEXT_MB} */
-	protected static final String DEFAULT_FILE_MAX_TEXT_MB = "25 MB";
-	/** Constant for the default value of {@value #KEY_FILE_MAX_TEXT_MB} */
-	protected static final String DEFAULT_FILENAME_MAX_LENGTH = "255";
-
 	/* SUPPORTING constants */
 
 	/** Array of characters that are not allowed at the beginning of a file names: {@code . / \ :} */
-	public static final String[] FILE_NAME_ILLEGAL_CHARS = { "/", "\\", ":" }; // NOSONAR - will be usedok
+	public static final String[] FILE_NAME_ILLEGAL_CHARS = { "/", "\\", ":" };
 	/** Constant for file extensions that are supported for conversion to PDF */
 	public static final String CONVERTIBLE_FILE_EXTENSIONS_STRING = Arrays.toString(ConvertibleTypesEnum.values());
-	/** Maximum length of absolute file path, constrained by lowest size allowed on common operating systems */
-	public static final int MAX_OS_FILEPATH_LENGTH = 4096;
 
 	/* MEMBERS FOR EXPOSED CONSTANTS */
 
-	// KEY_FILE_MAX_BYTES + ":" + DEFAULT_FILE_MAX_BYTES
+	// KEY_FILE_MAX_BYTES
 	@Value("${filemanager.config.file.max.bytes:26214400}")
 	private int maxFileBytes;
 
-	// KEY_FILE_MAX_TEXT_MB + ":" + DEFAULT_FILE_MAX_TEXT_MB
+	// KEY_FILE_MAX_TEXT_MB
 	@Value("${filemanager.config.file.max.text.megabytes:25 MB}")
 	private String maxFileMegaBytes;
 
-	// KEY_FILENAME_MAX_LENGTH + ":" + DEFAULT_FILENAME_MAX_LENGTH
+	// KEY_FILENAME_MAX_LENGTH
 	@Value("${filemanager.config.filname.max.length:255}")
 	private int maxFilenameLen;
 
@@ -71,7 +60,8 @@ public class FileManagerProperties {
 	 * The max size that a file can be, expressed in actual bytes.
 	 * <p>
 	 * This property can be overridden by including it in the application configuration as:<br/>
-	 * {@value #KEY_FILE_MAX_BYTES} (default is {@value #DEFAULT_FILE_MAX_BYTES}, equivalent to {@value #DEFAULT_FILE_MAX_TEXT_MB}).
+	 * {@link FileManagerProperties#KEY_FILE_MAX_BYTES} ({@value #KEY_FILE_MAX_BYTES}) - default is 26,214,400 bytes, equivalent to 25
+	 * MB.
 	 *
 	 * @return the maxFileBytes
 	 */
@@ -84,8 +74,8 @@ public class FileManagerProperties {
 	 * The max size that a file can be, expressed in the common vernacular of rounded megabytes.
 	 * <p>
 	 * This property can be overridden by including it in the application configuration as:<br/>
-	 * {@value #KEY_FILE_MAX_TEXT_MB} (default is {@value #DEFAULT_FILE_MAX_TEXT_MB}, equivalent to {@value #DEFAULT_FILE_MAX_BYTES}
-	 * bytes).
+	 * {@link FileManagerProperties#KEY_FILE_MAX_TEXT_MB} ({@value #KEY_FILE_MAX_TEXT_MB}) - default is 25 MB, equivalent to 26,214,400
+	 * bytes.
 	 *
 	 * @return the maxFileMegaBytes
 	 */
@@ -97,8 +87,7 @@ public class FileManagerProperties {
 	 * The max length that a filename (without path elements) can be in bytes.
 	 * <p>
 	 * This property can be overridden by including it in the application configuration as:<br/>
-	 * {@value #KEY_FILE_MAX_TEXT_MB} (default is {@value #DEFAULT_FILE_MAX_TEXT_MB}, equivalent to {@value #DEFAULT_FILE_MAX_BYTES}
-	 * bytes).
+	 * {@link FileManagerProperties#KEY_FILENAME_MAX_LENGTH} ({@value #KEY_FILENAME_MAX_LENGTH}) - default is 255 characters.
 	 *
 	 * @return the maxFilenameLen
 	 */

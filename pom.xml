@@ -121,7 +121,7 @@
 				This allows executions in the maven-jaxb2-plugin to function
 				without regenerating the classes declared in the framework XSD.
 				- ascent-framework classes are bound in jaxb-bindings.xjb
-				- ascent-framework classes are referenced in intenttofileApiModel.xsd
+				- ascent-framework classes are referenced in filemanager-api.xsd
 			-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

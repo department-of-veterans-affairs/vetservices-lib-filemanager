@@ -3,7 +3,6 @@ package gov.va.vetservices.lib.filemanager.api;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerRequest;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
-import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 
 /**
  * The public interface for operations contained in this artifact.

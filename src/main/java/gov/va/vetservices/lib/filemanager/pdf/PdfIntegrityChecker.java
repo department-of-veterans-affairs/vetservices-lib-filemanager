@@ -36,8 +36,7 @@ public class PdfIntegrityChecker {
 	private static final String MSG_PDF_FILE = "PDF file ";
 	private static final String MSG_IS_UNREADABLE = " is unreadable.";
 
-	// NOSONAR TODO find out how to reliably identify PDFs that are corrupt or otherwise locked
-	public boolean isReadable(final byte[] bytes, String filename) throws FileManagerException {
+	public boolean isReadable(final byte[] bytes, final String filename) throws FileManagerException {
 		boolean isreadable = false;
 
 		PdfReader pdfReader = null;
@@ -54,14 +53,14 @@ public class PdfIntegrityChecker {
 				isreadable = true;
 
 			} else {
-				MessageKeysEnum msg = MessageKeysEnum.PDF_UNREADABLE;
+				final MessageKeysEnum msg = MessageKeysEnum.PDF_UNREADABLE;
 				throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
 			}
 		} finally {
 			if (pdfReader != null) {
 				try {
 					pdfReader.close();
-				} catch (Throwable e) { // NOSONAR squid:S1166
+				} catch (final Throwable e) { // NOSONAR squid:S1166
 					LOGGER.debug("Couldn't close PdfReader.");
 				}
 			}
@@ -77,12 +76,12 @@ public class PdfIntegrityChecker {
 	 * @return PdfReader the PdfReader
 	 * @throws IOException if bytes cannot be read
 	 */
-	protected PdfReader newPdfReader(byte[] bytes, String filename) throws FileManagerException {
+	protected PdfReader newPdfReader(final byte[] bytes, final String filename) throws FileManagerException {
 		PdfReader reader = null;
-		if ((bytes != null) && (bytes.length > 0) && !StringUtils.isBlank(filename)) {
+		if (bytes != null && bytes.length > 0 && !StringUtils.isBlank(filename)) {
 			try {
 				reader = new PdfReader(bytes);
-			} catch (Throwable e) { // NOSONAR squid:S1166
+			} catch (final Throwable e) { // NOSONAR squid:S1166
 				isUnreadableEncryptor(e, filename);
 				isCorrupt(e, filename);
 				isPasswordEditProtected(e, filename);
@@ -105,13 +104,13 @@ public class PdfIntegrityChecker {
 	 * @throws FileManagerException thrown if file is encrypted
 	 */
 // NOSONAR TODO Need to find a better way to do this - will have to wait for the rest of the capabilities to be coded
-	protected final void isLocked(PdfReader pdfReader, String filename) throws FileManagerException {
+	protected final void isLocked(final PdfReader pdfReader, final String filename) throws FileManagerException {
 		boolean islocked = false;
 		MessageKeysEnum msg = MessageKeysEnum.PDF_LOCKED;
 
 		try {
 			islocked = pdfReader.isEncrypted() || pdfReader.is128Key() || pdfReader.isMetadataEncrypted();
-		} catch (Throwable e) { // NOSONAR - intentional
+		} catch (final Throwable e) { // NOSONAR - intentional
 			msg = MessageKeysEnum.PDF_CONTENT_INVALID;
 			islocked = true;
 		}
@@ -128,13 +127,13 @@ public class PdfIntegrityChecker {
 	 * @param filename the name of the file
 	 * @throws FileManagerException thrown if file is tampered
 	 */
-	protected final void isTampered(PdfReader pdfReader, String filename) throws FileManagerException {
+	protected final void isTampered(final PdfReader pdfReader, final String filename) throws FileManagerException {
 		boolean istampered = false;
 		MessageKeysEnum msg = MessageKeysEnum.PDF_TAMPERED;
 
 		try {
 			istampered = pdfReader.isTampered();
-		} catch (Throwable e) { // NOSONAR - intentional
+		} catch (final Throwable e) { // NOSONAR - intentional
 			msg = MessageKeysEnum.PDF_CONTENT_INVALID;
 			istampered = true;
 		}
@@ -146,13 +145,13 @@ public class PdfIntegrityChecker {
 
 	/**
 	 * If exception message indicates a corrupt file, throws FileManagerException with PDF_UNREADABLE message.
-	 * 
+	 *
 	 * @param e the cause
 	 * @param filename the filename associated with file
 	 * @throws FileManagerException exception with PDF_UNREADABLE message
 	 */
-	protected void isCorrupt(Throwable e, String filename) throws FileManagerException {
-		if ((e.getMessage() != null) && StringUtils.containsAny(e.getMessage(), THROWABLE_CORRUPT_1, THROWABLE_CORRUPT_2)) {
+	protected void isCorrupt(final Throwable e, final String filename) throws FileManagerException {
+		if (e.getMessage() != null && StringUtils.containsAny(e.getMessage(), THROWABLE_CORRUPT_1, THROWABLE_CORRUPT_2)) {
 			LOGGER.info(MSG_PDF_FILE + filename + MSG_IS_UNREADABLE, e);
 			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(),
 					MessageKeysEnum.PDF_UNREADABLE.getMessage(), filename, REASON_CORRUPT);
@@ -161,13 +160,13 @@ public class PdfIntegrityChecker {
 
 	/**
 	 * If exception message indicates the file is password protected, throws FileManagerException with PDF_UNREADABLE message.
-	 * 
+	 *
 	 * @param e the cause
 	 * @param filename the filename associated with file
 	 * @throws FileManagerException exception with PDF_UNREADABLE message
 	 */
-	protected void isPasswordEditProtected(Throwable e, String filename) throws FileManagerException {
-		if ((e.getMessage() != null) && e.getMessage().contains(THROWABLE_PW_EDIT)) {
+	protected void isPasswordEditProtected(final Throwable e, final String filename) throws FileManagerException {
+		if (e.getMessage() != null && e.getMessage().contains(THROWABLE_PW_EDIT)) {
 			LOGGER.info(MSG_PDF_FILE + filename + MSG_IS_UNREADABLE, e);
 			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(),
 					MessageKeysEnum.PDF_UNREADABLE.getMessage(), filename, REASON_PW_EDIT);
@@ -176,13 +175,13 @@ public class PdfIntegrityChecker {
 
 	/**
 	 * If exception message indicates the file is encrypted, throws FileManagerException with PDF_UNREADABLE message.
-	 * 
+	 *
 	 * @param e the cause
 	 * @param filename the filename associated with file
 	 * @throws FileManagerException exception with PDF_UNREADABLE message
 	 */
-	protected void isUnreadableEncryptor(Throwable e, String filename) throws FileManagerException {
-		if ((e.getMessage() != null) && e.getMessage().contains(THROWABLE_UNREADABLE_ENCRYPTOR)) {
+	protected void isUnreadableEncryptor(final Throwable e, final String filename) throws FileManagerException {
+		if (e.getMessage() != null && e.getMessage().contains(THROWABLE_UNREADABLE_ENCRYPTOR)) {
 			LOGGER.info(MSG_PDF_FILE + filename + MSG_IS_UNREADABLE, e);
 			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(),
 					MessageKeysEnum.PDF_UNREADABLE.getMessage(), filename, REASON_UNREADABLE_ENCRYPTOR);
