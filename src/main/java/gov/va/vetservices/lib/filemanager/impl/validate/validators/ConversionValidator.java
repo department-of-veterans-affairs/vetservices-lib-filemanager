@@ -34,17 +34,15 @@ public class ConversionValidator implements Validator<ImplDto> {
 	 * <p>
 	 */
 	@Override
-	public List<Message> validate(ImplArgDto<ImplDto> toValidate) {
-		if ((toValidate == null) || (toValidate.getValue() == null)) {
-			MessageKeysEnum msg = MessageKeysEnum.UNEXPECTED_ERROR;
-			Message message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
+	public List<Message> validate(final ImplArgDto<ImplDto> toValidate) {
+		if (toValidate == null || toValidate.getValue() == null) {
+			final MessageKeysEnum msg = MessageKeysEnum.UNEXPECTED_ERROR;
+			final Message message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
 			return Arrays.asList(new Message[] { message });
 		}
 
-		// NOSONAR TODO requires conversion and stamping code to be written first
-		List<Message> list = null; // new ArrayList<>(); // NOSONAR
-// NOSONAR		list.add(new Message(MessageSeverity.ERROR, "UNFINISHED.WORK",
-// NOSONAR				"ConversionValidator has not yet been completed. Search for TODO."));
+		// NOSONAR TODO would use iText 7 "checker" class(es) as template to validate all objects in the PDF.
+		final List<Message> list = null; // NOSONAR
 		return list; // NOSONAR
 	}
 

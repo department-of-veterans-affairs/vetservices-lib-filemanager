@@ -57,33 +57,33 @@ public class FilenameValidator implements Validator<ImplDto> {
 	 * <p>
 	 */
 	@Override
-	public List<Message> validate(ImplArgDto<ImplDto> toValidate) {  // NOSONAR - shut up complaint about cyclomatic complexity
-		if ((toValidate == null) || (toValidate.getValue() == null)) {
-			MessageKeysEnum msg = MessageKeysEnum.UNEXPECTED_ERROR;
-			Message message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
+	public List<Message> validate(final ImplArgDto<ImplDto> toValidate) {  // NOSONAR - shut up complaint about cyclomatic complexity
+		if (toValidate == null || toValidate.getValue() == null) {
+			final MessageKeysEnum msg = MessageKeysEnum.UNEXPECTED_ERROR;
+			final Message message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
 			return Arrays.asList(new Message[] { message });
 		}
 
-		ImplDto implDto = toValidate.getValue();
+		final ImplDto implDto = toValidate.getValue();
 
 		if (implDto.getOriginalFileDto() == null) {
 
 			addError(implDto, MessageKeysEnum.FILE_DTO_NULL);
 
-		} else if (StringUtils.isBlank(implDto.getOriginalFileDto().getFilename()) || StringUtils.isBlank(implDto.getFileParts().getName())
+		} else if (StringUtils.isBlank(implDto.getOriginalFileDto().getFilename())
+				|| StringUtils.isBlank(implDto.getFileParts().getName())
 				|| StringUtils.isBlank(implDto.getFileParts().getExtension())) {
 
 			addError(implDto, MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY);
 
 		} else if (StringUtils.isBlank(implDto.getOriginalFileDto().getFilename())
-				|| (implDto.getOriginalFileDto().getFilename().length() > fileManagerProperties.getMaxFilenameLen())) {
+				|| implDto.getOriginalFileDto().getFilename().length() > fileManagerProperties.getMaxFilenameLen()) {
 
 			addError(implDto, MessageKeysEnum.FILE_NAME_TOO_LONG);
 
 		} else if (StringUtils.containsAny(implDto.getFileParts().getName(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)
 				|| StringUtils.containsAny(implDto.getFileParts().getExtension(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)) {
 
-			// NOSONAR TODO need to add character filter validations from wss web and service regex validations
 			addError(implDto, MessageKeysEnum.FILE_NAME_MALFORMED);
 
 		}
@@ -97,7 +97,7 @@ public class FilenameValidator implements Validator<ImplDto> {
 	 * @param implDto the ImplDto
 	 * @param messageKey the {@link MessageKeysEnum} enumeration for key and message
 	 */
-	private void addError(ImplDto implDto, MessageKeysEnum messageKey) {
+	private void addError(final ImplDto implDto, final MessageKeysEnum messageKey) {
 		implDto.addMessage(new Message(MessageSeverity.ERROR, messageKey.getKey(), messageKey.getMessage()));
 	}
 
