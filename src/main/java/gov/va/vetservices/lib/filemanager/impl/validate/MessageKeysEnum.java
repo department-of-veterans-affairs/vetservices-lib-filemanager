@@ -66,7 +66,7 @@ public enum MessageKeysEnum {
 	PDF_CONTENT_INVALID("filemanager.pdf.content.invalid", "The content of {0} is locked, corrput or otherwise invalid."),
 	/** The PDF is locked with Adobe encryption. <b>Args:</b> {@code filename} */
 	PDF_LOCKED("filemanager.pdf.locked", "The file {0} is locked with Adobe encryption. Unlock the PDF file."),
-	/** The PDF is locked with Adobe encryption. <b>Args:</b> {@code filename} */
+	/** The PDF has been tampered with. <b>Args:</b> {@code filename} */
 	PDF_TAMPERED("filemanager.pdf.tampered", "The file {0} is signed and has been tampered with."),
 	/** PDF is unreadable. <b>Args:</b> {@code filename, reason (corrupt, tampered with, etc)} */
 	PDF_UNREADABLE("filemanager.pdf.unreadable", "The file {0} cannot be read. The file is {1}."),
@@ -98,7 +98,7 @@ public enum MessageKeysEnum {
 		 */
 		@PostConstruct
 		public void postConstruct() {
-			for (MessageKeysEnum mke : EnumSet.allOf(MessageKeysEnum.class)) {
+			for (final MessageKeysEnum mke : EnumSet.allOf(MessageKeysEnum.class)) {
 				mke.setFileManagerProperties(fileManagerProperties);
 			}
 		}
@@ -116,7 +116,7 @@ public enum MessageKeysEnum {
 	 * @param key the message key
 	 * @param message the explanatory message
 	 */
-	MessageKeysEnum(String key, String message) {
+	MessageKeysEnum(final String key, final String message) {
 		this.key = key;
 		this.message = message;
 	}
@@ -135,7 +135,7 @@ public enum MessageKeysEnum {
 	 *
 	 * @param fileManagerProperties
 	 */
-	private void setFileManagerProperties(FileManagerProperties fileManagerProperties) { // NOSONAR must be outside the injector
+	private void setFileManagerProperties(final FileManagerProperties fileManagerProperties) { // NOSONAR must be outside the injector
 		this.fileManagerProperties = fileManagerProperties;
 	}
 

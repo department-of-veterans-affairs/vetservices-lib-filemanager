@@ -1,7 +1,8 @@
 package gov.va.vetservices.lib.filemanager.pdf.stamp.dto;
 
+import com.itextpdf.io.font.constants.StandardFonts;
+
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
-import gov.va.vetservices.lib.filemanager.pdf.font.FontNameEnum;
 
 /**
  * Data that will be used to print onto the header area of the PDF.
@@ -10,26 +11,31 @@ import gov.va.vetservices.lib.filemanager.pdf.font.FontNameEnum;
  */
 public class StampDataDto {
 
-	private FontNameEnum fontNameEnum = FontNameEnum.COURIER;
+	private String fontName = StandardFonts.COURIER;
 	private int fontSizeInPoints = 10;
 	private ProcessType processType;
 
 	/**
-	 * Returns the {@link FontNameEnum} enumeration.
+	 * Returns the {@link StandardFonts} font name.
 	 *
-	 * @return FontNameEnum the font name
+	 * @return String the font name
 	 */
-	public FontNameEnum getFontName() {
-		return fontNameEnum;
+	public String getFontName() {
+		return fontName;
 	}
 
 	/**
-	 * Set the {@link FontNameEnum} enumeration. Default value is {@code FontNameEnum.COURIER}.
+	 * Set the {@link StandardFonts} font name. Default value is {@code StandardFonts.COURIER}.
+	 * If the font name does not appear in the StandardFonts enumeration, the default font is applied.
 	 *
-	 * @param fontNameEnum the font name to set
+	 * @param fontName the font name to set
 	 */
-	public void setFontName(FontNameEnum fontNameEnum) {
-		this.fontNameEnum = fontNameEnum;
+	public void setFontName(final String fontName) {
+		if (StandardFonts.isStandardFont(fontName)) {
+			this.fontName = fontName;
+		} else {
+			this.fontName = StandardFonts.COURIER;
+		}
 	}
 
 	/**
@@ -46,13 +52,13 @@ public class StampDataDto {
 	 *
 	 * @param fontSizeInPoints the font size in points
 	 */
-	public void setFontSizeInPoints(int fontSizeInPoints) {
+	public void setFontSizeInPoints(final int fontSizeInPoints) {
 		this.fontSizeInPoints = fontSizeInPoints;
 	}
 
 	/**
 	 * Gets the ProcessType from which the stamp text is derived. There is no default for this field.
-	 * 
+	 *
 	 * @return the processType
 	 */
 	public ProcessType getProcessType() {
@@ -61,10 +67,10 @@ public class StampDataDto {
 
 	/**
 	 * Sets the ProcessType from which the stamp text is derived. There is no default for this field.
-	 * 
+	 *
 	 * @param processType the processType to set
 	 */
-	public void setProcessType(ProcessType processType) {
+	public void setProcessType(final ProcessType processType) {
 		this.processType = processType;
 	}
 

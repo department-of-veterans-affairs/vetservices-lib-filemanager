@@ -36,8 +36,8 @@ public class FileManagerProperties {
 
 	/* SUPPORTING constants */
 
-	/** Array of characters that are not allowed at the beginning of a file names: {@code . / \ :} */
-	public static final String[] FILE_NAME_ILLEGAL_CHARS = { "/", "\\", ":" };
+	/** Array of characters that are not allowed at the beginning of a file names: {@code / \ :} */
+	public static final String[] FILE_NAME_ILLEGAL_CHARS = { "/", "\\", ":" }; // NOSONAR - it is intended to expose this publicly
 	/** Constant for file extensions that are supported for conversion to PDF */
 	public static final String CONVERTIBLE_FILE_EXTENSIONS_STRING = Arrays.toString(ConvertibleTypesEnum.values());
 

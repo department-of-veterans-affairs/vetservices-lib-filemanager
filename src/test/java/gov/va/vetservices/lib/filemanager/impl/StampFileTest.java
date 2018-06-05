@@ -31,27 +31,27 @@ public class StampFileTest extends AbstractFileHandler {
 	}
 
 	@Test
-	public final void testDoStamp() {
-		FileDto pdfFileDto = new FileDto();
+	public final void testStampPdf() {
+		final FileDto pdfFileDto = new FileDto();
 		try {
 			pdfFileDto.setFilebytes(super.readFile(Paths.get(PATH_PDF)));
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 			e1.printStackTrace();
 			fail("Could not read file: " + PATH_PDF);
 		}
 		pdfFileDto.setFilename(Paths.get(PATH_PDF).getFileName().toString());
-		DocMetadataDto docMetadata = new DocMetadataDto();
+		final DocMetadataDto docMetadata = new DocMetadataDto();
 		docMetadata.setClaimId(claimId);
 		docMetadata.setDocTypeId(docTypeId);
 		docMetadata.setProcessType(ProcessType.CLAIMS_526);
-		ImplDto implDto = new ImplDto();
+		final ImplDto implDto = new ImplDto();
 		implDto.setDocMetadataDto(docMetadata);
 		implDto.setPdfFileDto(pdfFileDto);
 		implDto.setProcessType(ProcessType.CLAIMS_526);
 
 		try {
 			stampFile.stampPdf(implDto);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			e.printStackTrace();
 			fail("Unexpected exception");
 		}
@@ -61,35 +61,35 @@ public class StampFileTest extends AbstractFileHandler {
 	}
 
 	@Test
-	public final void testDoStamp_Sad() {
+	public final void testStampPdf_Sad() {
 
 		try {
 			stampFile.stampPdf(null);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			assertNotNull(e);
 			assertTrue(IllegalArgumentException.class.equals(e.getClass()));
 		}
 
-		FileDto pdfFileDto = new FileDto();
+		final FileDto pdfFileDto = new FileDto();
 		try {
 			pdfFileDto.setFilebytes(super.readFile(Paths.get(PATH_PDF)));
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 			e1.printStackTrace();
 			fail("Could not read file: " + PATH_PDF);
 		}
 		pdfFileDto.setFilename(Paths.get(PATH_PDF).getFileName().toString());
-		DocMetadataDto docMetadata = new DocMetadataDto();
+		final DocMetadataDto docMetadata = new DocMetadataDto();
 		docMetadata.setClaimId(null);
 		docMetadata.setDocTypeId(docTypeId);
 		docMetadata.setProcessType(ProcessType.CLAIMS_526);
-		ImplDto implDto = new ImplDto();
+		final ImplDto implDto = new ImplDto();
 		implDto.setDocMetadataDto(docMetadata);
 		implDto.setPdfFileDto(pdfFileDto);
 		implDto.setProcessType(ProcessType.CLAIMS_526);
 
 		try {
 			stampFile.stampPdf(implDto);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			e.printStackTrace();
 			fail("Unexpected exception");
 		}

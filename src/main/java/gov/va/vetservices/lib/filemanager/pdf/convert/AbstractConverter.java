@@ -8,12 +8,6 @@ import java.nio.charset.Charset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.pdf.PdfWriter;
-
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
@@ -46,18 +40,6 @@ public abstract class AbstractConverter {
 	public abstract byte[] getPdf(byte[] bytes, FilePartsDto parts) throws FileManagerException;
 
 	/**
-	 * Set page dimensions and open the iText PDF @link Document}.
-	 *
-	 * @param pdfDocument the iText Document
-	 * @throws DocumentException some problem using the provided Document
-	 */
-	protected void initializePdfDocument(final Document pdfDocument) throws DocumentException {
-		pdfDocument.setPageSize(PageSize.LETTER);
-		pdfDocument.open();
-		pdfDocument.add(new Paragraph(NEW_LINE));
-	}
-
-	/**
 	 * Get an input stream reader that can be used to read a text file byte stream one line at a time.
 	 *
 	 * @param bytes the text file bytes
@@ -76,36 +58,12 @@ public abstract class AbstractConverter {
 	 * @param filename the filename argument for {@link java.text.MessageFormat} processing on the message
 	 * @throws PdfConverterException the PDF Conversion Processing exception
 	 */
-	protected void doThrowException(Throwable e, String filename) throws PdfConverterException {
-		MessageKeysEnum messageKeys = MessageKeysEnum.PDF_CONVERSION_PROCESSING;
+	protected void doThrowException(final Throwable e, final String filename) throws PdfConverterException {
+		final MessageKeysEnum messageKeys = MessageKeysEnum.PDF_CONVERSION_PROCESSING;
 
 		LOGGER.error(messageKeys.getKey() + ": " + messageKeys.getMessage(), e);
 		throw new PdfConverterException(e, MessageSeverity.ERROR, messageKeys.getKey(), messageKeys.getMessage(), filename,
 				e.getMessage());
 	}
 
-	/**
-	 * Close the PDF document and writer.
-	 *
-	 * @param pdfDocument the document
-	 * @param pdfWriter the writer
-	 */
-	protected void doClose(final Document pdfDocument, final PdfWriter pdfWriter) {
-		// close pdfDocument
-		try {
-			if (pdfDocument != null) {
-				pdfDocument.close();
-			}
-		} catch (final Exception e) { // NOSONAR - intentionally catching generic exception
-			LOGGER.error("document.close() failed", e);
-		}
-		// close pdfWriter
-		try {
-			if (pdfWriter != null) {
-				pdfWriter.close();
-			}
-		} catch (final Exception e) { // NOSONAR - intentionally catching generic exception
-			LOGGER.error("writer.close() failed", e);
-		}
-	}
 }

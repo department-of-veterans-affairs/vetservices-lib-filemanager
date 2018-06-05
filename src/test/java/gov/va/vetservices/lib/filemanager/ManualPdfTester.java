@@ -12,11 +12,8 @@ import java.util.List;
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -28,16 +25,9 @@ import com.itextpdf.kernel.pdf.PdfAConformanceLevel;
 import com.itextpdf.kernel.pdf.PdfArray;
 import com.itextpdf.kernel.pdf.PdfCatalog;
 import com.itextpdf.kernel.pdf.PdfDictionary;
-import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfDocumentInfo;
 import com.itextpdf.kernel.pdf.PdfName;
 import com.itextpdf.kernel.pdf.PdfPage;
-//import com.lowagie.text.pdf.AcroFields;
-//import com.lowagie.text.pdf.PRAcroForm;
-//import com.lowagie.text.pdf.PdfArray;
-//import com.lowagie.text.pdf.PdfDictionary;
-//import com.lowagie.text.pdf.PdfName;
-//import com.lowagie.text.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfString;
 import com.itextpdf.kernel.pdf.PdfVersion;
@@ -51,6 +41,8 @@ import com.itextpdf.signatures.SignatureUtil;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
 import gov.va.vetservices.lib.filemanager.impl.dto.DocMetadataDto;
+import gov.va.vetservices.lib.filemanager.pdf.itext.ItextUtils;
+import gov.va.vetservices.lib.filemanager.pdf.itext.LayoutAwarePdfDocument;
 import gov.va.vetservices.lib.filemanager.pdf.stamp.Stamper;
 import gov.va.vetservices.lib.filemanager.pdf.stamp.dto.StampDataDto;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
@@ -65,203 +57,19 @@ import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 public class ManualPdfTester extends AbstractFileHandler {
 
 	/* setting this value true engages iText7 "unethicalReading" to decrypt password protections when possible */
-	private static final boolean READ_PROTECTED_FILES = true;
-	private static final boolean PRINT_STACKTRACES = false;
+	private static final boolean READ_PROTECTED_FILES = false;
+	private static final boolean PRINT_STACKTRACES = true;
 
 	private static final String CLAIM_ID = "11111";
 	private static final String DOC_TYPE_ID = "123";
 
 	private static final String FILES_CLASSPATH_PDF = "application/pdf";
 
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
-
 	@Ignore
-	@Test
-	public final void testTikaItext217() {
-//		Stamper stamper = new Stamper();
-//		StampDataDto stampDataDto = new StampDataDto();
-//		stampDataDto.setProcessType(ProcessType.CLAIMS_526);
-//		MimeType mimetype = null;
-//		try {
-//			mimetype = new MimeType(FILES_CLASSPATH_PDF);
-//		} catch (MimeTypeParseException e2) {
-//			e2.printStackTrace();
-//		}
-//		List<File> files = super.listFilesByMimePath(mimetype);
-//		assertTrue("Files for " + mimetype.getPrimaryType() + " is null or empty.", (files != null) && !files.isEmpty());
-//
-//		PdfReader pdfReader = null;
-//		for (File file : files) {
-//			if (!file.exists()) {
-//				fail("File enumerated by " + super.getClass().getSimpleName() + ".getFilesByMimePath() returned non-existent file "
-//						+ file.getPath());
-//			}
-//
-//			System.out.println(StringUtils.repeat("-", 80));
-//			System.out.println("File: " + file.getName());
-//			byte[] bytes;
-//			try {
-//				bytes = Files.readAllBytes(file.toPath());
-//
-//				try {
-//					pdfReader = new PdfReader(bytes);
-//					// built in tests
-//					int fileLen = pdfReader.getFileLength();
-//					System.out.println(".. file length:" + fileLen);
-//					boolean is128Key = pdfReader.is128Key();
-//					System.out.println(".. is128Key:" + is128Key);
-//					boolean isAppendable = pdfReader.isAppendable();
-//					System.out.println(".. isAppendable:" + isAppendable);
-//					boolean isEncrypted = pdfReader.isEncrypted();
-//					System.out.println(".. isEncrypted:" + isEncrypted);
-//					boolean isMetadataEncrypted = pdfReader.isMetadataEncrypted();
-//					System.out.println(".. isMetadataEncrypted:" + isMetadataEncrypted);
-//					boolean isNewXrefType = pdfReader.isNewXrefType();
-//					System.out.println(".. isNewXrefType:" + isNewXrefType);
-//					boolean isOpenedWithFullPermissions = pdfReader.isOpenedWithFullPermissions();
-//					System.out.println(".. isOpenedWithFullPermissions:" + isOpenedWithFullPermissions);
-//					boolean isRebuilt = pdfReader.isRebuilt();
-//					System.out.println(".. isRebuilt:" + isRebuilt);
-//					boolean isTampered = pdfReader.isTampered();
-//					System.out.println(".. isTampered:" + isTampered);
-//					// get file info
-//					int certLevel = pdfReader.getCertificationLevel();
-//					System.out.println(".. certLevel:" + certLevel);
-//					int permissions = pdfReader.getPermissions();
-//					System.out.println(".. permissions:" + permissions);
-//					int cryptoMode = pdfReader.getCryptoMode();
-//					System.out.println(".. cryptoMode:" + cryptoMode);
-//					HashMap<?, ?> info = pdfReader.getInfo();
-//					System.out.println(".. info:" + info);
-//					byte[] metadata = pdfReader.getMetadata();
-//					System.out.println(".. metadata:" + metadata); // new String(metadata));
-//					char pdfVersion = pdfReader.getPdfVersion();
-//					System.out.println(".. pdfVersion:" + pdfVersion);
-//					AcroFields acroFields = pdfReader.getAcroFields();
-//					System.out.println(".. signature names: "
-//							+ ((acroFields != null) && (acroFields.getSignatureNames() != null) ? acroFields.getSignatureNames().size()
-//									: "null"));
-//					if ((acroFields != null) && (acroFields.getSignatureNames() != null)) {
-//						for (Object signame : acroFields.getSignatureNames()) {
-//							System.out.println("...... " + (signame == null ? "null" : (String) signame));
-//						}
-//					}
-//					PRAcroForm acroForm = pdfReader.getAcroForm();
-//					System.out
-//							.println(".. acroForm can be in ObjectStream: " + (acroForm == null ? "null" : acroForm.canBeInObjStm()));
-//					PdfDictionary dict = pdfReader.getCatalog();
-//					System.out.println(".. dictionary key/value pairs: " + (dict == null ? "null" : dict.size()));
-//					if (dict != null) {
-//						for (Object key : dict.getKeys()) {
-//							System.out.println("...... " + ((PdfName) key).toString() + " (type " + ((PdfName) key).type() + "): "
-//									+ StringUtils.replace(dict.get((PdfName) key).toString(), "\n", "_"));
-//						}
-//					}
-//					PdfDictionary trailer = pdfReader.getTrailer();
-//					System.out.println(".. trailer: key/value pairs: " + (trailer == null ? "null" : trailer.size()));
-//					if (trailer != null) {
-//						for (Object key : trailer.getKeys()) {
-//							System.out.println("...... " + ((PdfName) key).toString() + " (type " + ((PdfName) key).type() + "): "
-//									+ StringUtils.replace(trailer.get((PdfName) key).toString(), "\n", "_"));
-//						}
-//					}
-//					int xrefs = pdfReader.getXrefSize();
-//					System.out.println(".. xref number: " + xrefs);
-//					@SuppressWarnings("unchecked")
-//					HashMap<PdfName, PdfArray> namedest = pdfReader.getNamedDestination();
-//					System.out.println(".. named Destinations: " + (namedest == null ? "null" : namedest.size()));
-//					if (namedest != null) {
-//						for (PdfName name : namedest.keySet()) {
-//							System.out.println("...... " + name.toString() + ": " + namedest.get(name));
-//						}
-//					}
-//					int numPages = pdfReader.getNumberOfPages();
-//					System.out.println(".. number of pages: " + numPages);
-//					int simpleViewerPrefs = pdfReader.getSimpleViewerPreferences();
-//					System.out.println(".. Simple Viewer Prefs: " + simpleViewerPrefs);
-//
-//					// attempt to modify
-//					// PRIndirectReference addPdfObject = pdfReader.addPdfObject(new PdfObject());
-//					pdfReader.setAppendable(true);
-//					System.out.println(".. set appendable succeeded");
-//					pdfReader.setPageContent(1, "Hello!".getBytes());
-//					System.out.println(".. set page content succeeded");
-//					byte[] pageContent = pdfReader.getPageContent(1);
-//					System.out.println(".. pagecontent: " + new String(pageContent));
-//
-//				} catch (Throwable e) {
-//					System.out.println("** pdfReader ERROR " + e.getClass().getSimpleName() + ": "
-//							+ StringUtils.substringBefore(e.getMessage(), "\n"));
-//					if (printStackTrace) {
-//						e.printStackTrace();
-//					}
-//				} finally {
-//					if (pdfReader != null) {
-//						try {
-//							pdfReader.close();
-//						} catch (Throwable e) {
-//							System.out.println("** Closing pdfReader ERROR " + e.getClass().getSimpleName() + ": "
-//									+ StringUtils.substringBefore(e.getMessage(), "\n"));
-//						}
-//					}
-//				}
-//				byte[] pdf = null;
-//				try {
-//					DocMetadataDto docMetadata = new DocMetadataDto();
-//					docMetadata.setClaimId(claimId);
-//					docMetadata.setDocTypeId(docTypeId);
-//					docMetadata.setProcessType(ProcessType.CLAIMS_526);
-//					FileDto fileDto = new FileDto();
-//					fileDto.setFilename(file.getName());
-//					fileDto.setFilebytes(bytes);
-//					pdf = stamper.stamp(docMetadata, stampDataDto, fileDto);
-//					System.out.println(".. stamped " + file.getName());
-//				} catch (Throwable e) {
-//					System.out.println("** Stamper ERROR " + e.getClass().getSimpleName() + ": "
-//							+ StringUtils.substringBefore(e.getMessage(), "\n"));
-//					if (printStackTrace) {
-//						e.printStackTrace();
-//					}
-//				}
-//				try {
-//					if (pdf != null) {
-//						super.saveFile(pdf, file.getName());
-//						System.out.println(".. saved " + file.getName());
-//					}
-//				} catch (Throwable e) {
-//					System.out.println("** save ERROR " + e.getClass().getSimpleName() + ": "
-//							+ StringUtils.substringBefore(e.getMessage(), "\n"));
-//					if (printStackTrace) {
-//						e.printStackTrace();
-//					}
-//				}
-//
-//			} catch (Throwable e) {
-//				System.out.println("** readAllBytes ERROR " + e.getClass().getSimpleName() + ": "
-//						+ StringUtils.substringBefore(e.getMessage(), "\n"));
-//				if (printStackTrace) {
-//					e.printStackTrace();
-//				}
-//			} finally {
-//				bytes = null;
-//			}
-//		} // end for(){
-		assertTrue(true);
-	}
-
 	@Test
 	public final void testTikaItext712() {
 		final List<File> files = getFilesForMimeType(FILES_CLASSPATH_PDF);
 
-		PdfReader pdfReader = null;
-		PdfWriter pdfWriter = null;
-		PdfDocument pdfDoc = null;
 		for (final File file : files) {
 			if (!file.exists()) {
 				fail("File enumerated by " + super.getClass().getSimpleName() + ".getFilesByMimePath() returned non-existent file "
@@ -270,16 +78,18 @@ public class ManualPdfTester extends AbstractFileHandler {
 
 			System.out.println(StringUtils.repeat("-", 80));
 			System.out.println("File: " + file.getName());
-			InputStream inputstream = null;
-			ByteArrayOutputStream outputstream = null;
+
+			PdfReader pdfReader = null;
 			try {
-				inputstream = Files.newInputStream(file.toPath());
-				pdfReader = new PdfReader(inputstream);
+				// use common method of getting reader ...
+				pdfReader = ItextUtils.getPdfReader(Files.readAllBytes(file.toPath()));
+				// read protected files? does not work for cert encrypted files ...
 				pdfReader.setUnethicalReading(READ_PROTECTED_FILES);
 				System.out.println("readProtectedAnyway:" + READ_PROTECTED_FILES);
 
 				// PdfReader
 				try {
+					System.out.println(">> Start PdfReader operations");
 					// built in tests
 					final long fileLen = pdfReader.getFileLength();
 					System.out.println(".. file length:" + fileLen);
@@ -301,6 +111,9 @@ public class ManualPdfTester extends AbstractFileHandler {
 					System.out.println(".. cryptoMode:" + cryptoMode);
 					final long getPermissions = pdfReader.getPermissions();
 					System.out.println(".. getPermissions:" + getPermissions);
+					final String computeUserPassword =
+							pdfReader.computeUserPassword() == null ? "null" : new String(pdfReader.computeUserPassword());
+					System.out.println(".. computeUserPassword:" + computeUserPassword);
 					final PdfAConformanceLevel get_STATED_PdfAConformanceLevel = pdfReader.getPdfAConformanceLevel();
 					System.out.println(".. get_STATED_PdfAConformanceLevel:"
 							+ (get_STATED_PdfAConformanceLevel == null ? "null" : get_STATED_PdfAConformanceLevel.getConformance()));
@@ -313,10 +126,11 @@ public class ManualPdfTester extends AbstractFileHandler {
 				}
 
 				// PdfDocument
-				outputstream = new ByteArrayOutputStream();
-				pdfWriter = new PdfWriter(outputstream);
+				LayoutAwarePdfDocument pdfDoc = null;
 				try {
-					pdfDoc = new PdfDocument(pdfReader, pdfWriter);
+					System.out.println(">> Start PdfDocument operations");
+					// re-read the file again, just to be safe
+					pdfDoc = new LayoutAwarePdfDocument(Files.readAllBytes(file.toPath()));
 					// built in tests
 					final boolean isAppendMode = pdfDoc.isAppendMode();
 					System.out.println(".. isAppendMode:" + isAppendMode);
@@ -445,6 +259,7 @@ public class ManualPdfTester extends AbstractFileHandler {
 				// PdfStamper
 				byte[] pdf = null;
 				try {
+					System.out.println(">> Start Stamper operations");
 					final Stamper stamper = new Stamper();
 					final StampDataDto stampDataDto = new StampDataDto();
 					stampDataDto.setProcessType(ProcessType.CLAIMS_526);
@@ -452,12 +267,14 @@ public class ManualPdfTester extends AbstractFileHandler {
 					docMetadata.setClaimId(CLAIM_ID);
 					docMetadata.setDocTypeId(DOC_TYPE_ID);
 					docMetadata.setProcessType(ProcessType.CLAIMS_526);
+					// re-read the input file again, just to be safe...
 					final FileDto fileDto = new FileDto();
 					fileDto.setFilename(file.getName());
-					inputstream = Files.newInputStream(file.toPath());
-					fileDto.setFilebytes(IOUtils.toByteArray(inputstream));
+					fileDto.setFilebytes(Files.readAllBytes(file.toPath()));
+
 					pdf = stamper.stamp(docMetadata, stampDataDto, fileDto);
 					System.out.println(".. stamped " + file.getName());
+
 				} catch (final Throwable e) {
 					System.out.println("** Stamper ERROR " + e.getClass().getSimpleName() + ": "
 							+ StringUtils.substringBefore(e.getMessage(), "\n"));
@@ -485,6 +302,9 @@ public class ManualPdfTester extends AbstractFileHandler {
 						} catch (final Throwable e) {
 							System.out.println("** Closing pdfDocument ERROR " + e.getClass().getSimpleName() + ": "
 									+ StringUtils.substringBefore(e.getMessage(), "\n"));
+							if (PRINT_STACKTRACES) {
+								e.printStackTrace();
+							}
 						}
 					}
 				}
@@ -500,7 +320,7 @@ public class ManualPdfTester extends AbstractFileHandler {
 		assertTrue(true);
 	}
 
-//	@Ignore
+	@Ignore
 	@Test
 	public void testItext712_PdfA_Checker() {
 		final List<File> files = getFilesForMimeType(FILES_CLASSPATH_PDF);
@@ -565,6 +385,9 @@ public class ManualPdfTester extends AbstractFileHandler {
 						} catch (final Throwable e) {
 							System.out.println("** Closing pdfDocument ERROR " + e.getClass().getSimpleName() + ": "
 									+ StringUtils.substringBefore(e.getMessage(), "\n"));
+							if (PRINT_STACKTRACES) {
+								e.printStackTrace();
+							}
 						}
 					}
 				}
@@ -582,8 +405,8 @@ public class ManualPdfTester extends AbstractFileHandler {
 		MimeType mimetype = null;
 		try {
 			mimetype = new MimeType(classpathDir);
-		} catch (final MimeTypeParseException e2) {
-			e2.printStackTrace();
+		} catch (final MimeTypeParseException e) {
+			e.printStackTrace();
 		}
 		final List<File> files = super.listFilesByMimePath(mimetype);
 		assertTrue("Files for " + mimetype.getPrimaryType() + " is null or empty.", files != null && !files.isEmpty());
