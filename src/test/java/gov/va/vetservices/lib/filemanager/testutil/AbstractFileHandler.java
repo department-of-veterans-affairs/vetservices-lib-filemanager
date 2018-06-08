@@ -164,7 +164,7 @@ public abstract class AbstractFileHandler {
 	 */
 	protected boolean isRelativePath(Path path) {
 		return (path != null) && FileManagerUtils.hasFilename(path.toFile().getName())
-				&& !StringUtils.startsWithAny(path.toString(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS);
+				&& !StringUtils.startsWithAny(path.toString(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS.stream().toArray(String[]::new));
 	}
 
 	/**

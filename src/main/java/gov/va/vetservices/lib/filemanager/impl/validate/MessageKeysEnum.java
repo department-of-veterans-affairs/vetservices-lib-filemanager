@@ -38,7 +38,7 @@ public enum MessageKeysEnum {
 	/** Filename was null or empty */
 	FILE_NAME_NULL_OR_EMPTY("filemanager.file.name.null.or.empty", "File name cannot be null or empty."),
 	/** Filename starts or ends with one of {@link FileManagerUtils.ILLEGAL_FILE_START_CHARS} */
-	FILE_NAME_MALFORMED("filemanager.file.name.nmalformed",
+	FILE_NAME_MALFORMED("filemanager.file.name.malformed",
 			"File name is malformed. Filenames cannot begin or end with any of " + FileManagerProperties.FILE_NAME_ILLEGAL_CHARS),
 	/** Filename was too long - dev note: arg is automatically replaced in getMessage() */
 	FILE_NAME_TOO_LONG("filemanager.file.name.length", "File name must be less than {0} characters"),

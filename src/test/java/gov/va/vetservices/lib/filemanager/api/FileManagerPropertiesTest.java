@@ -54,7 +54,7 @@ public class FileManagerPropertiesTest {
 	@Test
 	public final void testFileManagerProperties() {
 		assertEquals(FileManagerProperties.CONVERTIBLE_FILE_EXTENSIONS_STRING, TEST_CONVERTIBLE_FILE_EXTENSIONS);
-		assertEquals(Arrays.toString(FileManagerProperties.FILE_NAME_ILLEGAL_CHARS), TEST_FILE_NAME_ILLEGAL_CHARS);
+		assertEquals(Arrays.toString(FileManagerProperties.FILE_NAME_ILLEGAL_CHARS.stream().toArray(String[]::new)), TEST_FILE_NAME_ILLEGAL_CHARS);
 		assertEquals(FileManagerProperties.KEY_FILE_MAX_BYTES, TEST_KEY_FILE_MAX_BYTES);
 		assertEquals(FileManagerProperties.KEY_FILE_MAX_TEXT_MB, TEST_KEY_FILE_MAX_TEXT_MB);
 		assertEquals(FileManagerProperties.KEY_CONVERTIBLE_FILE_EXTENSIONS, TEST_KEY_CONVERTIBLE_FILE_EXTENSIONS);

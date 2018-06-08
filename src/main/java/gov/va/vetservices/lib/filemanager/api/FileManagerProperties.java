@@ -1,6 +1,8 @@
 package gov.va.vetservices.lib.filemanager.api;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -35,9 +37,10 @@ public class FileManagerProperties {
 	public static final String KEY_FILENAME_MAX_LENGTH = "filemanager.config.filname.max.length";
 
 	/* SUPPORTING constants */
-
+	
 	/** Array of characters that are not allowed at the beginning of a file names: {@code . / \ :} */
-	public static final String[] FILE_NAME_ILLEGAL_CHARS = { "/", "\\", ":" };
+	public static final List<String> FILE_NAME_ILLEGAL_CHARS = Collections.unmodifiableList(Arrays.asList( "/", "\\", ":" ));
+	
 	/** Constant for file extensions that are supported for conversion to PDF */
 	public static final String CONVERTIBLE_FILE_EXTENSIONS_STRING = Arrays.toString(ConvertibleTypesEnum.values());
 
