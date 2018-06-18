@@ -23,6 +23,7 @@ public class LayoutAwarePdfDocumentTest extends AbstractFileHandler {
 
 		try {
 			doc = new LayoutAwarePdfDocument();
+			doc.addNewPage();
 			assertNotNull(doc);
 		} catch (final Exception e) {
 			e.printStackTrace();

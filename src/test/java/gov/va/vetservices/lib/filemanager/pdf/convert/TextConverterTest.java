@@ -19,6 +19,7 @@ import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.mime.MimeTypeDetector;
+import gov.va.vetservices.lib.filemanager.pdf.itext.LayoutAwarePdfDocument;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
@@ -100,6 +101,26 @@ public class TextConverterTest extends AbstractFileHandler {
 			assertTrue(MessageSeverity.ERROR.equals(e.getMessageSeverity()));
 			assertNotNull(e.getCause());
 			assertTrue(e.getCause().getClass().equals(exception.getClass()));
+		}
+	}
+
+	@Test
+	public final void testCloseDocument() {
+		final FilePartsDto parts = new FilePartsDto();
+		parts.setName("TransientTest");
+		parts.setExtension("txt");
+
+		final LayoutAwarePdfDocument pdfDocument = new LayoutAwarePdfDocument();
+		pdfDocument.addNewPage();
+
+		pdfDocument.getCatalog().getPdfObject().flush();
+
+		try {
+			textConverter.closeDocument(pdfDocument, parts);
+			fail("Should have thrown exception");
+		} catch (final Exception e) {
+			assertNotNull(e);
+			assertTrue(PdfConverterException.class.isAssignableFrom(e.getClass()));
 		}
 	}
 }

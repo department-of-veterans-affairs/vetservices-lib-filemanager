@@ -77,6 +77,8 @@ public enum MessageKeysEnum {
 			"The file {0} cannot be converted to PDF due to internal processing issue. Error: {1}"),
 	/** Problem with internal (iText) processing during stamping. <b>Args:</b> {@code filename, itextErrorMessage} */
 	PDF_STAMPING("filemanager.pdf.stamping", "Could not stamp file {0}. Error: {1}"),
+	/** Internal PDF processing issue. <b>Args:</b> {@code itextErrorMessage} */
+	PDF_ISSUE("filemanager.pdf.internal.issue", "Internal PDF processing issue occurred. Error: {1}"),
 	/** Internal FileManager issues that cannot be resolved at runtime */
 	FILEMANAGER_ISSUE("filemanager.internal.issue", "Internal issue occurred. Please check the application logs.");
 

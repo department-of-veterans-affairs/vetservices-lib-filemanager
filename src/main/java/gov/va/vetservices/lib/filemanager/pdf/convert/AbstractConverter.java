@@ -13,6 +13,7 @@ import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
+import gov.va.vetservices.lib.filemanager.pdf.itext.LayoutAwarePdfDocument;
 
 /**
  * Method signatures and base implementation for file type converters.
@@ -47,6 +48,23 @@ public abstract class AbstractConverter {
 	 */
 	protected BufferedReader getPlainTextReader(final byte[] bytes) {
 		return new BufferedReader(new InputStreamReader(new ByteArrayInputStream(bytes), Charset.forName("UTF-8")));
+	}
+
+	/**
+	 * Closes the PDF Document, and handles any exception that could arise from attempting to close it.
+	 *
+	 * @param pdfDocument the PDF Document to close
+	 * @param parts the file name parts associated with the document
+	 * @throws PdfConverterException any exception caused by the attempt to close the document
+	 */
+	protected void closeDocument(final LayoutAwarePdfDocument pdfDocument, final FilePartsDto parts) throws PdfConverterException {
+		if (pdfDocument != null && !pdfDocument.isClosed()) {
+			try {
+				pdfDocument.close();
+			} catch (final Exception e) { // NOSONAR - intentionally catching everything
+				doThrowException(e, parts.getName() + "." + parts.getExtension());
+			}
+		}
 	}
 
 	/**

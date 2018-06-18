@@ -45,9 +45,9 @@ public class ImageConverter extends AbstractConverter {
 			pdfBytes = pdfDocument.getOutput();
 
 		} catch (final Throwable e) { // NOSONAR - intentionally catching everything
-			doThrowException(e, parts.getName() + "." + parts.getExtension());
+			super.doThrowException(e, parts.getName() + "." + parts.getExtension());
 		} finally {
-			pdfDocument.close();
+			super.closeDocument(pdfDocument, parts);
 		}
 
 		return pdfBytes;

@@ -12,10 +12,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
+import gov.va.vetservices.lib.filemanager.testutil.TestingConstants;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
 public class DetectorAbstractDetectorTest {
@@ -30,7 +31,7 @@ public class DetectorAbstractDetectorTest {
 
 	class TestDetector extends AbstractDetector {
 		@Override
-		public MimeType detect(byte[] bytes, FilePartsDto parts) throws FileManagerException {
+		public MimeType detect(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
 			return ConvertibleTypesEnum.PDF.getMimeType();
 		}
 	}
@@ -48,7 +49,7 @@ public class DetectorAbstractDetectorTest {
 			testMimetype = new MimeType(testConvertibleType);
 			assertNotNull(testMimetype);
 			assertTrue(testMimetype.match(testDetector.detect(testBytes, testParts)));
-		} catch (FileManagerException e) {
+		} catch (final FileManagerException e) {
 			// will never get here, but in case the test changes, here's the logic
 			assertNotNull(e);
 			if (MessageKeysEnum.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
@@ -57,7 +58,7 @@ public class DetectorAbstractDetectorTest {
 			}
 			e.printStackTrace();
 			assertTrue(!StringUtils.isBlank(e.getKey()));
-		} catch (MimeTypeParseException e) {
+		} catch (final MimeTypeParseException e) {
 			// should never get here, but in case
 			e.printStackTrace();
 			fail("Developers should use valid MIME types.");
@@ -67,7 +68,7 @@ public class DetectorAbstractDetectorTest {
 	@Test
 	public final void testSelfCheck() {
 		try {
-			MimeType withMagic = new MimeType(testConvertibleType);
+			final MimeType withMagic = new MimeType(testConvertibleType);
 			MimeType withHint = new MimeType(testConvertibleType);
 			// magic, hint match with each other
 			MimeType winner = TestDetector.selfCheck(withMagic, withHint);
@@ -77,28 +78,36 @@ public class DetectorAbstractDetectorTest {
 			// both args null
 			winner = TestDetector.selfCheck(null, null);
 			assertNull(winner);
-			System.out.println("TestDetector.selfCheck(null, null)");
+			if (TestingConstants.PRINT) {
+				System.out.println("TestDetector.selfCheck(null, null)");
+			}
 
 			// magic, null
 			winner = TestDetector.selfCheck(withMagic, null);
 			assertNotNull(winner);
-			System.out.println("TestDetector.selfCheck(withMagic, null)");
+			if (TestingConstants.PRINT) {
+				System.out.println("TestDetector.selfCheck(withMagic, null)");
+			}
 			assertTrue(testConvertibleType.equals(winner.getBaseType()));
 
 			// null, hint
 			winner = TestDetector.selfCheck(null, withHint);
 			assertNotNull(winner);
-			System.out.println("TestDetector.selfCheck(null, withHint)");
+			if (TestingConstants.PRINT) {
+				System.out.println("TestDetector.selfCheck(null, withHint)");
+			}
 			assertTrue(testConvertibleType.equals(winner.getBaseType()));
 
 			// magic, hint do not match with each other
 			withHint = new MimeType(testTextType);
 			winner = TestDetector.selfCheck(withMagic, withHint);
 			assertNotNull(winner);
-			System.out.println("TestDetector.selfCheck(withMagic, withHint)");
+			if (TestingConstants.PRINT) {
+				System.out.println("TestDetector.selfCheck(withMagic, withHint)");
+			}
 			assertTrue(testConvertibleType.equals(winner.getBaseType()));
 
-		} catch (MimeTypeParseException e) {
+		} catch (final MimeTypeParseException e) {
 			e.printStackTrace();
 			fail("Could not parse MIME type. " + e.getMessage());
 		}

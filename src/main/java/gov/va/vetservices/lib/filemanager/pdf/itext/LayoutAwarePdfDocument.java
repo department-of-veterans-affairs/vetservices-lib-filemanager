@@ -1,10 +1,14 @@
 package gov.va.vetservices.lib.filemanager.pdf.itext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.layout.Document;
 
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
+import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 
 /**
  * A wrapper for {@link PdfDocument} that provides an intrinsic {@link Document} to declare and manage page layout dimensions
@@ -14,6 +18,7 @@ import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
  */
 public class LayoutAwarePdfDocument extends PdfDocument {
 	private static final long serialVersionUID = 4845270830809641462L;
+	private static final Logger LOGGER = LoggerFactory.getLogger(LayoutAwarePdfDocument.class);
 
 	/** The object that defines and manages layout characteristics of the PDF */
 	private transient Document document;
@@ -117,7 +122,10 @@ public class LayoutAwarePdfDocument extends PdfDocument {
 		try {
 			super.close();
 		} catch (final Exception e) { // NOSONAR catch everything
-			// NOSONAR nothing to do here
+			final MessageKeysEnum messageKeys = MessageKeysEnum.PDF_ISSUE;
+
+			LOGGER.error(messageKeys.getKey() + ": " + messageKeys.getMessage(), e);
+			throw e;
 		}
 
 	}

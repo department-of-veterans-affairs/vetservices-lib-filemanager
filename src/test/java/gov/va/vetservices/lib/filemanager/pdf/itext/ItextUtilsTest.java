@@ -1,6 +1,7 @@
 package gov.va.vetservices.lib.filemanager.pdf.itext;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -9,6 +10,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
+
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.StampingProperties;
 
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
@@ -31,16 +35,38 @@ public class ItextUtilsTest extends AbstractFileHandler {
 
 	@Test
 	public final void testGetPdfReader() {
+		// happy path
 		try {
-			ItextUtils.getPdfReader(super.readFile(FILE_PATH));
+			final PdfReader reader = ItextUtils.getPdfReader(super.readFile(FILE_PATH));
+			assertNotNull(reader);
+			reader.close();
 		} catch (FileManagerException | IOException e) {
 			e.printStackTrace();
-			fail("Should not have caused eception");
+			fail("Should not have caused exception");
 		}
 
+		// sad - null byte array
+		try {
+			final PdfReader reader = ItextUtils.getPdfReader(null);
+			assertNull(reader);
+		} catch (final Exception e) {
+			e.printStackTrace();
+			fail("Should not have caused exception");
+		}
+
+		// sad - empty byte array
+		try {
+			final PdfReader reader = ItextUtils.getPdfReader(new byte[] {});
+			assertNull(reader);
+		} catch (final Exception e) {
+			e.printStackTrace();
+			fail("Should not have caused exception");
+		}
+
+		// sad - bad byte array
 		try {
 			ItextUtils.getPdfReader(new byte[] { 0 });
-			fail("Should have thrown eception");
+			fail("Should have thrown exception");
 		} catch (final Exception e) {
 			assertNotNull(e);
 			assertTrue(FileManagerException.class.isAssignableFrom(e.getClass()));
@@ -55,9 +81,17 @@ public class ItextUtilsTest extends AbstractFileHandler {
 
 	@Test
 	public final void testGetStampingProperties() {
+		// populated options
 		final PdfDocumentOptions options = new PdfDocumentOptions();
+		options.setStampingProperties(new StampingProperties().preserveEncryption());
 		assertNotNull(ItextUtils.getStampingProperties(options));
+
+		// null options
 		assertNotNull(ItextUtils.getStampingProperties(null));
+
+		// null options.getStamptingProperties()
+		options.setStampingProperties(null);
+		assertNotNull(ItextUtils.getStampingProperties(options));
 	}
 
 }

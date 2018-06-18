@@ -48,35 +48,41 @@ public class TextConverter extends AbstractConverter {
 			final Document doc = new Document(pdfDocument); // NOSONAR - this gets closed by pdfDoc
 
 			final StringBuilder str = new StringBuilder();
-			Paragraph para = null;
 			String line = bufferReader.readLine();
 			while (line != null) {
 				if (StringUtils.isBlank(line)) {
-					str.append(NEW_LINE);
-					para = new Paragraph(str.toString());
-					doc.add(para);
-					str.setLength(0);
+					doc.add(makeParagraph(str));
 				} else {
 					str.append(str.length() > 0 ? " " : "").append(line);
 				}
 				line = bufferReader.readLine();
 			}
 			if (str.length() > 0) {
-				para = new Paragraph(str.toString());
-				doc.add(para);
+				doc.add(makeParagraph(str));
 			}
 
 			pdfBytes = pdfDocument.getOutput();
 
-		} catch (final Throwable e) { // NOSONAR - intentionally catching everything
-			doThrowException(e, parts.getName() + "." + parts.getExtension());
+		} catch (final Exception e) { // NOSONAR - intentionally catching everything
+			super.doThrowException(e, parts.getName() + "." + parts.getExtension());
 		} finally {
-			if (pdfDocument != null) {
-				pdfDocument.close();
-			}
+			super.closeDocument(pdfDocument, parts);
 		}
 
 		return pdfBytes;
 	}
 
+	/**
+	 * Adds a newline to the StringBuilder, creates the iText Paragraph, resets the StringBuilder value to empty, and returns the
+	 * Paragraph.
+	 *
+	 * @param strbldr the String content of the paragraph
+	 * @return Paragraph the iText Paragraph
+	 */
+	protected Paragraph makeParagraph(final StringBuilder strbldr) {
+		strbldr.append(NEW_LINE);
+		final Paragraph para = new Paragraph(strbldr.toString());
+		strbldr.setLength(0);
+		return para;
+	}
 }
