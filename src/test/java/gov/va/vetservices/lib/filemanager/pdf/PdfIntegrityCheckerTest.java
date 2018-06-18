@@ -33,53 +33,6 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 		}
 	}
 
-	// TODO need to find better method of testing non-editable status
-//	@Test
-//	public final void testIsLocked() {
-//		final String filename = "test.pdf";
-//		final PdfReader mock = mock(PdfReader.class);
-//
-//		when(mock.isEncrypted()).thenReturn(true);
-//		try {
-//			pdfIntegrityChecker.isLocked(mock, filename);
-//			fail("Should have thrown exception");
-//		} catch (final FileManagerException e) {
-//			assertNotNull(e);
-//			assertTrue(FileManagerException.class.isAssignableFrom(e.getClass()));
-//			assertTrue(MessageKeysEnum.PDF_LOCKED.getKey().equals(e.getKey()));
-//		}
-//
-//		when(mock.isEncrypted()).thenReturn(false);
-//		try {
-//			pdfIntegrityChecker.isLocked(mock, filename);
-////			fail("Should have thrown exception"); //TODO need to rewrite all the tests
-//		} catch (final FileManagerException e) {
-//			assertNotNull(e);
-//			assertTrue(FileManagerException.class.isAssignableFrom(e.getClass()));
-//			assertTrue(MessageKeysEnum.PDF_LOCKED.getKey().equals(e.getKey()));
-//		}
-//
-//		when(mock.isEncrypted()).thenReturn(false);
-//		try {
-//			pdfIntegrityChecker.isLocked(mock, filename);
-////			fail("Should have thrown exception"); //TODO need to rewrite all the tests
-//		} catch (final FileManagerException e) {
-//			assertNotNull(e);
-//			assertTrue(FileManagerException.class.isAssignableFrom(e.getClass()));
-//			assertTrue(MessageKeysEnum.PDF_LOCKED.getKey().equals(e.getKey()));
-//		}
-//
-//		when(mock.isEncrypted()).thenThrow(new IllegalArgumentException("test exception"));
-//		try {
-//			pdfIntegrityChecker.isLocked(mock, filename);
-//			fail("Should have thrown exception");
-//		} catch (final FileManagerException e) {
-//			assertNotNull(e);
-//			assertTrue(FileManagerException.class.isAssignableFrom(e.getClass()));
-//			assertTrue(MessageKeysEnum.PDF_CONTENT_INVALID.getKey().equals(e.getKey()));
-//		}
-//	}
-
 	@Test
 	public final void testIsReadable() {
 		boolean readable = false;
@@ -97,29 +50,5 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 			assertTrue(MessageKeysEnum.PDF_UNREADABLE.getKey().equals(e.getKey()));
 		}
 	}
-
-//	@Test
-//	public final void testIsReadable_Bad() {
-//
-//		boolean readable = false;
-//		try {
-//			final byte[] goodBytes = readFile(goodPdfPath);
-//			// mock null return from PdfReader
-//			final PdfIntegrityChecker spiedChecker = spy(pdfIntegrityChecker);
-//
-//			doReturn(null).when(spiedChecker).newPdfReader(any(), any());
-//			readable = spiedChecker.isReadable(goodBytes, goodPdfPath.getFileName().toString());
-//			fail("isReadable should have thrown an exception");
-//
-//		} catch (final IOException e) {
-//			e.printStackTrace();
-//			fail("Unexpected error " + e.getMessage());
-//		} catch (final FileManagerException e) {
-//			e.printStackTrace();
-//			assertTrue(!readable);
-//			assertTrue(MessageKeysEnum.PDF_UNREADABLE.getKey().equals(e.getKey()));
-//		}
-//
-//	}
 
 }

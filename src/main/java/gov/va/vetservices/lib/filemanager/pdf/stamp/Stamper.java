@@ -64,7 +64,6 @@ public class Stamper {
 				rect = page.getPageSize();
 				canvas = new PdfCanvas(page);
 				canvas.beginText()
-						// NOSONAR TODO need to change font definition in StampDataDto
 						.setFontAndSize(PdfFontFactory.createFont(stampDataDto.getFontName()),
 								Float.parseFloat(Integer.toString(stampDataDto.getFontSizeInPoints())))
 						.setFillColor(new DeviceCmyk(100, 100, 100, 0))
