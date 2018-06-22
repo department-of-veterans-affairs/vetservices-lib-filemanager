@@ -81,8 +81,8 @@ public class FilenameValidator implements Validator<ImplDto> {
 
 			addError(implDto, MessageKeysEnum.FILE_NAME_TOO_LONG);
 
-		} else if (StringUtils.containsAny(implDto.getFileParts().getName(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)
-				|| StringUtils.containsAny(implDto.getFileParts().getExtension(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS)) {
+		} else if (StringUtils.containsAny(implDto.getFileParts().getName(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS.stream().toArray(String[]::new))
+				|| StringUtils.containsAny(implDto.getFileParts().getExtension(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS.stream().toArray(String[]::new))) {
 
 			addError(implDto, MessageKeysEnum.FILE_NAME_MALFORMED);
 

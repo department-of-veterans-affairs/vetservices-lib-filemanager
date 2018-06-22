@@ -41,7 +41,7 @@ public class FileManagerUtils {
 	 * @return boolean
 	 */
 	public static boolean hasFilename(String filename) {
-		return !(StringUtils.isBlank(filename) || StringUtils.startsWithAny(filename, FileManagerProperties.FILE_NAME_ILLEGAL_CHARS));
+		return !(StringUtils.isBlank(filename) || StringUtils.startsWithAny(filename, FileManagerProperties.FILE_NAME_ILLEGAL_CHARS.stream().toArray(String[]::new)));
 	}
 
 	/**
