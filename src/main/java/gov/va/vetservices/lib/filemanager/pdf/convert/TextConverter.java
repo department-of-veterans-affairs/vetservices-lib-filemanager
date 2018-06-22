@@ -61,7 +61,7 @@ public class TextConverter extends AbstractConverter {
 				doc.add(makeParagraph(str));
 			}
 
-			pdfBytes = pdfDocument.getOutput();
+			pdfBytes = pdfDocument.closeAndGetOutput();
 
 		} catch (final Exception e) { // NOSONAR - intentionally catching everything
 			super.doThrowException(e, parts.getName() + "." + parts.getExtension());

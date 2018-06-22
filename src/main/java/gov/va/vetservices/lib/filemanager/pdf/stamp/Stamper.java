@@ -63,14 +63,21 @@ public class Stamper {
 				final PdfPage page = pdfDoc.getPage(pageNum);
 				rect = page.getPageSize();
 				canvas = new PdfCanvas(page);
-				canvas.beginText()
-						.setFontAndSize(PdfFontFactory.createFont(stampDataDto.getFontName()),
-								Float.parseFloat(Integer.toString(stampDataDto.getFontSizeInPoints())))
-						.setFillColor(new DeviceCmyk(100, 100, 100, 0))
-						.moveText(5, rect.getHeight() - stampDataDto.getFontSizeInPoints()).showText(stampText).endText();
+				// prep text font and colors
+				canvas.beginText();
+				canvas.setFontAndSize(PdfFontFactory.createFont(stampDataDto.getFontName()),
+						Float.parseFloat(Integer.toString(stampDataDto.getFontSizeInPoints())));
+				canvas.setFillColor(new DeviceCmyk(100, 100, 100, 0));
+				// position the text and place it on the page
+				final double xCoord = 5;
+				final double yCoord = rect.getHeight() - stampDataDto.getFontSizeInPoints();
+				canvas.moveText(xCoord, yCoord)
+						.showText(stampText).endText()
+						.endText()
+						.release();
 			}
 
-			stampedPdf = pdfDoc.getOutput();
+			stampedPdf = pdfDoc.closeAndGetOutput();
 
 		} catch (final Throwable e) { // NOSONAR intentionally catching everything
 			final MessageKeysEnum mke = MessageKeysEnum.PDF_STAMPING;

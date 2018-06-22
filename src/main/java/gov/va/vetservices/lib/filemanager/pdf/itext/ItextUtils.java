@@ -1,12 +1,15 @@
 package gov.va.vetservices.lib.filemanager.pdf.itext;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.itextpdf.io.source.IRandomAccessSource;
+import com.itextpdf.io.source.RandomAccessSourceFactory;
 import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.ReaderProperties;
 import com.itextpdf.kernel.pdf.StampingProperties;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
@@ -38,9 +41,13 @@ public class ItextUtils {
 
 		if (pdfBytes != null && pdfBytes.length > 0) {
 			try {
-				final ByteArrayInputStream bais = new ByteArrayInputStream(pdfBytes);
-				pdfReader = new PdfReader(bais);
+//				final ByteArrayInputStream bais = new ByteArrayInputStream(pdfBytes);
+				final RandomAccessSourceFactory factory = new RandomAccessSourceFactory();
+				final IRandomAccessSource source = factory.createSource(pdfBytes);
+//				pdfReader = new PdfReader(bais);
+				pdfReader = new PdfReader(source, new ReaderProperties());
 				pdfReader.setUnethicalReading(PROCESS_PROTECTED_FILES);
+				LOGGER.debug("... pdfReader.getFileLength(): " + pdfReader.getFileLength());
 			} catch (final Exception e) {
 				final MessageKeysEnum key = MessageKeysEnum.UNEXPECTED_ERROR;
 				LOGGER.error(
@@ -56,10 +63,11 @@ public class ItextUtils {
 	/**
 	 * Constructor helper to create a new {@link ByteArrayPdfWriter}.
 	 *
+	 * @param byteArrayOutputStream the stream after PdfDocument is closed
 	 * @return ByteArrayPdfWriter
 	 */
-	public static ByteArrayPdfWriter getPdfWriter() {
-		return new ByteArrayPdfWriter(new ByteArrayOutputStream());
+	public static PdfWriter getPdfWriter(final ByteArrayOutputStream byteArrayOutputStream) {
+		return new PdfWriter(byteArrayOutputStream);
 	}
 
 	/**

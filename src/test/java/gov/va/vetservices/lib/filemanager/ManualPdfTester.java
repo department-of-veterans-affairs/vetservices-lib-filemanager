@@ -56,8 +56,9 @@ import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
  */
 public class ManualPdfTester extends AbstractFileHandler {
 
-	/* setting this value true engages iText7 "unethicalReading" to decrypt password protections when possible */
+	/** Value of true engages iText7 "unethicalReading" to decrypt password protections when possible */
 	private static final boolean READ_PROTECTED_FILES = false;
+	/** Controls whether console output includes exception stack traces or not */
 	private static final boolean PRINT_STACKTRACES = true;
 
 	private static final String CLAIM_ID = "11111";
@@ -65,7 +66,7 @@ public class ManualPdfTester extends AbstractFileHandler {
 
 	private static final String FILES_CLASSPATH_PDF = "application/pdf";
 
-	@Ignore
+//	@Ignore
 	@Test
 	public final void testTikaItext712() {
 		final List<File> files = getFilesForMimeType(FILES_CLASSPATH_PDF);

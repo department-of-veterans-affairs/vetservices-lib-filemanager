@@ -66,9 +66,9 @@ public class LayoutAwarePdfDocumentTest extends AbstractFileHandler {
 		try {
 			doc = new LayoutAwarePdfDocument(super.readFile(GOOD_PDF_PATH));
 
-			final byte[] out = doc.getOutput();
+			final byte[] out = doc.closeAndGetOutput();
 			assertNotNull(out);
-			assertTrue(out.length > 0);
+			assertTrue(out.length > 15); // empty PDF is 15 bytes long
 
 			assertNotNull(doc.getLayoutDocument());
 
@@ -78,7 +78,7 @@ public class LayoutAwarePdfDocumentTest extends AbstractFileHandler {
 			e.printStackTrace();
 			fail("Should not have thrown exception");
 		} finally {
-			if (doc != null) {
+			if (doc != null && !doc.isClosed()) {
 				doc.close();
 			}
 		}

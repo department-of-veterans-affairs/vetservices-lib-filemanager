@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -76,7 +77,7 @@ public class ItextUtilsTest extends AbstractFileHandler {
 
 	@Test
 	public final void testGetPdfWriter() {
-		assertNotNull(ItextUtils.getPdfWriter());
+		assertNotNull(ItextUtils.getPdfWriter(new ByteArrayOutputStream()));
 	}
 
 	@Test

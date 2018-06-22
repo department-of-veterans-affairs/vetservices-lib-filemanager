@@ -42,7 +42,7 @@ public class ImageConverter extends AbstractConverter {
 			image.scaleToFit(fitWidth, fitHeight);
 			pdfDocument.getLayoutDocument().add(image);
 
-			pdfBytes = pdfDocument.getOutput();
+			pdfBytes = pdfDocument.closeAndGetOutput();
 
 		} catch (final Throwable e) { // NOSONAR - intentionally catching everything
 			super.doThrowException(e, parts.getName() + "." + parts.getExtension());

@@ -1,8 +1,11 @@
 package gov.va.vetservices.lib.filemanager.pdf.itext;
 
+import java.io.ByteArrayOutputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.itextpdf.kernel.PdfException;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.layout.Document;
@@ -22,7 +25,10 @@ public class LayoutAwarePdfDocument extends PdfDocument {
 
 	/** The object that defines and manages layout characteristics of the PDF */
 	private transient Document document;
+	/** Options governing behavior of the document */
 	private transient PdfDocumentOptions documentOptions;
+	/** the output bytes (only available after {@code close()} has been called) */
+	private transient ByteArrayOutputStream destination;
 
 	/**
 	 * Create a new PDF.
@@ -31,7 +37,13 @@ public class LayoutAwarePdfDocument extends PdfDocument {
 	 * @param properties stamping properties
 	 */
 	public LayoutAwarePdfDocument() {
-		super(ItextUtils.getPdfWriter());
+		/*
+		 * Dev note:
+		 * Since class-level variables aren't available until after super(),
+		 * the ByteArrayOutputStream needs to be retrieved from PdfWriter afterward.
+		 */
+		super(ItextUtils.getPdfWriter(new ByteArrayOutputStream()));
+		destination = (ByteArrayOutputStream) this.getWriter().getOutputStream();
 		initialize(null);
 	}
 
@@ -43,7 +55,13 @@ public class LayoutAwarePdfDocument extends PdfDocument {
 	 * @throws FileManagerException could not read pdfBytes
 	 */
 	public LayoutAwarePdfDocument(final byte[] pdfBytes) throws FileManagerException {
-		super(ItextUtils.getPdfReader(pdfBytes), ItextUtils.getPdfWriter());
+		/*
+		 * Dev note:
+		 * Since class-level variables aren't available until after super(),
+		 * the ByteArrayOutputStream needs to be retrieved from PdfWriter afterward.
+		 */
+		super(ItextUtils.getPdfReader(pdfBytes), ItextUtils.getPdfWriter(new ByteArrayOutputStream()));
+		destination = (ByteArrayOutputStream) this.getWriter().getOutputStream();
 		initialize(null);
 	}
 
@@ -56,7 +74,15 @@ public class LayoutAwarePdfDocument extends PdfDocument {
 	 * @throws FileManagerException could not read pdfBytes
 	 */
 	public LayoutAwarePdfDocument(final byte[] pdfBytes, final PdfDocumentOptions options) throws FileManagerException {
-		super(ItextUtils.getPdfReader(pdfBytes), ItextUtils.getPdfWriter(), ItextUtils.getStampingProperties(options));
+		/*
+		 * Dev note:
+		 * Since class-level variables aren't available until after super(),
+		 * the ByteArrayOutputStream needs to be retrieved from PdfWriter afterward.
+		 */
+		super(ItextUtils.getPdfReader(pdfBytes),
+				ItextUtils.getPdfWriter(new ByteArrayOutputStream()),
+				ItextUtils.getStampingProperties(options));
+		destination = (ByteArrayOutputStream) this.getWriter().getOutputStream();
 		initialize(options);
 	}
 
@@ -87,9 +113,13 @@ public class LayoutAwarePdfDocument extends PdfDocument {
 	 * Get the PDF output as bytes, including any modifications that were made to the {@link PdfDocument}.
 	 *
 	 * @return byte[] the PdfDocument
+	 * @throws PdfException if problem closing the PdfDocument
 	 */
-	public byte[] getOutput() {
-		return ((ByteArrayPdfWriter) this.getWriter()).getDestinationBytes();
+	public byte[] closeAndGetOutput() {
+		if (!this.isClosed()) {
+			this.close();
+		}
+		return destination == null ? null : destination.toByteArray();
 	}
 
 	/**
@@ -110,6 +140,11 @@ public class LayoutAwarePdfDocument extends PdfDocument {
 		return this.documentOptions;
 	}
 
+	/**
+	 * Close the PdfDocument.
+	 *
+	 * @throws PdfException if problem closing the PdfDocument
+	 */
 	@Override
 	public void close() {
 		/*
