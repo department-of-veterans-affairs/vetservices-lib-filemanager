@@ -83,4 +83,42 @@ public class LayoutAwarePdfDocumentTest extends AbstractFileHandler {
 			}
 		}
 	}
+
+	@Test
+	public final void testCloseAndGetOutput() {
+		LayoutAwarePdfDocument doc = null;
+
+		// close with document still open
+		try {
+			doc = new LayoutAwarePdfDocument(super.readFile(GOOD_PDF_PATH));
+
+			final byte[] out = doc.closeAndGetOutput();
+			assertNotNull(out);
+			assertTrue(out.length > 15); // empty PDF is 15 bytes long
+		} catch (FileManagerException | IOException e) {
+			e.printStackTrace();
+			fail("Should not have thrown exception");
+		} finally {
+			if (doc != null && !doc.isClosed()) {
+				doc.close();
+			}
+		}
+
+		// close with document already closed
+		try {
+			doc = new LayoutAwarePdfDocument(super.readFile(GOOD_PDF_PATH));
+
+			doc.close();
+			final byte[] out = doc.closeAndGetOutput();
+			assertNotNull(out);
+			assertTrue(out.length > 15); // empty PDF is 15 bytes long
+		} catch (FileManagerException | IOException e) {
+			e.printStackTrace();
+			fail("Should not have thrown exception");
+		} finally {
+			if (doc != null && !doc.isClosed()) {
+				doc.close();
+			}
+		}
+	}
 }

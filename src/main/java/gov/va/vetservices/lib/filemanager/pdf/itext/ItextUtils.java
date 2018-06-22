@@ -41,11 +41,9 @@ public class ItextUtils {
 
 		if (pdfBytes != null && pdfBytes.length > 0) {
 			try {
-//				final ByteArrayInputStream bais = new ByteArrayInputStream(pdfBytes);
 				final RandomAccessSourceFactory factory = new RandomAccessSourceFactory();
 				final IRandomAccessSource source = factory.createSource(pdfBytes);
-//				pdfReader = new PdfReader(bais);
-				pdfReader = new PdfReader(source, new ReaderProperties());
+				pdfReader = new PdfReader(source, new ReaderProperties()); // NOSONAR reader is closed by the PdfDocument
 				pdfReader.setUnethicalReading(PROCESS_PROTECTED_FILES);
 				LOGGER.debug("... pdfReader.getFileLength(): " + pdfReader.getFileLength());
 			} catch (final Exception e) {

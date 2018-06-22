@@ -132,8 +132,8 @@
 								<artifactItem>
 									<groupId>gov.va.ascent</groupId>
 									<artifactId>ascent-framework</artifactId>
-									<outputDirectory>${project.basedir}/src/main/resources/mvn-copied</outputDirectory>
 									<includes>xsd/ascent-framework-types.xsd</includes>
+									<outputDirectory>${project.basedir}/src/main/resources/mvn-copied</outputDirectory>
 								</artifactItem>
 							</artifactItems>
 						</configuration>
