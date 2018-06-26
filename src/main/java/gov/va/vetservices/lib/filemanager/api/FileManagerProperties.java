@@ -37,7 +37,7 @@ public class FileManagerProperties {
 	public static final String KEY_FILENAME_MAX_LENGTH = "filemanager.config.filname.max.length";
 
 	/* SUPPORTING constants */
-	
+
 	/** Array of characters that are not allowed at the beginning of a file names: {@code . / \ :} */
 	public static final List<String> FILE_NAME_ILLEGAL_CHARS = Collections.unmodifiableList(Arrays.asList( "/", "\\", ":" ));
 	

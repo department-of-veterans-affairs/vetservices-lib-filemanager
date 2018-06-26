@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -22,7 +23,9 @@
 	<properties>
 		<!-- file type detection and conversion -->
 		<tika.version>1.17</tika.version>
-		<itext.version>2.1.7</itext.version>
+		<jmimemagic.version>0.1.5</jmimemagic.version>
+		<itext.version>7.1.2</itext.version>
+		<itext-licensekey.version>2.0.4</itext-licensekey.version>
 	</properties>
 
 	<dependencies>
@@ -46,40 +49,22 @@
 			<version>${tika.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>bouncycastle</groupId>
-			<artifactId>bcprov-jdk16</artifactId>
-			<version>140</version>
-		</dependency>
-		<dependency>
-			<groupId>bouncycastle</groupId>
-			<artifactId>bcmail-jdk16</artifactId>
-			<version>140</version>
-		</dependency>
-		<dependency>
-			<groupId>com.lowagie</groupId>
-			<artifactId>itext</artifactId>
-			<version>${itext.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>bouncycastle</groupId>
-					<artifactId>bcprov-jdk14</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>bouncycastle</groupId>
-					<artifactId>bctsp-jdk14</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>bouncycastle</groupId>
-					<artifactId>bcmail-jdk14</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 			<groupId>net.sf.jmimemagic</groupId>
 			<artifactId>jmimemagic</artifactId>
-			<version>0.1.5</version>
+			<version>${jmimemagic.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>itext7-core</artifactId>
+			<version>${itext.version}</version>
+			<type>pom</type>
+		</dependency>
+		<!-- ⬇ ︎license required for iText 7 prod ⬇    ⬇ scroll down for private repo ⬇ -->
+		<!-- dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>itext-licensekey</artifactId>
+			<version>${itext-licensekey.version}</version>
+		</dependency -->
 		<!-- Apache Commons project dependencies -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -104,6 +89,15 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<!-- ⬇ ︎license repo required for iText 7 prod ⬇    ⬆ scroll up for dependency ⬆︎ -->
+	<!-- repositories>
+		<repository>
+			<id>itext</id>
+			<name>iText Repository - releases</name>
+			<url>https://repo.itextsupport.com/releases</url>
+		</repository>
+	</repositories -->
 
 	<build>
 		<plugins>
@@ -138,8 +132,8 @@
 								<artifactItem>
 									<groupId>gov.va.ascent</groupId>
 									<artifactId>ascent-framework</artifactId>
-									<outputDirectory>${project.basedir}/src/main/resources/mvn-copied</outputDirectory>
 									<includes>xsd/ascent-framework-types.xsd</includes>
+									<outputDirectory>${project.basedir}/src/main/resources/mvn-copied</outputDirectory>
 								</artifactItem>
 							</artifactItems>
 						</configuration>
@@ -189,7 +183,7 @@
 					<!-- To introduce a new schema/model:
 						1. Copy/paste this entire execution
 						2. Give the new execution a new id, e.g. xjc-v2
-						3. Configure generatePackage for the version, e.g.  xxx.api.v2.transfer
+						3. Configure generatePackage for the version, e.g. xxx.api.v2.transfer
 						4. Configure schemaDirectory for the version, e.g. xxx/model/v2
 					-->
 					<execution>

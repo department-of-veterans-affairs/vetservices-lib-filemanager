@@ -3,9 +3,6 @@ package gov.va.vetservices.lib.filemanager.pdf.convert;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -15,9 +12,6 @@ import javax.activation.MimeType;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.pdf.PdfWriter;
-
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
@@ -25,6 +19,7 @@ import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.mime.MimeTypeDetector;
+import gov.va.vetservices.lib.filemanager.pdf.itext.LayoutAwarePdfDocument;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
@@ -48,23 +43,43 @@ public class TextConverterTest extends AbstractFileHandler {
 		byte[] bytes = null;
 		try {
 			bytes = super.readFile(Paths.get(FILE_PATH));
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 			e1.printStackTrace();
 			fail("Unexpected exception.");
 		}
 
-		FilePartsDto parts = FileManagerUtils.getFileParts(Paths.get(FILE_PATH).toFile().getName());
+		final FilePartsDto parts = FileManagerUtils.getFileParts(Paths.get(FILE_PATH).toFile().getName());
 
 		try {
-			byte[] pdf = textConverter.getPdf(bytes, parts);
+			final byte[] pdf = textConverter.getPdf(bytes, parts);
 			assertNotNull(pdf);
 			assertTrue(pdf.length > 0);
 
-			FilePartsDto pdfparts = FileManagerUtils.getFileParts("ipsumlorem-diacriticals.pdf");
-			MimeType pdftype = mimetypeDetector.detectMimeType(pdf, pdfparts);
+			final FilePartsDto pdfparts = FileManagerUtils.getFileParts("ipsumlorem-diacriticals.pdf");
+			final MimeType pdftype = mimetypeDetector.detectMimeType(pdf, pdfparts);
 			assertTrue(ConvertibleTypesEnum.PDF.getMimeType().match(pdftype));
 
-		} catch (FileManagerException e) {
+		} catch (final FileManagerException e) {
+			e.printStackTrace();
+			fail("Unexpected exception.");
+		}
+	}
+
+	@Test
+	public final void testGetPdf_Sad() {
+		final byte[] bytes = { 64, 65, 66, 67 };
+		final FilePartsDto parts = FileManagerUtils.getFileParts(Paths.get(FILE_PATH).toFile().getName());
+
+		try {
+			final byte[] pdf = textConverter.getPdf(bytes, parts);
+			assertNotNull(pdf);
+			assertTrue(pdf.length > 0);
+
+			final FilePartsDto pdfparts = FileManagerUtils.getFileParts("ipsumlorem-diacriticals.pdf");
+			final MimeType pdftype = mimetypeDetector.detectMimeType(pdf, pdfparts);
+			assertTrue(ConvertibleTypesEnum.PDF.getMimeType().match(pdftype));
+
+		} catch (final FileManagerException e) {
 			e.printStackTrace();
 			fail("Unexpected exception.");
 		}
@@ -72,14 +87,14 @@ public class TextConverterTest extends AbstractFileHandler {
 
 	@Test
 	public final void testDoThrowException() {
-		IllegalArgumentException exception = new IllegalArgumentException("test exception");
-		MessageKeysEnum messageKey = MessageKeysEnum.PDF_CONVERSION_PROCESSING;
+		final IllegalArgumentException exception = new IllegalArgumentException("test exception");
+		final MessageKeysEnum messageKey = MessageKeysEnum.PDF_CONVERSION_PROCESSING;
 
 		try {
 			textConverter.doThrowException(exception, "filename.txt");
 			fail("Should have thrown an exception.");
 
-		} catch (PdfConverterException e) {
+		} catch (final PdfConverterException e) {
 			assertNotNull(e);
 			assertTrue(e.getClass().equals(PdfConverterException.class));
 			assertTrue(messageKey.getKey().equals(e.getKey()));
@@ -90,18 +105,22 @@ public class TextConverterTest extends AbstractFileHandler {
 	}
 
 	@Test
-	public final void testDoClose() {
-		Document mockPdfDocument = mock(Document.class);
-		PdfWriter mockPdfWriter = mock(PdfWriter.class);
+	public final void testCloseDocument() {
+		final FilePartsDto parts = new FilePartsDto();
+		parts.setName("TransientTest");
+		parts.setExtension("txt");
 
-		doNothing().when(mockPdfDocument).close();
-		doNothing().when(mockPdfWriter).close();
-		textConverter.doClose(mockPdfDocument, mockPdfWriter);
+		final LayoutAwarePdfDocument pdfDocument = new LayoutAwarePdfDocument();
+		pdfDocument.addNewPage();
 
-		doThrow(new IllegalArgumentException("test exception")).when(mockPdfDocument).close();
-		doThrow(new IllegalArgumentException("test exception")).when(mockPdfWriter).close();
-		textConverter.doClose(mockPdfDocument, mockPdfWriter);
+		pdfDocument.getCatalog().getPdfObject().flush();
 
-		textConverter.doClose(null, null);
+		try {
+			textConverter.closeDocument(pdfDocument, parts);
+			fail("Should have thrown exception");
+		} catch (final Exception e) {
+			assertNotNull(e);
+			assertTrue(PdfConverterException.class.isAssignableFrom(e.getClass()));
+		}
 	}
 }

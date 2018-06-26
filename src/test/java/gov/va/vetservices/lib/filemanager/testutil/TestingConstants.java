@@ -2,6 +2,8 @@ package gov.va.vetservices.lib.filemanager.testutil;
 
 public class TestingConstants {
 
+	public static final boolean PRINT = false;
+
 	/** Prefix used on src/test/resources/files/** filenames that are the type the extension claims */
 	public static String TEST_FILE_PREFIX_LEGITIMATE = "IS_";
 	/** Prefix used on src/test/resources/files/** filenames that are NOT the type the extensions claims */

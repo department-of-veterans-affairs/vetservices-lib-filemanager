@@ -20,6 +20,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 
 import gov.va.ascent.framework.config.AscentCommonSpringProfiles;
 import gov.va.vetservices.lib.filemanager.FileManagerConfig;
+import gov.va.vetservices.lib.filemanager.testutil.TestingConstants;
 
 //@RunWith(MockitoJUnitRunner.class)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -63,15 +64,19 @@ public class FileManagerPropertiesTest {
 
 	@Test
 	public final void testGetMaxFileBytes() {
-		System.out.println("FileManagerProperties.getMaxFileBytes() = " + fileManagerProperties.getMaxFileBytes());
-		System.out.println("maxFileBytes = " + maxFileBytes);
+		if (TestingConstants.PRINT) {
+			System.out.println("FileManagerProperties.getMaxFileBytes() = " + fileManagerProperties.getMaxFileBytes());
+			System.out.println("maxFileBytes = " + maxFileBytes);
+		}
 		assertEquals(fileManagerProperties.getMaxFileBytes(), maxFileBytes);
 	}
 
 	@Test
 	public final void testGetMaxFileMegaBytes() {
-		System.out.println("FileManagerProperties.getMaxFileMegaBytes() = " + fileManagerProperties.getMaxFileMegaBytes());
-		System.out.println("maxFileMegaBytes = " + maxFileMegaBytes);
+		if (TestingConstants.PRINT) {
+			System.out.println("FileManagerProperties.getMaxFileMegaBytes() = " + fileManagerProperties.getMaxFileMegaBytes());
+			System.out.println("maxFileMegaBytes = " + maxFileMegaBytes);
+		}
 		assertEquals(fileManagerProperties.getMaxFileMegaBytes(), maxFileMegaBytes);
 	}
 

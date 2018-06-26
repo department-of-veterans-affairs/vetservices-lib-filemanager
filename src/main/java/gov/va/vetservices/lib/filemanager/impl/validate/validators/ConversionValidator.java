@@ -14,6 +14,8 @@ import gov.va.vetservices.lib.filemanager.impl.validate.Validator;
 
 /**
  * Perform the necessary tests to confirm that the file can be converted to PDF.
+ * This validation would attempt to catch "subtle" corruptions that could be introduced to a PDF file
+ * that might cause PDF readers to fail when trying to open it.
  *
  * @author aburkholder
  */
@@ -23,8 +25,11 @@ public class ConversionValidator implements Validator<ImplDto> {
 	public static final String BEAN_NAME = "conversionValidator";
 
 	/**
+	 * NOSONAR TODO if it is decided to do this ...
 	 * <p>
 	 * Perform the necessary tests to confirm that the file can be converted to PDF.
+	 * Attempts to catch "subtle" corruptions that could be introduced to a PDF file
+	 * that might cause PDF readers to fail when trying to open it.
 	 * <p>
 	 * If validations succeeds, {@code null} is returned, otherwise the returned list of messages is also returned on the ValidataorDto
 	 * parameter.

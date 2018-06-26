@@ -1,6 +1,5 @@
 package gov.va.vetservices.lib.filemanager.api;
 
-import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerRequest;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 
@@ -25,10 +24,10 @@ public interface FileManager {
 
 	/**
 	 * Convert a file to PDF, and stamp its header area. Note that the file should have been previously validated by the
-	 * {@link #validateFileForPDFConversion(FileDto)} method.
+	 * {@link #validateFileForPDFConversion(FileManagerRequest)} method.
 	 *
 	 * @param request the {@code FileManagerRequest} containing the byte array to be converted
-	 * @return FileManagerResponse the response with messages and PDF if successful
+	 * @return FileManagerResponse the response with message list and PDF if successful
 	 */
 	public FileManagerResponse convertToPdf(FileManagerRequest request);
 

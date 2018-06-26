@@ -1,6 +1,5 @@
 package gov.va.vetservices.lib.filemanager.impl.validate.validators;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -11,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Image;
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.layout.element.Image;
 
 import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.messages.MessageSeverity;
@@ -44,9 +43,9 @@ public class FileTypeValidator implements Validator<ImplDto> {
 
 	private static final String IMAGE = "image";
 
-	private MimeTypeDetector mimeTypeDetector = new MimeTypeDetector();
+	private final MimeTypeDetector mimeTypeDetector = new MimeTypeDetector();
 
-	private PdfIntegrityChecker pdfIntegrityChecker = new PdfIntegrityChecker();
+	private final PdfIntegrityChecker pdfIntegrityChecker = new PdfIntegrityChecker();
 
 	/**
 	 * <p>
@@ -65,14 +64,14 @@ public class FileTypeValidator implements Validator<ImplDto> {
 	 * @throws FileManagerException
 	 */
 	@Override
-	public List<Message> validate(ImplArgDto<ImplDto> toValidate) {
-		if ((toValidate == null) || (toValidate.getValue() == null)) {
-			MessageKeysEnum msg = MessageKeysEnum.UNEXPECTED_ERROR;
-			Message message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
+	public List<Message> validate(final ImplArgDto<ImplDto> toValidate) {
+		if (toValidate == null || toValidate.getValue() == null) {
+			final MessageKeysEnum msg = MessageKeysEnum.UNEXPECTED_ERROR;
+			final Message message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
 			return Arrays.asList(new Message[] { message });
 		}
-		
-		ImplDto implDto = toValidate.getValue();
+
+		final ImplDto implDto = toValidate.getValue();
 
 		MimeType detectedMimetype = null;
 		boolean convertible = false;
@@ -81,13 +80,15 @@ public class FileTypeValidator implements Validator<ImplDto> {
 			convertible = isImageConvertible(implDto, detectedMimetype);
 		}
 
-		if (convertible && (detectedMimetype != null) && ConvertibleTypesEnum.PDF.getMimeType().match(detectedMimetype)) {
+		if (convertible && detectedMimetype != null && ConvertibleTypesEnum.PDF.getMimeType().match(detectedMimetype)) {
+			// file is a PDF
 			try {
-				if (!pdfIntegrityChecker.isReadable(implDto.getOriginalFileDto().getFilebytes(), implDto.getOriginalFileDto().getFilename())) {
-					implDto.addMessage(new Message(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(),
-							MessageFormat.format(MessageKeysEnum.PDF_UNREADABLE.getMessage(), implDto.getOriginalFileDto().getFilename())));
+				if (!pdfIntegrityChecker.isReadable(implDto.getOriginalFileDto().getFilebytes(),
+						implDto.getOriginalFileDto().getFilename())) {
+					implDto.addMessage(new Message(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(), MessageFormat
+							.format(MessageKeysEnum.PDF_UNREADABLE.getMessage(), implDto.getOriginalFileDto().getFilename())));
 				}
-			} catch (FileManagerException e) { // squid:S1166
+			} catch (final FileManagerException e) { // squid:S1166
 				LOGGER.debug(e.getMessageSeverity().toString() + " " + e.getKey() + ": " + e.getMessage());
 				implDto.addMessage(new Message(e.getMessageSeverity(), e.getKey(), e.getMessage()));
 			}
@@ -108,12 +109,12 @@ public class FileTypeValidator implements Validator<ImplDto> {
 	 * @param implDto
 	 * @return boolean
 	 */
-	protected boolean isExtensionSupported(ImplDto implDto) {
+	protected boolean isExtensionSupported(final ImplDto implDto) {
 		boolean isValid = false;
 
 		if (implDto != null) {
 			if (implDto.getFileParts() != null) {
-				MimeType mimetype = ConvertibleTypesEnum.getMimeTypeForExtension(implDto.getFileParts().getExtension());
+				final MimeType mimetype = ConvertibleTypesEnum.getMimeTypeForExtension(implDto.getFileParts().getExtension());
 				isValid = mimetype != null;
 			}
 			if (!isValid) {
@@ -129,6 +130,8 @@ public class FileTypeValidator implements Validator<ImplDto> {
 	/**
 	 * <p>
 	 * Checks if the provided file extension and the detected MimeType match.
+	 * Messages are returned on the ImplDto parameter messages.
+	 * If the type is undetectable (e.g. due to corruption or other issue), {@code null} is returned.
 	 * <p>
 	 * The terms of a positive match are loose:
 	 * <li>if both the derived and detected MimeTypes are defined, they must match</li>
@@ -137,10 +140,9 @@ public class FileTypeValidator implements Validator<ImplDto> {
 	 * <p>
 	 *
 	 * @param implDto the ImplDto with the bytes and filename
-	 * @return MimeType the detected MIME type
-	 * @throws FileManagerException
+	 * @return MimeType the detected MIME type, or {@code null} if undetectable
 	 */
-	protected MimeType isMimetypeValid(ImplDto implDto) {
+	protected MimeType isMimetypeValid(final ImplDto implDto) {
 		MimeType detectedMimetype = null;
 
 		// get the mime type for the extension
@@ -148,8 +150,8 @@ public class FileTypeValidator implements Validator<ImplDto> {
 
 			throw new IllegalArgumentException("Impl Dto cannot be null.");
 
-		} else if ((implDto.getOriginalFileDto() == null) || (implDto.getOriginalFileDto().getFilebytes() == null)
-				|| (implDto.getOriginalFileDto().getFilebytes().length < 1)) {
+		} else if (implDto.getOriginalFileDto() == null || implDto.getOriginalFileDto().getFilebytes() == null
+				|| implDto.getOriginalFileDto().getFilebytes().length < 1) {
 
 			implDto.addMessage(new Message(MessageSeverity.ERROR, MessageKeysEnum.FILE_DTO_NULL.getKey(),
 					MessageKeysEnum.FILE_DTO_NULL.getMessage()));
@@ -157,8 +159,9 @@ public class FileTypeValidator implements Validator<ImplDto> {
 		} else {
 			try {
 				// performs all necessary checks, including extension match and supported types
-				detectedMimetype = mimeTypeDetector.detectMimeType(implDto.getOriginalFileDto().getFilebytes(), implDto.getFileParts());
-			} catch (FileManagerException e) { // squid:S1166
+				detectedMimetype =
+						mimeTypeDetector.detectMimeType(implDto.getOriginalFileDto().getFilebytes(), implDto.getFileParts());
+			} catch (final FileManagerException e) { // squid:S1166
 				LOGGER.debug(e.getMessageSeverity().toString() + " " + e.getKey() + ": " + e.getMessage());
 				implDto.addMessage(new Message(e.getMessageSeverity(), e.getKey(), e.getMessage()));
 			}
@@ -177,26 +180,25 @@ public class FileTypeValidator implements Validator<ImplDto> {
 	 * @param implDto the bytes and filename
 	 * @return boolean {@code true} if the image can be embedded (or the bytes are not an image)
 	 */
-	protected boolean isImageConvertible(ImplDto implDto, MimeType detectedMimetype) {
+	protected boolean isImageConvertible(final ImplDto implDto, final MimeType detectedMimetype) {
 		boolean isValid = true;
 
-		if ((implDto == null) || (implDto.getOriginalFileDto() == null)) {
+		if (implDto == null || implDto.getOriginalFileDto() == null) {
 			return false;
 		}
 
-		if ((detectedMimetype != null) && IMAGE.equals(detectedMimetype.getPrimaryType())) {
+		if (detectedMimetype != null && IMAGE.equals(detectedMimetype.getPrimaryType())) {
 			// see if itext has any issue
 			try {
 				// the document is a valid image type if no exception is thrown.
-				Image.getInstance(implDto.getOriginalFileDto().getFilebytes());
-			} catch (final IOException | BadElementException e) {
+				new Image(ImageDataFactory.create(implDto.getOriginalFileDto().getFilebytes()));
+			} catch (final com.itextpdf.io.IOException e) {
 				isValid = false;
-				LOGGER.error(
-						"iText error while performing Image.getInstance(..) on bytes for file " + implDto.getOriginalFileDto().getFilename(),
-						e);
-				implDto.addMessage(
-						new Message(MessageSeverity.ERROR, MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getKey(), MessageFormat.format(
-								MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getMessage(), implDto.getOriginalFileDto().getFilename())));
+				LOGGER.error("iText error while performing Image.getInstance(..) on bytes for file "
+						+ implDto.getOriginalFileDto().getFilename(), e);
+				implDto.addMessage(new Message(MessageSeverity.ERROR, MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getKey(),
+						MessageFormat.format(MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getMessage(),
+								implDto.getOriginalFileDto().getFilename())));
 			} catch (final Throwable e) { // NOSONAR - intent is to catch everything // squid:S1166
 				isValid = false;
 				LOGGER.debug(

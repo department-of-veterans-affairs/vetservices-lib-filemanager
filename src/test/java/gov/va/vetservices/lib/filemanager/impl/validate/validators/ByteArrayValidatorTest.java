@@ -21,6 +21,7 @@ import gov.va.ascent.framework.messages.Message;
 import gov.va.vetservices.lib.filemanager.FileManagerConfig;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
+import gov.va.vetservices.lib.filemanager.testutil.TestingConstants;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles({ AscentCommonSpringProfiles.PROFILE_REMOTE_CLIENT_SIMULATORS })
@@ -48,9 +49,11 @@ public class ByteArrayValidatorTest {
 		bytesMax = StringUtils.repeat("-", maxBytes).getBytes();
 		bytesOver = StringUtils.repeat("-", maxBytes + 1).getBytes();
 
-		System.out.println("maxBytes:\t" + maxBytes);
-		System.out.println("bytesMax:\t" + bytesMax.length);
-		System.out.println("bytesOver:\t" + bytesOver.length);
+		if (TestingConstants.PRINT) {
+			System.out.println("maxBytes:\t" + maxBytes);
+			System.out.println("bytesMax:\t" + bytesMax.length);
+			System.out.println("bytesOver:\t" + bytesOver.length);
+		}
 
 		assertTrue(maxBytes > 25000000);
 		assertTrue(bytesMax.length == maxBytes);

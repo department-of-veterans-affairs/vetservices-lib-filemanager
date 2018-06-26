@@ -1,17 +1,18 @@
 package gov.va.vetservices.lib.filemanager.pdf;
 
-import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lowagie.text.pdf.PdfReader;
+import com.itextpdf.signatures.SignatureUtil;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.MimeTypeDetector;
+import gov.va.vetservices.lib.filemanager.pdf.itext.LayoutAwarePdfDocument;
 
 /**
  * Checks the integrity of the PDF and confirms it can be read.
@@ -25,122 +26,72 @@ public class PdfIntegrityChecker {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PdfIntegrityChecker.class);
 
-	private static final String THROWABLE_CORRUPT_1 = "Rebuild failed";
-	private static final String THROWABLE_CORRUPT_2 = "cannot be read";
+	/** Exception message fragments that indicate the file is corrupt */
+	private static final String[] THROWABLE_CORRUPT = { "Rebuild failed", "cannot be read", "Trailer not found", "Header not found" };
+	/** Replacement var for Messages that indicate the file is corrupt */
 	private static final String REASON_CORRUPT = "corrupt";
-	private static final String THROWABLE_PW_EDIT = "signer information does not match";
-	private static final String REASON_PW_EDIT = "password protected or restricted for edits";
-	private static final String THROWABLE_UNREADABLE_ENCRYPTOR = "Bad type on operand stack";
-	private static final String REASON_UNREADABLE_ENCRYPTOR = "encrypted with a certificate";
+
+	/** Exception message fragments that indicate the file is password protected */
+	private static final String[] THROWABLE_PW_PROTECTED =
+			{ "BadPasswordException", "signer information does not match" };
+	/** Replacement var for Messages that indicate the file is password protected */
+	private static final String REASON_PW_PROTECTED = "password protected or restricted for edits";
+
+	/** Exception message fragments that indicate the file is signed with a digital certificate */
+	private static final String[] THROWABLE_SIGNED = { "signed with a digital certificate" };
+	/** Replacement var for Messages that indicate the file is signed with a digital certificate */
+	private static final String REASON_SIGNED = "has been signed with a digital certificate";
+
+	/** Exception message fragments that indicate the file is encrypted with a certificate */
+	private static final String[] THROWABLE_ENCRYPTED =
+			{ "Certificate is not provided", "is encrypted with", "Bad type on operand stack" };
+	/** Replacement var for Messages that indicate the file is encrypted with a certificate */
+	private static final String REASON_ENCRYPTED = "encrypted with a certificate";
 
 	private static final String MSG_PDF_FILE = "PDF file ";
 	private static final String MSG_IS_UNREADABLE = " is unreadable.";
 
+	/*
+	 * NOSONAR TODO find out how to reliably identify PDFs that are corrupt or otherwise cannot be opened in desktop software
+	 * Evidence: Test PDFs that can still be processed: IS_signed-tampered-unopenable.pdf, IS_signed-tampered.pdf
+	 */
 	public boolean isReadable(final byte[] bytes, final String filename) throws FileManagerException {
-		boolean isreadable = false;
-
-		PdfReader pdfReader = null;
+		LayoutAwarePdfDocument pdfDoc = null;
 		try {
-			// The PDF can be read, if no exception is thrown.
-			pdfReader = newPdfReader(bytes, filename);
+			pdfDoc = new LayoutAwarePdfDocument(bytes);
 
-			if (pdfReader != null) {
-				// throws exception if locked (e.g. encrypted)
-				isLocked(pdfReader, filename);
-				// throws exception if signed PDF has been tampered with and a reader app updated the setting
-				isTampered(pdfReader, filename);
+		} catch (final Exception e) {
+			// errors that occur due just to opening and initializing the PDF
+			throwIfCorrupt(e, filename);
+			throwIfPasswordProtected(e, filename);
+			throwIfEncrypted(e, filename);
 
-				isreadable = true;
-
-			} else {
-				final MessageKeysEnum msg = MessageKeysEnum.PDF_UNREADABLE;
-				throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
-			}
-		} finally {
-			if (pdfReader != null) {
-				try {
-					pdfReader.close();
-				} catch (final Throwable e) { // NOSONAR squid:S1166
-					LOGGER.debug("Couldn't close PdfReader.");
-				}
-			}
+			final MessageKeysEnum msg = MessageKeysEnum.PDF_UNREADABLE;
+			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename, "corrupt");
 		}
 
-		return isreadable;
+		// manually throw exception if the document is signed
+		if (isSigned(pdfDoc)) {
+			throwIfSigned(new IllegalArgumentException("Document is signed with a digital certificate."), filename);
+		}
+
+		return true;
 	}
 
 	/**
-	 * PdfReader instantiation extracted to this method for testing purposes.
+	 * Determines if a PDF document has been signed with a digital certificate.
 	 *
-	 * @param bytes the PDF bytes
-	 * @return PdfReader the PdfReader
-	 * @throws IOException if bytes cannot be read
+	 * @param pdfDoc the LayoutAwarePdfDocument
+	 * @return boolean {@code true} if a signature is found
 	 */
-	protected PdfReader newPdfReader(final byte[] bytes, final String filename) throws FileManagerException {
-		PdfReader reader = null;
-		if (bytes != null && bytes.length > 0 && !StringUtils.isBlank(filename)) {
-			try {
-				reader = new PdfReader(bytes);
-			} catch (final Throwable e) { // NOSONAR squid:S1166
-				isUnreadableEncryptor(e, filename);
-				isCorrupt(e, filename);
-				isPasswordEditProtected(e, filename);
+	protected boolean isSigned(final LayoutAwarePdfDocument pdfDoc) {
+		boolean isSigned = false;
 
-				// default message
-				LOGGER.info(MSG_PDF_FILE + filename + MSG_IS_UNREADABLE, e);
-				throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(),
-						MessageKeysEnum.PDF_UNREADABLE.getMessage(), filename,
-						StringUtils.substringBefore(e.getMessage() == null ? "null" : e.getMessage(), "\n"));
-			}
-		}
-		return reader;
-	}
+		final SignatureUtil sigutil = new SignatureUtil(pdfDoc);
+		final List<String> signames = sigutil.getSignatureNames();
+		isSigned = signames == null ? false : !signames.isEmpty();
 
-	/**
-	 * Throws exception it PDF is locked
-	 *
-	 * @param pdfReader the PdfReader
-	 * @param filename the name of the file
-	 * @throws FileManagerException thrown if file is encrypted
-	 */
-// NOSONAR TODO Need to find a better way to do this - will have to wait for the rest of the capabilities to be coded
-	protected final void isLocked(final PdfReader pdfReader, final String filename) throws FileManagerException {
-		boolean islocked = false;
-		MessageKeysEnum msg = MessageKeysEnum.PDF_LOCKED;
-
-		try {
-			islocked = pdfReader.isEncrypted() || pdfReader.is128Key() || pdfReader.isMetadataEncrypted();
-		} catch (final Throwable e) { // NOSONAR - intentional
-			msg = MessageKeysEnum.PDF_CONTENT_INVALID;
-			islocked = true;
-		}
-		if (islocked) {
-			LOGGER.debug(MSG_PDF_FILE + filename + " is encrypted.");
-			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
-		}
-	}
-
-	/**
-	 * Throws exception has been tampered with (must be signed for tamper detection to work).
-	 *
-	 * @param pdfReader the PdfReader
-	 * @param filename the name of the file
-	 * @throws FileManagerException thrown if file is tampered
-	 */
-	protected final void isTampered(final PdfReader pdfReader, final String filename) throws FileManagerException {
-		boolean istampered = false;
-		MessageKeysEnum msg = MessageKeysEnum.PDF_TAMPERED;
-
-		try {
-			istampered = pdfReader.isTampered();
-		} catch (final Throwable e) { // NOSONAR - intentional
-			msg = MessageKeysEnum.PDF_CONTENT_INVALID;
-			istampered = true;
-		}
-		if (istampered) {
-			LOGGER.info("Signed PDF file " + filename + " has been tampered with.");
-			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
-		}
+		return isSigned;
 	}
 
 	/**
@@ -150,8 +101,8 @@ public class PdfIntegrityChecker {
 	 * @param filename the filename associated with file
 	 * @throws FileManagerException exception with PDF_UNREADABLE message
 	 */
-	protected void isCorrupt(final Throwable e, final String filename) throws FileManagerException {
-		if (e.getMessage() != null && StringUtils.containsAny(e.getMessage(), THROWABLE_CORRUPT_1, THROWABLE_CORRUPT_2)) {
+	protected void throwIfCorrupt(final Throwable e, final String filename) throws FileManagerException {
+		if (e.getMessage() != null && StringUtils.containsAny(e.getMessage(), THROWABLE_CORRUPT)) {
 			LOGGER.info(MSG_PDF_FILE + filename + MSG_IS_UNREADABLE, e);
 			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(),
 					MessageKeysEnum.PDF_UNREADABLE.getMessage(), filename, REASON_CORRUPT);
@@ -165,11 +116,27 @@ public class PdfIntegrityChecker {
 	 * @param filename the filename associated with file
 	 * @throws FileManagerException exception with PDF_UNREADABLE message
 	 */
-	protected void isPasswordEditProtected(final Throwable e, final String filename) throws FileManagerException {
-		if (e.getMessage() != null && e.getMessage().contains(THROWABLE_PW_EDIT)) {
-			LOGGER.info(MSG_PDF_FILE + filename + MSG_IS_UNREADABLE, e);
+	protected void throwIfPasswordProtected(final Throwable e, final String filename) throws FileManagerException {
+		if (e.getMessage() != null && StringUtils.containsAny(e.getMessage(), THROWABLE_PW_PROTECTED)) {
+			LOGGER.info(MSG_PDF_FILE + filename + THROWABLE_PW_PROTECTED, e);
 			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(),
-					MessageKeysEnum.PDF_UNREADABLE.getMessage(), filename, REASON_PW_EDIT);
+					MessageKeysEnum.PDF_UNREADABLE.getMessage(), filename, REASON_PW_PROTECTED);
+		}
+	}
+
+	/**
+	 * If exception message indicates the file is signed with a digital certificate, throws FileManagerException with PDF_UNREADABLE
+	 * message.
+	 *
+	 * @param e the cause
+	 * @param filename the filename associated with file
+	 * @throws FileManagerException exception with PDF_UNREADABLE message
+	 */
+	protected void throwIfSigned(final Throwable e, final String filename) throws FileManagerException {
+		if (e.getMessage() != null && StringUtils.containsAny(e.getMessage(), THROWABLE_SIGNED)) {
+			LOGGER.info(MSG_PDF_FILE + filename + THROWABLE_SIGNED, e);
+			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(),
+					MessageKeysEnum.PDF_UNREADABLE.getMessage(), filename, REASON_SIGNED);
 		}
 	}
 
@@ -180,11 +147,11 @@ public class PdfIntegrityChecker {
 	 * @param filename the filename associated with file
 	 * @throws FileManagerException exception with PDF_UNREADABLE message
 	 */
-	protected void isUnreadableEncryptor(final Throwable e, final String filename) throws FileManagerException {
-		if (e.getMessage() != null && e.getMessage().contains(THROWABLE_UNREADABLE_ENCRYPTOR)) {
+	protected void throwIfEncrypted(final Throwable e, final String filename) throws FileManagerException {
+		if (e.getMessage() != null && StringUtils.containsAny(e.getMessage(), THROWABLE_ENCRYPTED)) {
 			LOGGER.info(MSG_PDF_FILE + filename + MSG_IS_UNREADABLE, e);
 			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(),
-					MessageKeysEnum.PDF_UNREADABLE.getMessage(), filename, REASON_UNREADABLE_ENCRYPTOR);
+					MessageKeysEnum.PDF_UNREADABLE.getMessage(), filename, REASON_ENCRYPTED);
 		}
 	}
 

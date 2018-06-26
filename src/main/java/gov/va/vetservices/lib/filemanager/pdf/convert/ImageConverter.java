@@ -1,16 +1,12 @@
 package gov.va.vetservices.lib.filemanager.pdf.convert;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.layout.element.Image;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Image;
-import com.lowagie.text.pdf.PdfWriter;
-
-import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
+import gov.va.vetservices.lib.filemanager.pdf.itext.LayoutAwarePdfDocument;
 
 /**
  * Convert the byte array of a supported "image/*" file into a PDF.
@@ -33,29 +29,28 @@ public class ImageConverter extends AbstractConverter {
 	 * @throws PdfConverterException some problem processing the bytes
 	 */
 	@Override
-	public byte[] getPdf(byte[] bytes, FilePartsDto parts) throws FileManagerException {
-		final ByteArrayOutputStream bytesOutputStream = new ByteArrayOutputStream();
-		final Document pdfDocument = new Document();
-		PdfWriter pdfWriter = null;
+	public byte[] getPdf(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
+
+		byte[] pdfBytes = null;
+		final LayoutAwarePdfDocument pdfDocument = new LayoutAwarePdfDocument();
+
 		try {
-			pdfWriter = PdfWriter.getInstance(pdfDocument, bytesOutputStream);
-
-			initializePdfDocument(pdfDocument);
-
-			final Image image = Image.getInstance(bytes);
-			final float fitWidth = Math.min(FIT_500F, image.getWidth());
-			final float fitHeight = Math.min(FIT_500F, image.getHeight());
+			final Image image = new Image(ImageDataFactory.create(bytes));
+			final float fitWidth = Math.min(FIT_500F, image.getImageScaledWidth());
+			final float fitHeight = Math.min(FIT_500F, image.getImageScaledHeight());
 
 			image.scaleToFit(fitWidth, fitHeight);
-			pdfDocument.add(image);
+			pdfDocument.getLayoutDocument().add(image);
 
-		} catch (DocumentException | IOException e) {
-			doThrowException(e, parts.getName() + "." + parts.getExtension());
+			pdfBytes = pdfDocument.closeAndGetOutput();
+
+		} catch (final Throwable e) { // NOSONAR - intentionally catching everything
+			super.doThrowException(e, parts.getName() + "." + parts.getExtension());
 		} finally {
-			doClose(pdfDocument, pdfWriter);
+			super.closeDocument(pdfDocument, parts);
 		}
 
-		return bytesOutputStream.toByteArray();
+		return pdfBytes;
 	}
 
 }

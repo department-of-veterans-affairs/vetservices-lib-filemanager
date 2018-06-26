@@ -18,6 +18,7 @@ import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
+import gov.va.vetservices.lib.filemanager.testutil.TestingConstants;
 
 public class FileManagerUtilsTest {
 
@@ -33,7 +34,7 @@ public class FileManagerUtilsTest {
 		FileManagerUtils fmu = null;
 		try {
 			fmu = new FileManagerUtils();
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			assertTrue("Attempt to instantiate FileManagerUtils did not fail as expected.",
 					IllegalAccessError.class.equals(e.getClass()));
 		}
@@ -64,8 +65,8 @@ public class FileManagerUtilsTest {
 
 	@Test
 	public final void testGetFileParts() {
-		String filename = FILE_RELATIVE.split("\\.")[0];
-		String extension = FILE_RELATIVE.split("\\.")[1];
+		final String filename = FILE_RELATIVE.split("\\.")[0];
+		final String extension = FILE_RELATIVE.split("\\.")[1];
 
 		// happy
 		FilePartsDto parts = FileManagerUtils.getFileParts(FILE_RELATIVE);
@@ -95,16 +96,16 @@ public class FileManagerUtilsTest {
 
 	@Test
 	public final void testMakeImplDto() {
-		FileManagerRequest request = new FileManagerRequest();
+		final FileManagerRequest request = new FileManagerRequest();
 		request.setClaimId(CLAIM_ID);
 		request.setDocTypeId(DOCTYPE_ID);
 		request.setProcessType(ProcessType.CLAIMS_526);
-		FileDto fdto = new FileDto();
+		final FileDto fdto = new FileDto();
 		fdto.setFilename("test filename.txt");
 		fdto.setFilebytes(new byte[] { 33, 34, 35, 36 });
 		request.setFileDto(fdto);
 
-		ImplDto implDto = FileManagerUtils.makeImplDto(request);
+		final ImplDto implDto = FileManagerUtils.makeImplDto(request);
 
 		assertNotNull("ImplDto is unexpectedly null.", implDto);
 
@@ -123,7 +124,7 @@ public class FileManagerUtilsTest {
 
 	@Test
 	public final void testMakeImplDto_NullFileDto() {
-		ImplDto implDto = FileManagerUtils.makeImplDto(null);
+		final ImplDto implDto = FileManagerUtils.makeImplDto(null);
 
 		assertNotNull("ImplDto is unexpectedly null.", implDto);
 		assertNull("ImplDto.fileDto should be null.", implDto.getOriginalFileDto());
@@ -145,63 +146,81 @@ public class FileManagerUtilsTest {
 		String[] parts = FileManagerUtils.splitOnLastOf(null, c);
 		assertNotNull(parts);
 		assertTrue(parts.length == 2);
-		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		if (TestingConstants.PRINT) {
+			System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		}
 		assertTrue(parts[0] == null);
 		assertTrue(parts[1] == null);
 
 		parts = FileManagerUtils.splitOnLastOf(empty, c);
 		assertNotNull(parts);
 		assertTrue(parts.length == 2);
-		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		if (TestingConstants.PRINT) {
+			System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		}
 		assertTrue(parts[0] == null);
 		assertTrue(parts[1] == null);
 
 		parts = FileManagerUtils.splitOnLastOf(blank, c);
 		assertNotNull(parts);
 		assertTrue(parts.length == 2);
-		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		if (TestingConstants.PRINT) {
+			System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		}
 		assertTrue(parts[0] == null);
 		assertTrue(parts[1] == null);
 
 		parts = FileManagerUtils.splitOnLastOf(bstringb, c);
 		assertNotNull(parts);
 		assertTrue(parts.length == 2);
-		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		if (TestingConstants.PRINT) {
+			System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		}
 		assertTrue(bstringb.equals(parts[0]));
 		assertTrue(parts[1] == null);
 
 		parts = FileManagerUtils.splitOnLastOf(string, c);
 		assertNotNull(parts);
 		assertTrue(parts.length == 2);
-		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		if (TestingConstants.PRINT) {
+			System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		}
 		assertTrue(string.equals(parts[0]));
 		assertTrue(parts[1] == null);
 
 		parts = FileManagerUtils.splitOnLastOf(cstring, c);
 		assertNotNull(parts);
 		assertTrue(parts.length == 2);
-		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		if (TestingConstants.PRINT) {
+			System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		}
 		assertTrue(empty.equals(parts[0]));
 		assertTrue(cstring.endsWith(parts[1]));
 
 		parts = FileManagerUtils.splitOnLastOf(stringc, c);
 		assertNotNull(parts);
 		assertTrue(parts.length == 2);
-		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		if (TestingConstants.PRINT) {
+			System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		}
 		assertTrue(stringc.startsWith(parts[0]));
 		assertTrue(empty.equals(parts[1]));
 
 		parts = FileManagerUtils.splitOnLastOf(strcing, c);
 		assertNotNull(parts);
 		assertTrue(parts.length == 2);
-		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		if (TestingConstants.PRINT) {
+			System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		}
 		assertTrue("str".equals(parts[0]));
 		assertTrue("ing".equals(parts[1]));
 
 		parts = FileManagerUtils.splitOnLastOf(strcingcses, c);
 		assertNotNull(parts);
 		assertTrue(parts.length == 2);
-		System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		if (TestingConstants.PRINT) {
+			System.out.println("[\"" + parts[0] + "\", \"" + parts[1] + "\"]");
+		}
 		assertTrue("str/ing".equals(parts[0]));
 		assertTrue("ses".equals(parts[1]));
 

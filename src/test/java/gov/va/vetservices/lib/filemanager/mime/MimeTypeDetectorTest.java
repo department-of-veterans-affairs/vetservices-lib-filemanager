@@ -18,8 +18,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 import gov.va.vetservices.lib.filemanager.testutil.TestingConstants;
@@ -49,23 +49,25 @@ public class MimeTypeDetectorTest extends AbstractFileHandler {
 
 	@Test
 	public final void testDetectMimeType() throws IOException {
-		for (ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
-			List<File> files = super.listFilesByMimePath(enumeration.getMimeType());
-			assertTrue("Files for " + enumeration.getMimeString() + " is null or empty.", (files != null) && !files.isEmpty());
+		for (final ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
+			final List<File> files = super.listFilesByMimePath(enumeration.getMimeType());
+			assertTrue("Files for " + enumeration.getMimeString() + " is null or empty.", files != null && !files.isEmpty());
 
 			// we have to detect every file in the directory
 			// to confirm that we can detect the variations of that file type
-			for (File file : files) {
+			for (final File file : files) {
 				if (!file.exists()) {
 					fail("File enumerated by " + super.getClass().getSimpleName() + ".getFilesByMimePath() returned non-existent file "
 							+ file.getPath());
 				}
-				byte[] bytes = Files.readAllBytes(file.toPath());
-				String filename = file.getName();
-				String msgPrefix = file.getPath() + ": ";
-				FilePartsDto parts = FileManagerUtils.getFileParts(filename);
+				final byte[] bytes = Files.readAllBytes(file.toPath());
+				final String filename = file.getName();
+				final String msgPrefix = file.getPath() + ": ";
+				final FilePartsDto parts = FileManagerUtils.getFileParts(filename);
 
-				System.out.println("File: " + filename);
+				if (TestingConstants.PRINT) {
+					System.out.println("File: " + filename);
+				}
 
 				if (filename.startsWith(TestingConstants.TEST_FILE_PREFIX_CORRUPT)) {
 					// so far, corrupt files have typically still been detected correctly
@@ -74,12 +76,12 @@ public class MimeTypeDetectorTest extends AbstractFileHandler {
 						mimetype = mimeTypeDetector.detectMimeType(bytes, parts);
 						assertNotNull(msgPrefix + " detected as null", mimetype);
 
-						String mimestring = mimetype.toString();
+						final String mimestring = mimetype.toString();
 						assertTrue(msgPrefix + " blank mimestring", !StringUtils.isBlank(mimestring));
 						assertTrue(msgPrefix + mimestring + " != " + enumeration.getMimeString(),
 								StringUtils.equals(mimestring, enumeration.getMimeString()));
 
-					} catch (FileManagerException e) {
+					} catch (final FileManagerException e) {
 						if (MessageKeysEnum.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
 							e.printStackTrace();
 							fail(msgPrefix + " something went wrong: " + e.getMessage());
@@ -91,12 +93,12 @@ public class MimeTypeDetectorTest extends AbstractFileHandler {
 						mimetype = mimeTypeDetector.detectMimeType(bytes, parts);
 						assertNotNull(msgPrefix + " detected as null", mimetype);
 
-						String mimestring = mimetype.toString();
+						final String mimestring = mimetype.toString();
 						assertTrue(msgPrefix + " blank mimestring", !StringUtils.isBlank(mimestring));
 						assertTrue(msgPrefix + mimestring + " != " + enumeration.getMimeString(),
 								StringUtils.equals(mimestring, enumeration.getMimeString()));
 
-					} catch (FileManagerException e) {
+					} catch (final FileManagerException e) {
 						if (MessageKeysEnum.FILEMANAGER_ISSUE.getKey().equals(e.getKey())) {
 							e.printStackTrace();
 							fail(msgPrefix + " something went wrong: " + e.getMessage());

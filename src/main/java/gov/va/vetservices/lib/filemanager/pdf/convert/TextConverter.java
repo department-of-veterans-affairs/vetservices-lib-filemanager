@@ -4,17 +4,16 @@
 package gov.va.vetservices.lib.filemanager.pdf.convert;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.pdf.PdfWriter;
+import org.apache.commons.lang3.StringUtils;
 
-import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
+import gov.va.vetservices.lib.filemanager.pdf.itext.LayoutAwarePdfDocument;
 
 /**
  * Convert the byte array of a supported "text/plain" file into a PDF.
@@ -36,40 +35,54 @@ public class TextConverter extends AbstractConverter {
 	 * @throws PdfConverterException some problem processing the bytes
 	 */
 	@Override
-	public byte[] getPdf(byte[] bytes, FilePartsDto parts) throws FileManagerException {
-		final ByteArrayOutputStream pdfContent = new ByteArrayOutputStream();
-		final Document pdfDocument = new Document();
-		PdfWriter writer = null;
+	public byte[] getPdf(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
+
+		byte[] pdfBytes = null;
+		LayoutAwarePdfDocument pdfDocument = null;
+
 		final BufferedReader bufferReader = getPlainTextReader(bytes);
 
-		try {
-			writer = PdfWriter.getInstance(pdfDocument, pdfContent);
+		try { // NOSONAR - try-with-resource does not work if var is needed for finally block
+			pdfDocument = new LayoutAwarePdfDocument();
+			@SuppressWarnings("resource")
+			final Document doc = new Document(pdfDocument); // NOSONAR - this gets closed by pdfDoc
 
-			initializePdfDocument(pdfDocument);
+			final StringBuilder str = new StringBuilder();
 			String line = bufferReader.readLine();
-
-			StringBuilder paragraph = new StringBuilder();
 			while (line != null) {
-				if (line.isEmpty()) {
-					pdfDocument.add(new Paragraph(paragraph.toString()));
-					pdfDocument.add(new Paragraph(NEW_LINE));
-					paragraph.setLength(0);
+				if (StringUtils.isBlank(line)) {
+					doc.add(makeParagraph(str));
 				} else {
-					paragraph.append(paragraph.length() > 0 ? " " : "").append(line.trim());
+					str.append(str.length() > 0 ? " " : "").append(line);
 				}
 				line = bufferReader.readLine();
 			}
-			if (paragraph.length() > 0) {
-				pdfDocument.add(new Paragraph(paragraph.toString()));
+			if (str.length() > 0) {
+				doc.add(makeParagraph(str));
 			}
 
-		} catch (DocumentException | IOException e) {
-			doThrowException(e, parts.getName() + "." + parts.getExtension());
+			pdfBytes = pdfDocument.closeAndGetOutput();
+
+		} catch (final Exception e) { // NOSONAR - intentionally catching everything
+			super.doThrowException(e, parts.getName() + "." + parts.getExtension());
 		} finally {
-			doClose(pdfDocument, writer);
+			super.closeDocument(pdfDocument, parts);
 		}
 
-		return pdfContent.toByteArray();
+		return pdfBytes;
 	}
 
+	/**
+	 * Adds a newline to the StringBuilder, creates the iText Paragraph, resets the StringBuilder value to empty, and returns the
+	 * Paragraph.
+	 *
+	 * @param strbldr the String content of the paragraph
+	 * @return Paragraph the iText Paragraph
+	 */
+	protected Paragraph makeParagraph(final StringBuilder strbldr) {
+		strbldr.append(NEW_LINE);
+		final Paragraph para = new Paragraph(strbldr.toString());
+		strbldr.setLength(0);
+		return para;
+	}
 }

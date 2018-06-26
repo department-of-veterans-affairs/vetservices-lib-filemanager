@@ -9,11 +9,13 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import com.itextpdf.io.font.constants.StandardFonts;
+
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
+import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfStamperException;
 import gov.va.vetservices.lib.filemanager.impl.dto.DocMetadataDto;
-import gov.va.vetservices.lib.filemanager.pdf.font.FontNameEnum;
 import gov.va.vetservices.lib.filemanager.pdf.stamp.dto.StampDataDto;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 
@@ -24,25 +26,25 @@ public class StamperTest extends AbstractFileHandler {
 
 	@Test
 	public final void testStamp() throws IOException {
-		byte[] bytes = super.readFile(Paths.get(pdfPath));
-		Stamper stamper = new Stamper();
-		DocMetadataDto metadata = new DocMetadataDto();
+		final byte[] bytes = super.readFile(Paths.get(pdfPath));
+		final Stamper stamper = new Stamper();
+		final DocMetadataDto metadata = new DocMetadataDto();
 		metadata.setClaimId(claimId);
 		metadata.setDocTypeId("123");
 		metadata.setProcessType(ProcessType.CLAIMS_526);
-		StampDataDto stampDataDto = new StampDataDto();
-		stampDataDto.setFontName(FontNameEnum.HELVETICA);
+		final StampDataDto stampDataDto = new StampDataDto();
+		stampDataDto.setFontName(StandardFonts.HELVETICA);
 		stampDataDto.setFontSizeInPoints(12);
 		stampDataDto.setProcessType(ProcessType.CLAIMS_526);
-		FileDto fileDto = new FileDto();
+		final FileDto fileDto = new FileDto();
 		fileDto.setFilename(Paths.get(pdfPath).getFileName().toString());
 		fileDto.setFilebytes(bytes);
 
 		try {
-			byte[] stamped = stamper.stamp(metadata, stampDataDto, fileDto);
+			final byte[] stamped = stamper.stamp(metadata, stampDataDto, fileDto);
 			assertNotNull(stamped);
 
-		} catch (PdfStamperException e) {
+		} catch (final PdfStamperException e) {
 			e.printStackTrace();
 			fail(e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
@@ -50,29 +52,58 @@ public class StamperTest extends AbstractFileHandler {
 
 	@Test
 	public final void testStamp_Bad() {
-		byte[] bytes = new byte[] { 0 };
-		DocMetadataDto metadata = new DocMetadataDto();
+		final byte[] bytes = new byte[] { 0 };
+		final DocMetadataDto metadata = new DocMetadataDto();
 		metadata.setClaimId(claimId);
 		metadata.setDocTypeId("123");
 		metadata.setProcessType(ProcessType.CLAIMS_526);
-		Stamper stamper = new Stamper();
-		StampDataDto stampDataDto = new StampDataDto();
-		stampDataDto.setFontName(FontNameEnum.HELVETICA);
+		final Stamper stamper = new Stamper();
+		final StampDataDto stampDataDto = new StampDataDto();
+		stampDataDto.setFontName(StandardFonts.HELVETICA);
 		stampDataDto.setFontSizeInPoints(12);
 		stampDataDto.setProcessType(ProcessType.CLAIMS_526);
-		FileDto fileDto = new FileDto();
+		final FileDto fileDto = new FileDto();
 		fileDto.setFilename("bad-bytes.pdf");
 		fileDto.setFilebytes(bytes);
 
 		try {
-			byte[] stamped = stamper.stamp(metadata, stampDataDto, fileDto);
-			fail("Exception should have been thrown, stampped is " + stamped);
+			final byte[] stamped = stamper.stamp(metadata, stampDataDto, fileDto);
+			fail("Exception should have been thrown, stamped is " + stamped);
 
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			assertNotNull(e);
 			assertTrue(e.getClass().isAssignableFrom(PdfStamperException.class));
 			assertNotNull(e.getCause());
-			assertTrue(e.getCause().getClass().isAssignableFrom(IOException.class));
+			assertTrue(e.getCause().getClass().isAssignableFrom(FileManagerException.class));
+			assertNotNull(e.getCause().getCause());
+			assertTrue(e.getCause().getCause().getClass().isAssignableFrom(com.itextpdf.io.IOException.class));
+		}
+
+		fileDto.setFilename(Paths.get(pdfPath).getFileName().toString());
+		fileDto.setFilebytes(bytes);
+
+		try {
+			stamper.stamp(null, stampDataDto, fileDto);
+			fail("Exception should have been thrown");
+		} catch (final Throwable e) {
+			assertNotNull(e);
+			assertTrue(IllegalArgumentException.class.isAssignableFrom(e.getClass()));
+		}
+
+		try {
+			stamper.stamp(metadata, null, fileDto);
+			fail("Exception should have been thrown");
+		} catch (final Throwable e) {
+			assertNotNull(e);
+			assertTrue(IllegalArgumentException.class.isAssignableFrom(e.getClass()));
+		}
+
+		try {
+			stamper.stamp(metadata, stampDataDto, null);
+			fail("Exception should have been thrown");
+		} catch (final Throwable e) {
+			assertNotNull(e);
+			assertTrue(IllegalArgumentException.class.isAssignableFrom(e.getClass()));
 		}
 	}
 }
