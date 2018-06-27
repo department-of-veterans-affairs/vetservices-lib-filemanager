@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
+import gov.va.ascent.framework.util.SanitizationUtil;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
@@ -80,8 +81,8 @@ public abstract class AbstractConverter {
 		final MessageKeysEnum messageKeys = MessageKeysEnum.PDF_CONVERSION_PROCESSING;
 
 		LOGGER.error(messageKeys.getKey() + ": " + messageKeys.getMessage(), e);
-		throw new PdfConverterException(e, MessageSeverity.ERROR, messageKeys.getKey(), messageKeys.getMessage(), filename,
-				e.getMessage());
+		throw new PdfConverterException(e, MessageSeverity.ERROR, messageKeys.getKey(), messageKeys.getMessage(),
+				SanitizationUtil.safeFilename(filename), e.getMessage());
 	}
 
 }

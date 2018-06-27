@@ -21,8 +21,9 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.xml.sax.SAXException;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
+import gov.va.ascent.framework.util.SanitizationUtil;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
@@ -58,22 +59,22 @@ public class TikaDetector extends AbstractDetector {
 	 * @param path the path (on the classpath) to the config file
 	 * @throws IllegalArgumentException could not locate or load the specified file
 	 */
-	protected void getTikaConfig(String path) {
+	protected void getTikaConfig(final String path) {
 		if (StringUtils.isBlank(path)) {
 			throw new IllegalArgumentException("Configuration file cannot be null or empty.");
 		}
 
 		try {
-			Resource[] resources = (new PathMatchingResourcePatternResolver()).getResources("classpath*:" + path);
-			if ((resources == null) || (resources.length < 1)) {
+			final Resource[] resources = new PathMatchingResourcePatternResolver().getResources("classpath*:" + path);
+			if (resources == null || resources.length < 1) {
 				throw new IllegalArgumentException("Configuration file '" + path + "' not found.");
 			} else if (resources.length > 1) {
 				throw new IllegalArgumentException("Multiple configuration files found at '" + path + "'.");
 			}
-			Resource resource = resources[0];
+			final Resource resource = resources[0];
 			tikaConfig = new TikaConfig(resource.getInputStream());
 		} catch (TikaException | IOException | SAXException e) {
-			String message = "FATAL ERROR: " + e.getClass().getSimpleName() + " - could not load classpath file '" + path + "': "
+			final String message = "FATAL ERROR: " + e.getClass().getSimpleName() + " - could not load classpath file '" + path + "': "
 					+ e.getMessage();
 			LOGGER.error(message);
 			throw new IllegalArgumentException(message, e);
@@ -81,37 +82,39 @@ public class TikaDetector extends AbstractDetector {
 	}
 
 	@Override
-	public MimeType detect(byte[] bytes, FilePartsDto parts) throws FileManagerException {
+	public MimeType detect(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
 		MimeType mimetype = null;
 
 		if (bytes == null) {
-			MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY;
+			final MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY;
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
 		}
 		if (parts == null) {
-			MessageKeysEnum msg = MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY;
+			final MessageKeysEnum msg = MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY;
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
 		}
 
-		String filename = parts.getName() + SEPARATOR + parts.getExtension();
+		final String filename = parts.getName() + SEPARATOR + parts.getExtension();
 		try {
-			MimeType withMagic = detectByMagic(bytes);
-			MimeType withHint = detectWithFilename(bytes, filename);
+			final MimeType withMagic = detectByMagic(bytes);
+			final MimeType withHint = detectWithFilename(bytes, filename);
 			mimetype = selfCheck(withMagic, withHint);
 
 			mimetype = fixKnownFlaws(mimetype, parts);
 
-		} catch (IOException e) { // NOSONAR - sonar doesn't see the exception being thrown
+		} catch (final IOException e) { // NOSONAR - sonar doesn't see the exception being thrown
 			LOGGER.debug("File " + filename + " is unreadable.");
-			MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_UNREADABLE;
-			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), filename));
-			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
+			final MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_UNREADABLE;
+			final String safeName = SanitizationUtil.safeFilename(filename);
+			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), safeName));
+			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), safeName);
 
-		} catch (MimeTypeParseException e) { // NOSONAR - sonar doesn't see the exception being thrown
+		} catch (final MimeTypeParseException e) { // NOSONAR - sonar doesn't see the exception being thrown
 			LOGGER.debug("MIME type '" + mimetype + "' cannot be converted to PDF.");
-			MessageKeysEnum msg = MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE;
-			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), filename));
-			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
+			final MessageKeysEnum msg = MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE;
+			final String safeName = SanitizationUtil.safeFilename(filename);
+			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), safeName));
+			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), safeName);
 		}
 
 		return mimetype;
@@ -137,7 +140,7 @@ public class TikaDetector extends AbstractDetector {
 		if (FileManagerUtils.hasBytes(bytes)) {
 			MediaType mediatypeMagic = null;
 
-			MimeTypes mimeRegistry = tikaConfig.getMimeRepository();
+			final MimeTypes mimeRegistry = tikaConfig.getMimeRepository();
 
 			// detect by magic
 			mediatypeMagic = mimeRegistry.detect(TikaInputStream.get(bytes), new Metadata());
@@ -169,13 +172,13 @@ public class TikaDetector extends AbstractDetector {
 		MimeType mimetype = null;
 
 		if (FileManagerUtils.hasBytes(bytes)) {
-			MimeTypes mimeRegistry = tikaConfig.getMimeRepository();
+			final MimeTypes mimeRegistry = tikaConfig.getMimeRepository();
 
 			// detect with filename hint
-			Metadata metadata = new Metadata();
+			final Metadata metadata = new Metadata();
 			metadata.set(TikaCoreProperties.ORIGINAL_RESOURCE_NAME, filename);
 
-			MediaType mediatype = mimeRegistry.detect(TikaInputStream.get(bytes), metadata);
+			final MediaType mediatype = mimeRegistry.detect(TikaInputStream.get(bytes), metadata);
 			if (mediatype != null) {
 				mimetype = new MimeType(mediatype.getBaseType().toString());
 			}
@@ -198,13 +201,13 @@ public class TikaDetector extends AbstractDetector {
 	 * @param filename the filename
 	 * @return MimeType the fixed Tika detected MIME type
 	 */
-	protected MimeType fixKnownFlaws(MimeType fromBytes, FilePartsDto parts) {
+	protected MimeType fixKnownFlaws(final MimeType fromBytes, final FilePartsDto parts) {
 		MimeType fixed = fromBytes;
 
 		// sonar cannot be made happy here - it complains about too many arguments in the if statement,
 		// and splitting it into 2 if statements, it says to merge them into one statement again
 		// ... and it is pointless to create another method just to put the other half of the if statement
-		if ((fromBytes != null) && (parts != null) && !StringUtils.isBlank(parts.getExtension()) // NOSONAR
+		if (fromBytes != null && parts != null && !StringUtils.isBlank(parts.getExtension()) // NOSONAR
 				&& MIME_RAW_OCTECT_STREAM.equals(fromBytes.getBaseType()) // NOSONAR
 				&& StringUtils.equalsIgnoreCase(parts.getExtension(), ConvertibleTypesEnum.TXT.getExtension())) { // NOSONAR
 

@@ -13,6 +13,7 @@ import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
+import gov.va.ascent.framework.util.SanitizationUtil;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.exception.PdfStamperException;
 import gov.va.vetservices.lib.filemanager.impl.dto.DocMetadataDto;
@@ -81,7 +82,7 @@ public class Stamper {
 
 		} catch (final Throwable e) { // NOSONAR intentionally catching everything
 			final MessageKeysEnum mke = MessageKeysEnum.PDF_STAMPING;
-			final String msg = MessageFormat.format(mke.getMessage(), fileDto.getFilename(),
+			final String msg = MessageFormat.format(mke.getMessage(), SanitizationUtil.safeFilename(fileDto.getFilename()),
 					e.getClass().getSimpleName() + " - " + StringUtils.substringBefore(e.getMessage(), "\n"));
 			LOGGER.error(mke.getKey() + ": " + msg, e);
 			throw new PdfStamperException(e, MessageSeverity.ERROR, mke.getKey(), msg);

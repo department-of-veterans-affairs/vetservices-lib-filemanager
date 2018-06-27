@@ -40,6 +40,7 @@ public class FilenameValidatorTest {
 
 	private static final String FILENAME = "test.txt";
 	private static final String FILENAME_EMPTY = "";
+	private static final String FILENAME_ILLEGAL = "illegalchar" + (char) 1 + ".txt";
 	private String FILENAME_TOO_LONG;
 	private String FILENAME_LONG;
 
@@ -65,8 +66,8 @@ public class FilenameValidatorTest {
 
 	@Test
 	public final void testValidate() {
-		FileManagerRequest request = new FileManagerRequest();
-		FileDto dto = new FileDto();
+		final FileManagerRequest request = new FileManagerRequest();
+		final FileDto dto = new FileDto();
 		request.setFileDto(dto);
 
 		// happy
@@ -94,6 +95,11 @@ public class FilenameValidatorTest {
 		assertNotNull(messages);
 
 		dto.setFilename(FILENAME_TOO_LONG);
+		arg = new ImplArgDto<>(FileManagerUtils.makeImplDto(request));
+		messages = filenameValidator.validate(arg);
+		assertNotNull(messages);
+
+		dto.setFilename(FILENAME_ILLEGAL);
 		arg = new ImplArgDto<>(FileManagerUtils.makeImplDto(request));
 		messages = filenameValidator.validate(arg);
 		assertNotNull(messages);

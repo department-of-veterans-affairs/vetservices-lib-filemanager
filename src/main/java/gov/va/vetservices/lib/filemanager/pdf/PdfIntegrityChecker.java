@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.itextpdf.signatures.SignatureUtil;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
+import gov.va.ascent.framework.util.SanitizationUtil;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.MimeTypeDetector;
@@ -118,9 +119,10 @@ public class PdfIntegrityChecker {
 	 */
 	protected void throwIfPasswordProtected(final Throwable e, final String filename) throws FileManagerException {
 		if (e.getMessage() != null && StringUtils.containsAny(e.getMessage(), THROWABLE_PW_PROTECTED)) {
-			LOGGER.info(MSG_PDF_FILE + filename + THROWABLE_PW_PROTECTED, e);
+			final String safename = SanitizationUtil.safeFilename(filename);
+			LOGGER.info(MSG_PDF_FILE + safename + THROWABLE_PW_PROTECTED, e);
 			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(),
-					MessageKeysEnum.PDF_UNREADABLE.getMessage(), filename, REASON_PW_PROTECTED);
+					MessageKeysEnum.PDF_UNREADABLE.getMessage(), safename, REASON_PW_PROTECTED);
 		}
 	}
 
@@ -134,9 +136,10 @@ public class PdfIntegrityChecker {
 	 */
 	protected void throwIfSigned(final Throwable e, final String filename) throws FileManagerException {
 		if (e.getMessage() != null && StringUtils.containsAny(e.getMessage(), THROWABLE_SIGNED)) {
-			LOGGER.info(MSG_PDF_FILE + filename + THROWABLE_SIGNED, e);
+			final String safename = SanitizationUtil.safeFilename(filename);
+			LOGGER.info(MSG_PDF_FILE + safename + THROWABLE_SIGNED, e);
 			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(),
-					MessageKeysEnum.PDF_UNREADABLE.getMessage(), filename, REASON_SIGNED);
+					MessageKeysEnum.PDF_UNREADABLE.getMessage(), safename, REASON_SIGNED);
 		}
 	}
 
@@ -149,9 +152,10 @@ public class PdfIntegrityChecker {
 	 */
 	protected void throwIfEncrypted(final Throwable e, final String filename) throws FileManagerException {
 		if (e.getMessage() != null && StringUtils.containsAny(e.getMessage(), THROWABLE_ENCRYPTED)) {
-			LOGGER.info(MSG_PDF_FILE + filename + MSG_IS_UNREADABLE, e);
+			final String safename = SanitizationUtil.safeFilename(filename);
+			LOGGER.info(MSG_PDF_FILE + safename + MSG_IS_UNREADABLE, e);
 			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(),
-					MessageKeysEnum.PDF_UNREADABLE.getMessage(), filename, REASON_ENCRYPTED);
+					MessageKeysEnum.PDF_UNREADABLE.getMessage(), safename, REASON_ENCRYPTED);
 		}
 	}
 
