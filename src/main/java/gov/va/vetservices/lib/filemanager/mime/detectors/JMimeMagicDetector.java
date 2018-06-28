@@ -11,8 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
+import gov.va.ascent.framework.util.SanitizationUtil;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import net.sf.jmimemagic.Magic;
@@ -32,15 +33,15 @@ public class JMimeMagicDetector extends AbstractDetector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JMimeMagicDetector.class);
 
 	@Override
-	public MimeType detect(byte[] bytes, FilePartsDto parts) throws FileManagerException {
+	public MimeType detect(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
 		MimeType mimetype = null;
 
 		if (bytes == null) {
-			MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY;
+			final MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY;
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
 		}
 		if (parts == null) {
-			MessageKeysEnum msg = MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY;
+			final MessageKeysEnum msg = MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY;
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
 		}
 
@@ -48,15 +49,15 @@ public class JMimeMagicDetector extends AbstractDetector {
 			mimetype = detectByMagic(bytes);
 			mimetype = fixKnownFlaws(mimetype, parts.getExtension());
 
-		} catch (IOException e) { // NOSONAR - sonar doesn't see the exception being thrown
-			MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_UNREADABLE;
-			String filename = parts.getName() + SEPARATOR + parts.getExtension();
+		} catch (final IOException e) { // NOSONAR - sonar doesn't see the exception being thrown
+			final MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_UNREADABLE;
+			final String filename = SanitizationUtil.safeFilename(parts.getName() + SEPARATOR + parts.getExtension());
 			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), filename));
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
 
-		} catch (MimeTypeParseException e) { // NOSONAR - sonar doesn't see the exception being thrown
-			String filename = parts.getName() + SEPARATOR + parts.getExtension();
-			MessageKeysEnum msg = MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE;
+		} catch (final MimeTypeParseException e) { // NOSONAR - sonar doesn't see the exception being thrown
+			final String filename = SanitizationUtil.safeFilename(parts.getName() + SEPARATOR + parts.getExtension());
+			final MessageKeysEnum msg = MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE;
 			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), filename));
 			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), filename);
 		}
@@ -104,10 +105,10 @@ public class JMimeMagicDetector extends AbstractDetector {
 	 * @param fileExtension the filename
 	 * @return String the fixed jMimeMagic MIME type
 	 */
-	protected MimeType fixKnownFlaws(MimeType fromBytes, String fileExtension) {
+	protected MimeType fixKnownFlaws(final MimeType fromBytes, final String fileExtension) {
 		MimeType fixed = fromBytes;
 
-		if ((fromBytes != null) && !StringUtils.isBlank(fileExtension)
+		if (fromBytes != null && !StringUtils.isBlank(fileExtension)
 				&& StringUtils.equalsIgnoreCase(fileExtension, ConvertibleTypesEnum.BMP.getExtension())
 				&& ConvertibleTypesEnum.TXT.getMimeType().match(fromBytes)) {
 

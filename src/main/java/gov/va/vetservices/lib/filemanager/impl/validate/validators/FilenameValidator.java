@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.ascent.framework.util.Defense;
+import gov.va.ascent.framework.util.SanitizationUtil;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
@@ -81,10 +82,17 @@ public class FilenameValidator implements Validator<ImplDto> {
 
 			addError(implDto, MessageKeysEnum.FILE_NAME_TOO_LONG);
 
-		} else if (StringUtils.containsAny(implDto.getFileParts().getName(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS.stream().toArray(String[]::new))
-				|| StringUtils.containsAny(implDto.getFileParts().getExtension(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS.stream().toArray(String[]::new))) {
+		} else if (StringUtils.containsAny(implDto.getFileParts().getName(),
+				FileManagerProperties.FILE_NAME_ILLEGAL_CHARS.stream().toArray(String[]::new))
+				|| StringUtils.containsAny(implDto.getFileParts().getExtension(),
+						FileManagerProperties.FILE_NAME_ILLEGAL_CHARS.stream().toArray(String[]::new))) {
 
 			addError(implDto, MessageKeysEnum.FILE_NAME_MALFORMED);
+
+		} else if (!implDto.getOriginalFileDto().getFilename()
+				.equals(SanitizationUtil.safeFilename(implDto.getOriginalFileDto().getFilename()))) {
+
+			addError(implDto, MessageKeysEnum.FILE_NAME_ILLEGAL);
 
 		}
 

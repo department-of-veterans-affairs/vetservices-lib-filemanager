@@ -40,6 +40,8 @@ public enum MessageKeysEnum {
 	/** Filename starts or ends with one of {@link FileManagerUtils.ILLEGAL_FILE_START_CHARS} */
 	FILE_NAME_MALFORMED("filemanager.file.name.malformed",
 			"File name is malformed. Filenames cannot begin or end with any of " + FileManagerProperties.FILE_NAME_ILLEGAL_CHARS),
+	/** Filename contains illegal characters, per the restrictions of the Windows operating system. */
+	FILE_NAME_ILLEGAL("filemanager.file.name.illegal", "File name contains illegal characters."),
 	/** Filename was too long - dev note: arg is automatically replaced in getMessage() */
 	FILE_NAME_TOO_LONG("filemanager.file.name.length", "File name must be less than {0} characters"),
 	/** Byte array was null or empty */
