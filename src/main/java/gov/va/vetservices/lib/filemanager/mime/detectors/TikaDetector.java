@@ -1,6 +1,7 @@
 package gov.va.vetservices.lib.filemanager.mime.detectors;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.MessageFormat;
 
 import javax.activation.MimeType;
@@ -72,7 +73,8 @@ public class TikaDetector extends AbstractDetector {
 				throw new IllegalArgumentException("Multiple configuration files found at '" + path + "'.");
 			}
 			final Resource resource = resources[0];
-			tikaConfig = new TikaConfig(resource.getInputStream());
+			InputStream is = resource.getInputStream(); // no need to close, InputStream.close() does nothing
+			tikaConfig = new TikaConfig(is);
 		} catch (TikaException | IOException | SAXException e) {
 			final String message = "FATAL ERROR: " + e.getClass().getSimpleName() + " - could not load classpath file '" + path + "': "
 					+ e.getMessage();
