@@ -16,12 +16,15 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
+import gov.va.vetservices.lib.filemanager.mime.MimeTypeDetector;
 import gov.va.vetservices.lib.filemanager.pdf.convert.ImageConverter;
 import gov.va.vetservices.lib.filemanager.pdf.convert.TextConverter;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
@@ -41,6 +44,11 @@ public class PdfConverterTest extends AbstractFileHandler {
 	@Mock
 	private final TextConverter textConverter = new TextConverter();
 
+	@Mock
+	MimeTypeDetector detector;
+
+	@InjectMocks
+	@Spy
 	PdfConverter converter;
 
 	@Before
@@ -90,6 +98,7 @@ public class PdfConverterTest extends AbstractFileHandler {
 
 	@Test
 	public final void testConvert_Bad() {
+		// unsupported mimetype
 		byte[] bytes = null;
 		try {
 			bytes = readFile(Paths.get(FILE_UNSUPPORTED));
@@ -98,13 +107,26 @@ public class PdfConverterTest extends AbstractFileHandler {
 			fail("Unexpected exception");
 		}
 
-		final FilePartsDto parts = FileManagerUtils.getFileParts(Paths.get(FILE_UNSUPPORTED).toFile().getName());
+		FilePartsDto parts = FileManagerUtils.getFileParts(Paths.get(FILE_UNSUPPORTED).toFile().getName());
 		try {
 			converter.convert(bytes, parts);
 			fail("converter.convert() should have thrown exception");
 		} catch (final FileManagerException e) {
 			assertNotNull(e);
 		}
+
+		// mock to force throwing default PdfConverterException from convert()
+		parts = new FilePartsDto();
+		parts.setName("techdraw");
+		parts.setExtension("cgm");
+		try {
+			converter.convert(super.readFile(Paths.get("files/image/cgm/techdraw.cgm")), parts);
+			fail("Should have thrown exception.");
+		} catch (final Exception e) {
+			assertTrue(FileManagerException.class.isAssignableFrom(e.getClass()));
+			assertTrue(e.getMessage().contains("connot be converted"));
+		}
+
 	}
 
 	private void assertExpectedException(Throwable e, final String filename) throws AssertionError {

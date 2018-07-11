@@ -4,20 +4,28 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tika.exception.TikaException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.core.io.Resource;
 
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
@@ -32,23 +40,64 @@ public class TikaDetectorTest extends AbstractFileHandler {
 
 	private static final String UNSUPPORTED_MIMETYPE = "application/stl";
 
+	@Spy
 	private TikaDetector tikaDetector;
+
+	@Mock
+	Resource resource;
 
 	@Before
 	public void setUp() throws Exception {
 		tikaDetector = new TikaDetector();
 		assertNotNull(tikaDetector);
+		assertNotNull(resource);
 	}
 
 	@Test
 	public final void testGetTikaConfig() {
-		// sad
-		final String path = "/some-nonexistent-file.xml";
+		// sad invalid file
+		String path = "/some-nonexistent-file.xml";
 		try {
 			tikaDetector.getTikaConfig(path);
+			fail("Should have thrown exception");
 		} catch (final Throwable e) {
 			assertNotNull(e);
 			assertTrue(IllegalArgumentException.class.equals(e.getClass()));
+		}
+
+		// sad null path
+		path = null;
+		try {
+			tikaDetector.getTikaConfig(path);
+			fail("Should have thrown exception");
+		} catch (final Throwable e) {
+			assertNotNull(e);
+			assertTrue(IllegalArgumentException.class.equals(e.getClass()));
+		}
+
+		// sad blank path
+		path = "   ";
+		try {
+			tikaDetector.getTikaConfig(path);
+			fail("Should have thrown exception");
+		} catch (final Throwable e) {
+			assertNotNull(e);
+			assertTrue(IllegalArgumentException.class.equals(e.getClass()));
+		}
+
+		// sad TikaConfig instantiation failure
+		try {
+			doThrow(TikaException.class).when(resource).getInputStream();
+		} catch (final IOException e) {
+			e.printStackTrace();
+			fail("Should not have thrown exception yet.");
+		}
+		path = "/nonexistent.xml";
+		try {
+			tikaDetector.getTikaConfig(path);
+			fail("Should have thrown exception");
+		} catch (final IllegalArgumentException e) {
+			assertNotNull(e);
 		}
 	}
 
@@ -129,13 +178,50 @@ public class TikaDetectorTest extends AbstractFileHandler {
 	@Test
 	public final void testDetect_Bad() {
 		// null bytes and parts
-		final FilePartsDto parts = new FilePartsDto();
+		FilePartsDto parts = new FilePartsDto();
 		parts.setName(null);
 		parts.setExtension(null);
 
 		testNullBytesAndParts(null, parts);
 		testNullBytesAndParts(new byte[] { 64, 65, 66 }, null);
 		testNullBytesAndParts(null, null);
+
+		final TikaDetector tikad = spy(new TikaDetector());
+		// cause exceptions //
+		parts = new FilePartsDto();
+		parts.setName("IS_Text-doc");
+		parts.setExtension("pdf");
+		byte[] bytes = null;
+		try {
+			bytes = super.readFile(Paths.get("files/application/pdf/IS_Text-doc.pdf"));
+		} catch (final IOException e) {
+			e.printStackTrace();
+			fail("Should not have thrown exception yet.");
+		}
+		// IOException
+		try {
+			doThrow(IOException.class).when(tikad).detectByMagic(any());
+		} catch (IOException | MimeTypeParseException e) {
+			e.printStackTrace();
+			fail("Should not have thrown exception yet.");
+		}
+		try {
+			tikad.detect(bytes, parts);
+		} catch (final FileManagerException e) {
+			assertTrue(e.getMessage().contains("cannot be read"));
+		}
+		// MimeTypeParseException
+		try {
+			doThrow(MimeTypeParseException.class).when(tikad).detectByMagic(any());
+		} catch (IOException | MimeTypeParseException e) {
+			e.printStackTrace();
+			fail("Should not have thrown exception yet.");
+		}
+		try {
+			tikad.detect(bytes, parts);
+		} catch (final FileManagerException e) {
+			assertTrue(e.getMessage().contains("connot be converted"));
+		}
 
 	}
 

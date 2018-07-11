@@ -49,7 +49,16 @@ public class MimeTypeDetectorTest extends AbstractFileHandler {
 
 	@Test
 	public final void testDetectMimeType() throws IOException {
+
+		final int singlejMimeMagicEnabled = 6;
+		int counter = 0;
+
 		for (final ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
+			mimeTypeDetector.enableJMimeMagic = false;
+			if (++counter == singlejMimeMagicEnabled) {
+				mimeTypeDetector.enableJMimeMagic = true;
+			}
+
 			final List<File> files = super.listFilesByMimePath(enumeration.getMimeType());
 			assertTrue("Files for " + enumeration.getMimeString() + " is null or empty.", files != null && !files.isEmpty());
 
@@ -107,6 +116,19 @@ public class MimeTypeDetectorTest extends AbstractFileHandler {
 				}
 			}
 		}
+
+		// one test with both tika and jMimeMagic shut off
+		mimeTypeDetector.enableJMimeMagic = false;
+		mimeTypeDetector.enableTika = false;
+		try {
+			mimeTypeDetector.detectMimeType(super.readFile(Paths.get("files/image/gif/IS_Animated.gif")),
+					FileManagerUtils.getFileParts("IS_Animated.gif"));
+			fail("Should have thrown exception");
+		} catch (final FileManagerException e) {
+			assertTrue(FileManagerException.class.isAssignableFrom(e.getClass()));
+			assertTrue(e.getMessage().contains("cannot be verified"));
+		}
+
 	}
 
 	@Test

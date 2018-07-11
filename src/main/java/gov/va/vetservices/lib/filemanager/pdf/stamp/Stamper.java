@@ -70,7 +70,7 @@ public class Stamper {
 						Float.parseFloat(Integer.toString(stampDataDto.getFontSizeInPoints())));
 				canvas.setFillColor(new DeviceCmyk(100, 100, 100, 0));
 				// position the text and place it on the page
-				final double xCoord = 5;
+				final double xCoord = Double.parseDouble("5.0");
 				final double yCoord = rect.getHeight() - stampDataDto.getFontSizeInPoints();
 				canvas.moveText(xCoord, yCoord)
 						.showText(stampText).endText()

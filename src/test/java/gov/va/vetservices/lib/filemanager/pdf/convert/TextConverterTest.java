@@ -3,6 +3,8 @@ package gov.va.vetservices.lib.filemanager.pdf.convert;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -106,6 +108,7 @@ public class TextConverterTest extends AbstractFileHandler {
 
 	@Test
 	public final void testCloseDocument() {
+		// happy
 		final FilePartsDto parts = new FilePartsDto();
 		parts.setName("TransientTest");
 		parts.setExtension("txt");
@@ -122,5 +125,16 @@ public class TextConverterTest extends AbstractFileHandler {
 			assertNotNull(e);
 			assertTrue(PdfConverterException.class.isAssignableFrom(e.getClass()));
 		}
+
+		// fail to close non-null doc
+		final LayoutAwarePdfDocument spiedDoc = spy(pdfDocument);
+		doThrow(Exception.class).when(spiedDoc).close();
+		try {
+			textConverter.closeDocument(spiedDoc, parts);
+			fail("Should have thrown exception.");
+		} catch (final Exception e) {
+			assertTrue(PdfConverterException.class.isAssignableFrom(e.getClass()));
+		}
+
 	}
 }

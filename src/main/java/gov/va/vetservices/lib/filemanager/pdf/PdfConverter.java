@@ -6,9 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
-import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
+import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.mime.MimeTypeDetector;
@@ -28,9 +28,9 @@ public class PdfConverter {
 	private static final String IMAGE = "image";
 	private static final String TEXT = "text";
 
-	private MimeTypeDetector detector = new MimeTypeDetector();
-	private ImageConverter imageConverter = new ImageConverter();
-	private TextConverter textConverter = new TextConverter();
+	private final MimeTypeDetector mimeDetector = new MimeTypeDetector();
+	private final ImageConverter imageConverter = new ImageConverter();
+	private final TextConverter textConverter = new TextConverter();
 
 	/**
 	 * Convert the byte array of a supported file type into a PDF.
@@ -41,22 +41,24 @@ public class PdfConverter {
 	 * @return byte[] the PDF file byte array
 	 * @throws FileManagerException
 	 */
-	public final byte[] convert(byte[] bytes, FilePartsDto parts) throws FileManagerException {
-		MimeType mimetype = detector.detectMimeType(bytes, parts);
+	public final byte[] convert(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
+		final MimeType mimetype = mimeDetector.detectMimeType(bytes, parts);
 
-		if (ConvertibleTypesEnum.hasMimeType(mimetype) && mimetype.match(ConvertibleTypesEnum.PDF.getMimeType())) {
-			return bytes;
+		if (ConvertibleTypesEnum.hasMimeType(mimetype)) {
+			if (mimetype.match(ConvertibleTypesEnum.PDF.getMimeType())) {
+				return bytes;
 
-		} else if (IMAGE.equals(mimetype.getPrimaryType())) {
-			return imageConverter.getPdf(bytes, parts);
+			} else if (IMAGE.equals(mimetype.getPrimaryType())) {
+				return imageConverter.getPdf(bytes, parts);
 
-		} else if (TEXT.equals(mimetype.getPrimaryType())) {
-			return textConverter.getPdf(bytes, parts);
+			} else if (TEXT.equals(mimetype.getPrimaryType())) {
+				return textConverter.getPdf(bytes, parts);
 
+			}
 		}
 		// catch-all ... should never actually get here
-		MessageKeysEnum messagekey = MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE;
-		String filename = parts.getName() + "." + parts.getExtension();
+		final MessageKeysEnum messagekey = MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE;
+		final String filename = parts.getName() + "." + parts.getExtension();
 		LOGGER.error("Attempting to convert unsupported file type. " + messagekey.getKey() + ": " + messagekey.getMessage());
 		throw new PdfConverterException(MessageSeverity.ERROR, messagekey.getKey(), messagekey.getMessage(), filename);
 	}

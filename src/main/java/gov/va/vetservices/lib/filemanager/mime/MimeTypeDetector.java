@@ -31,9 +31,9 @@ public class MimeTypeDetector {
 
 	// dev note: these two variables are candidates to externally expose in FileMangerProperties
 	/** Determines if the TikaDetector should be operational (true) or not (false) */
-	private boolean enableTika = true;
+	protected boolean enableTika = true;
 	/** Determines if the JMimeMagicDetector should be operational (true) or not (false) */
-	private boolean enableJMimeMagic = false;
+	protected boolean enableJMimeMagic = false;
 
 	/**
 	 * Determine if a file extension is supported by FileManager.
@@ -41,7 +41,7 @@ public class MimeTypeDetector {
 	 * @param fileExtension the file extension
 	 * @return boolean {@code false} if not supported
 	 */
-	public static boolean isFileExtensionSupported(String fileExtension) {
+	public static boolean isFileExtensionSupported(final String fileExtension) {
 		return ConvertibleTypesEnum.getMimeTypeForExtension(fileExtension) != null;
 	}
 
@@ -58,12 +58,12 @@ public class MimeTypeDetector {
 	 * @return MimeType null, uninitialized MimeType, or the detected MimeType
 	 * @throws FileManagerException mismatch between detected file bytes and the filename extension
 	 */
-	public MimeType detectMimeType(byte[] bytes, FilePartsDto parts) throws FileManagerException {
+	public MimeType detectMimeType(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
 
 		MimeType bestGuess = null;
 
 		// derived from filename extension, or null
-		MimeType filenameDerived = filenameDetector.detect(bytes, parts);
+		final MimeType filenameDerived = filenameDetector.detect(bytes, parts);
 
 		MimeType tikaDetected = null;
 		MimeType jmimeDetected = null;
@@ -104,9 +104,10 @@ public class MimeTypeDetector {
 	 * @param filename the original filename
 	 * @throws FileManagerException mismatch between detected and derived types
 	 */
-	private void checkContentVsExtension(MimeType detectedType, MimeType derivedtype, FilePartsDto parts) throws FileManagerException {
+	private void checkContentVsExtension(final MimeType detectedType, final MimeType derivedtype, final FilePartsDto parts)
+			throws FileManagerException {
 		if (!derivedtype.match(detectedType)) {
-			String filename = parts.getName() + AbstractDetector.SEPARATOR + parts.getExtension();
+			final String filename = parts.getName() + AbstractDetector.SEPARATOR + parts.getExtension();
 			LOGGER.error("MIME type detection mismatch. File: " + filename + "; Type by filename extension: " + derivedtype
 					+ "; Type by magic byte detection: " + detectedType);
 			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.FILE_EXTENSION_CONTENT_MISMATCH.getKey(),
@@ -121,9 +122,9 @@ public class MimeTypeDetector {
 	 * @param mimetype the detected MimeType
 	 * @throws FileManagerException unsupported type
 	 */
-	private void checkUnsupportedType(MimeType mimetype, FilePartsDto parts) throws FileManagerException {
+	private void checkUnsupportedType(final MimeType mimetype, final FilePartsDto parts) throws FileManagerException {
 		if (!ConvertibleTypesEnum.hasMimeType(mimetype)) {
-			String filename = parts.getName() + AbstractDetector.SEPARATOR + parts.getExtension();
+			final String filename = parts.getName() + AbstractDetector.SEPARATOR + parts.getExtension();
 			LOGGER.error("Files of type " + mimetype + " are not supported. ");
 			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE.getKey(),
 					MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE.getMessage(), filename);
@@ -132,7 +133,7 @@ public class MimeTypeDetector {
 
 	/**
 	 * Determines if the TikaDetector should be operational (default: true)
-	 * 
+	 *
 	 * @return the enableTika
 	 */
 	public boolean isEnableTika() {
@@ -141,16 +142,16 @@ public class MimeTypeDetector {
 
 	/**
 	 * Determines if the TikaDetector should be operational (default: true)
-	 * 
+	 *
 	 * @param enableTika the enableTika to set
 	 */
-	public void setEnableTika(boolean enableTika) {
+	public void setEnableTika(final boolean enableTika) {
 		this.enableTika = enableTika;
 	}
 
 	/**
 	 * Determines if the JMimeMagicDetector should be operational (default: false)
-	 * 
+	 *
 	 * @return the enableJMimeMagic
 	 */
 	public boolean isEnableJMimeMagic() {
@@ -159,10 +160,10 @@ public class MimeTypeDetector {
 
 	/**
 	 * Determines if the JMimeMagicDetector should be operational (default: false)
-	 * 
+	 *
 	 * @param enableJMimeMagic the enableJMimeMagic to set
 	 */
-	public void setEnableJMimeMagic(boolean enableJMimeMagic) {
+	public void setEnableJMimeMagic(final boolean enableJMimeMagic) {
 		this.enableJMimeMagic = enableJMimeMagic;
 	}
 }
