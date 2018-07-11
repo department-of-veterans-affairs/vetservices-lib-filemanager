@@ -21,6 +21,8 @@ import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
  */
 public enum MessageKeysEnum {
 
+	// enum members in form of: ENUM(messageKey, messageValue)
+
 	/** Some unanticipated runtime exception that is not properly caught and dealt with */
 	UNEXPECTED_ERROR("filemanager.unexpected.error", "FileManager library encountered an unexpected error. Please investigate."),
 	/** FileManagerRequest was null */

@@ -205,11 +205,13 @@ public class TikaDetectorTest extends AbstractFileHandler {
 			e.printStackTrace();
 			fail("Should not have thrown exception yet.");
 		}
+
 		try {
 			tikad.detect(bytes, parts);
 		} catch (final FileManagerException e) {
 			assertTrue(e.getMessage().contains("cannot be read"));
 		}
+
 		// MimeTypeParseException
 		try {
 			doThrow(MimeTypeParseException.class).when(tikad).detectByMagic(any());
@@ -217,6 +219,7 @@ public class TikaDetectorTest extends AbstractFileHandler {
 			e.printStackTrace();
 			fail("Should not have thrown exception yet.");
 		}
+
 		try {
 			tikad.detect(bytes, parts);
 		} catch (final FileManagerException e) {
