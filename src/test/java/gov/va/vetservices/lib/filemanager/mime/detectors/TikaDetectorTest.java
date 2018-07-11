@@ -193,7 +193,7 @@ public class TikaDetectorTest extends AbstractFileHandler {
 		parts.setExtension("pdf");
 		byte[] bytes = null;
 		try {
-			bytes = super.readFile(Paths.get("files/application/pdf/IS_Text-doc.pdf"));
+			bytes = super.readFile(Paths.get("files/application/pdf/IS_text-doc.pdf"));
 		} catch (final IOException e) {
 			e.printStackTrace();
 			fail("Should not have thrown exception yet.");
