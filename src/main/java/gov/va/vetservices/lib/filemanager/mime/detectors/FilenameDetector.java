@@ -67,11 +67,13 @@ public class FilenameDetector extends AbstractDetector {
 				}
 				props.load(is);
 			} finally {
-				try { // NOSONAR failure here is irrelevant
-					is.close();
-				} catch (final Exception e) { // NOSONAR failure here is irrelevant
-					// NOSONAR failure here is irrelevant
-				} // NOSONAR failure here is irrelevant
+				if (is != null) {
+					try { // NOSONAR failure here is irrelevant
+						is.close();
+					} catch (final Exception e) { // NOSONAR failure here is irrelevant
+						// NOSONAR failure here is irrelevant
+					} // NOSONAR failure here is irrelevant
+				}
 			}
 
 		} catch (final IOException e) {
