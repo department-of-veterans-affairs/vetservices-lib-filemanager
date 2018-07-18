@@ -54,7 +54,7 @@ public enum ConvertibleTypesEnum {
 	 * @param extension the file extension
 	 * @param mimetype the raw "type/subtype" mime type
 	 */
-	ConvertibleTypesEnum(String extension, String mimetype) {
+	ConvertibleTypesEnum(final String extension, final String mimetype) {
 		this.extension = extension;
 		this.mimetype = mimetype;
 	}
@@ -86,7 +86,7 @@ public enum ConvertibleTypesEnum {
 		MimeType mt = null;
 		try {
 			mt = new MimeType(this.mimetype);
-		} catch (MimeTypeParseException e) { // squid:S1166
+		} catch (final MimeTypeParseException e) { // squid:S1166
 			// should not happen, log it
 			LOGGER.error("Unexpected issue parsing " + this.mimetype + " into a MimeType object.", e);
 		}
@@ -99,11 +99,11 @@ public enum ConvertibleTypesEnum {
 	 *
 	 * @param extension the file extension
 	 */
-	public static MimeType getMimeTypeForExtension(String extension) {
+	public static MimeType getMimeTypeForExtension(final String extension) {
 		MimeType mt = null;
 
 		if (!StringUtils.isBlank(extension)) {
-			for (ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
+			for (final ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
 				if (StringUtils.equalsIgnoreCase(enumeration.getExtension(), extension)) {
 					mt = enumeration.getMimeType();
 					break;
@@ -124,7 +124,7 @@ public enum ConvertibleTypesEnum {
 		// Singleton style handling required for the static primaryTypes class-level variable
 		if (primaryTypes == null) {
 			primaryTypes = new TreeSet<>();
-			for (ConvertibleTypesEnum type : ConvertibleTypesEnum.values()) {
+			for (final ConvertibleTypesEnum type : ConvertibleTypesEnum.values()) {
 				primaryTypes.add(type.getMimeType().getPrimaryType());
 			}
 		}
@@ -137,11 +137,11 @@ public enum ConvertibleTypesEnum {
 	 * @param mimetype the MimeType to look for
 	 * @return boolean has the MimeType ({@code true}) or not ({@code false})
 	 */
-	public static boolean hasMimeType(String mimetype) {
+	public static boolean hasMimeType(final String mimetype) {
 		try {
-			MimeType mt = new MimeType(mimetype);
+			final MimeType mt = new MimeType(mimetype);
 			return hasMimeType(mt);
-		} catch (MimeTypeParseException e) { // squid:S1166
+		} catch (final MimeTypeParseException e) { // squid:S1166
 			LOGGER.debug("Unexpected issue parsing " + mimetype + " into a MimeType object.", e);
 			return false;
 		}
@@ -153,10 +153,10 @@ public enum ConvertibleTypesEnum {
 	 * @param mimetype the MimeType to look for
 	 * @return boolean has the MimeType ({@code true}) or not ({@code false})
 	 */
-	public static boolean hasMimeType(MimeType mimetype) {
+	public static boolean hasMimeType(final MimeType mimetype) {
 		boolean matched = false;
 
-		for (ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
+		for (final ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
 			if (enumeration.getMimeType().match(mimetype)) {
 				matched = true;
 				break;
