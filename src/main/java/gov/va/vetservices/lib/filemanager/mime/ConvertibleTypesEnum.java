@@ -120,16 +120,12 @@ public enum ConvertibleTypesEnum {
 	 *
 	 * @return List&lt;String&gt; the list of supported primary types
 	 */
-	public static Set<String> getConvertiblePrimaryTypes() {
+	public static synchronized Set<String> getConvertiblePrimaryTypes() {
 		// Singleton style handling required for the static primaryTypes class-level variable
 		if (primaryTypes == null) {
-			synchronized (ConvertibleTypesEnum.class) {
-				if (primaryTypes == null) { // post-lock check
-					primaryTypes = new TreeSet<>();
-					for (ConvertibleTypesEnum type : ConvertibleTypesEnum.values()) {
-						primaryTypes.add(type.getMimeType().getPrimaryType());
-					}
-				}
+			primaryTypes = new TreeSet<>();
+			for (ConvertibleTypesEnum type : ConvertibleTypesEnum.values()) {
+				primaryTypes.add(type.getMimeType().getPrimaryType());
 			}
 		}
 		return primaryTypes;

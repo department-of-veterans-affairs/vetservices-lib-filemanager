@@ -55,19 +55,29 @@ public class FilenameDetector extends AbstractDetector {
 		try {
 			props = new Properties();
 
-			Resource resource = (new PathMatchingResourcePatternResolver()).getResources("classpath*:" + PROPS_CLASSPATH)[0];
+			final Resource resource = new PathMatchingResourcePatternResolver().getResources("classpath*:" + PROPS_CLASSPATH)[0];
 			if (resource == null) {
 				throw new IOException(PROPS_CLASSPATH + " does not exist on the classpath.");
 			}
-			InputStream is = resource.getInputStream();
-			if (is == null) {
-				throw new IOException(PROPS_CLASSPATH + " cannot be opened.");
+			InputStream is = null;
+			try {
+				is = resource.getInputStream();
+				if (is == null) {
+					throw new IOException(PROPS_CLASSPATH + " cannot be opened.");
+				}
+				props.load(is);
+			} finally {
+				try { // NOSONAR failure here is irrelevant
+					is.close();
+				} catch (final Exception e) { // NOSONAR failure here is irrelevant
+					// NOSONAR failure here is irrelevant
+				} // NOSONAR failure here is irrelevant
 			}
-			props.load(is);
 
-		} catch (IOException e) {
-			String message = "FATAL ERROR: " + e.getClass().getSimpleName() + " - could not load classpath file '" + PROPS_CLASSPATH
-					+ "': " + e.getMessage();
+		} catch (final IOException e) {
+			final String message =
+					"FATAL ERROR: " + e.getClass().getSimpleName() + " - could not load classpath file '" + PROPS_CLASSPATH
+							+ "': " + e.getMessage();
 			LOGGER.error(message);
 			throw new IllegalArgumentException(message, e);
 		}
@@ -80,7 +90,7 @@ public class FilenameDetector extends AbstractDetector {
 	 * @throws FileManagerException if MIME type cannot be derived
 	 */
 	@Override
-	public MimeType detect(byte[] bytes, FilePartsDto parts) throws FileManagerException {
+	public MimeType detect(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
 		MimeType mimetype = null;
 
 		mimetype = detectWithExtension(parts);
@@ -99,10 +109,10 @@ public class FilenameDetector extends AbstractDetector {
 	 * @param parts the file extension from which the MIME type is derived
 	 * @throws NullPointerException if parts is {@code null} or parts.getExtension() returns {@code null}
 	 */
-	protected MimeType detectWithExtension(FilePartsDto parts) {
+	protected MimeType detectWithExtension(final FilePartsDto parts) {
 		MimeType mimetype = null;
 
-		if ((parts != null) && !StringUtils.isBlank(parts.getExtension())) {
+		if (parts != null && !StringUtils.isBlank(parts.getExtension())) {
 			mimetype = ConvertibleTypesEnum.getMimeTypeForExtension(parts.getExtension());
 			if (mimetype == null) {
 				mimetype = detectNonConvertibleTypes(parts);
@@ -118,10 +128,10 @@ public class FilenameDetector extends AbstractDetector {
 	 * @param parts the file extension from which the MIME type is derived
 	 * @return MimeType the derived MIME type, or {@code null}
 	 */
-	private MimeType detectNonConvertibleTypes(FilePartsDto parts) {
+	private MimeType detectNonConvertibleTypes(final FilePartsDto parts) {
 		MimeType mimetype = null;
 
-		String filename = parts.getName() + SEPARATOR + parts.getExtension();
+		final String filename = parts.getName() + SEPARATOR + parts.getExtension();
 		String rawtype = URLConnection.guessContentTypeFromName(filename);
 		if (StringUtils.isBlank(rawtype)) {
 			rawtype = props.getProperty(parts.getExtension().toLowerCase());
@@ -131,7 +141,7 @@ public class FilenameDetector extends AbstractDetector {
 			try {
 				mimetype = new MimeType(rawtype);
 				// CHECKSTYLE:OFF
-			} catch (MimeTypeParseException e) { // NOSONAR - intentionally do not re-throw
+			} catch (final MimeTypeParseException e) { // NOSONAR - intentionally do not re-throw
 				LOGGER.debug("Could not parse raw MIME type '" + rawtype + "'");
 				// intentionally ignore this, just let mimetype be null
 			}

@@ -115,7 +115,7 @@ public class PdfConverterTest extends AbstractFileHandler {
 			assertNotNull(e);
 		}
 
-		// mock to force throwing default PdfConverterException from convert()
+		// mock to force throwing default FileManagerException from convert()
 		parts = new FilePartsDto();
 		parts.setName("techdraw");
 		parts.setExtension("cgm");
