@@ -38,7 +38,7 @@ import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
  *
  * @author aburkholder
  */
-public abstract class AbstractFileHandler extends AbstractReflectiveFieldManager {
+public abstract class AbstractFileHandler extends AbstractReflectiveAccessManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractFileHandler.class);
 

@@ -10,6 +10,7 @@ import static org.mockito.Mockito.spy;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -58,31 +59,31 @@ public class TikaDetectorTest extends AbstractFileHandler {
 		// sad invalid file
 		String path = "/some-nonexistent-file.xml";
 		try {
-			tikaDetector.getTikaConfig(path);
+			invokeMethodForGivenObject(tikaDetector, "getTikaConfig", new Class<?>[] { String.class }, path);
 			fail("Should have thrown exception");
 		} catch (final Throwable e) {
 			assertNotNull(e);
-			assertTrue(IllegalArgumentException.class.equals(e.getClass()));
+			assertTrue(IllegalArgumentException.class.equals(((InvocationTargetException) e).getTargetException().getClass()));
 		}
 
 		// sad null path
 		path = null;
 		try {
-			tikaDetector.getTikaConfig(path);
+			invokeMethodForGivenObject(tikaDetector, "getTikaConfig", new Class<?>[] { String.class }, path);
 			fail("Should have thrown exception");
 		} catch (final Throwable e) {
 			assertNotNull(e);
-			assertTrue(IllegalArgumentException.class.equals(e.getClass()));
+			assertTrue(IllegalArgumentException.class.equals(((InvocationTargetException) e).getTargetException().getClass()));
 		}
 
 		// sad blank path
 		path = "   ";
 		try {
-			tikaDetector.getTikaConfig(path);
+			invokeMethodForGivenObject(tikaDetector, "getTikaConfig", new Class<?>[] { String.class }, path);
 			fail("Should have thrown exception");
 		} catch (final Throwable e) {
 			assertNotNull(e);
-			assertTrue(IllegalArgumentException.class.equals(e.getClass()));
+			assertTrue(IllegalArgumentException.class.equals(((InvocationTargetException) e).getTargetException().getClass()));
 		}
 
 		// sad TikaConfig instantiation failure
@@ -94,10 +95,11 @@ public class TikaDetectorTest extends AbstractFileHandler {
 		}
 		path = "/nonexistent.xml";
 		try {
-			tikaDetector.getTikaConfig(path);
+			invokeMethodForGivenObject(tikaDetector, "getTikaConfig", new Class<?>[] { String.class }, path);
 			fail("Should have thrown exception");
-		} catch (final IllegalArgumentException e) {
+		} catch (final InvocationTargetException e) {
 			assertNotNull(e);
+			assertTrue(IllegalArgumentException.class.equals(((InvocationTargetException) e).getTargetException().getClass()));
 		}
 	}
 
@@ -106,7 +108,7 @@ public class TikaDetectorTest extends AbstractFileHandler {
 		// test all convertible types
 		for (final ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
 			final List<File> files = super.listFilesByMimePath(enumeration.getMimeType());
-			assertTrue("Files for " + enumeration.getMimeString() + " is null or empty.", files != null && !files.isEmpty());
+			assertTrue("Files for " + enumeration.getMimeString() + " is null or empty.", (files != null) && !files.isEmpty());
 
 			// we have to detect every file in the directory
 			// to confirm that we can detect the variations of that file type
