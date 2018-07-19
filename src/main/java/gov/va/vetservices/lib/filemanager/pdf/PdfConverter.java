@@ -5,11 +5,8 @@ import javax.activation.MimeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
-import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.mime.MimeTypeDetector;
 import gov.va.vetservices.lib.filemanager.pdf.convert.ImageConverter;
@@ -43,24 +40,20 @@ public class PdfConverter {
 	 */
 	public final byte[] convert(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
 		final MimeType mimetype = mimeDetector.detectMimeType(bytes, parts);
+		byte[] returnBytes = null;
 
-		if (ConvertibleTypesEnum.hasMimeType(mimetype)) {
-			if (mimetype.match(ConvertibleTypesEnum.PDF.getMimeType())) {
-				return bytes;
+		if (mimetype.match(ConvertibleTypesEnum.PDF.getMimeType())) {
+			returnBytes = bytes;
 
-			} else if (IMAGE.equals(mimetype.getPrimaryType())) {
-				return imageConverter.getPdf(bytes, parts);
+		} else if (IMAGE.equals(mimetype.getPrimaryType())) {
+			returnBytes = imageConverter.getPdf(bytes, parts);
 
-			} else if (TEXT.equals(mimetype.getPrimaryType())) {
-				return textConverter.getPdf(bytes, parts);
+		} else if (TEXT.equals(mimetype.getPrimaryType())) {
+			returnBytes = textConverter.getPdf(bytes, parts);
 
-			}
 		}
-		// catch-all ... should never actually get here
-		final MessageKeysEnum messagekey = MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE;
-		final String filename = parts.getName() + "." + parts.getExtension();
-		LOGGER.error("Attempting to convert unsupported file type. " + messagekey.getKey() + ": " + messagekey.getMessage());
-		throw new PdfConverterException(MessageSeverity.ERROR, messagekey.getKey(), messagekey.getMessage(), filename);
+
+		return returnBytes;
 	}
 
 }

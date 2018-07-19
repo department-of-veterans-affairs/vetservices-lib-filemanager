@@ -12,6 +12,9 @@ import javax.activation.MimeType;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.layout.element.Image;
+
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
@@ -19,6 +22,7 @@ import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.mime.MimeTypeDetector;
+import gov.va.vetservices.lib.filemanager.pdf.itext.LayoutAwarePdfDocument;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 
@@ -81,5 +85,38 @@ public class ImageConverterTest extends AbstractFileHandler {
 			assertNotNull(e.getCause());
 			assertTrue(e.getCause().getClass().equals(exception.getClass()));
 		}
+	}
+
+	// manual close - as opposed to normal closing via LayoutAwarePdfDocument.closeAndGetOutput()
+	@Test
+	public final void testSuperClose() {
+		final FilePartsDto parts = FileManagerUtils.getFileParts(Paths.get(FILE_PATH).toFile().getName());
+		final LayoutAwarePdfDocument pdfDocument = new LayoutAwarePdfDocument();
+
+		// unclosable document
+		try {
+			imageConverter.closeDocument(pdfDocument, parts);
+			fail("Should have thrown 'Error: Document has no pages'");
+		} catch (final PdfConverterException e) {
+			assertTrue(e.getMessage().contains("internal processing issue"));
+		}
+
+		// closable document
+		byte[] bytes = null;
+		try {
+			bytes = super.readFile(Paths.get(FILE_PATH));
+		} catch (final IOException e1) {
+			e1.printStackTrace();
+			fail("Unexpected exception.");
+		}
+		final Image image = new Image(ImageDataFactory.create(bytes));
+		pdfDocument.getLayoutDocument().add(image);
+		try {
+			imageConverter.closeDocument(pdfDocument, parts);
+			assertTrue(pdfDocument.isClosed());
+		} catch (final PdfConverterException e) {
+			fail("Should not have thrown exception");
+		}
+
 	}
 }

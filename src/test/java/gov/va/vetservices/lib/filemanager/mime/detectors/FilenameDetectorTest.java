@@ -4,15 +4,22 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Properties;
 
 import javax.activation.MimeType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
@@ -156,6 +163,68 @@ public class FilenameDetectorTest extends AbstractFileHandler {
 			}
 			assertTrue(!StringUtils.isBlank(e.getKey()));
 			assertTrue(MessageKeysEnum.FILE_TYPE_UNVERIFIABLE.getKey().equals(e.getKey()));
+		}
+
+	}
+
+	@Test
+	public final void testGetProps() {
+		super.setFieldFromGivenObject(fileManagerDetector, "props", null);
+
+		// re-populate props
+		try {
+			super.invokeMethodForGivenObject(fileManagerDetector, "getProps", null);
+		} catch (final InvocationTargetException e) {
+			e.printStackTrace();
+			fail("Unexpected exception.");
+		}
+		try {
+			final Properties props = (Properties) super.getFieldFromGivenObject(fileManagerDetector, "props").get(fileManagerDetector);
+			assertNotNull(props);
+			assertTrue(!props.isEmpty());
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			e.printStackTrace();
+			fail("Unexpected exception.");
+		}
+
+		// get existing props
+		try {
+			super.invokeMethodForGivenObject(fileManagerDetector, "getProps", null);
+		} catch (final InvocationTargetException e) {
+			e.printStackTrace();
+			fail("Unexpected exception.");
+		}
+		try {
+			final Properties props = (Properties) super.getFieldFromGivenObject(fileManagerDetector, "props").get(fileManagerDetector);
+			assertNotNull(props);
+			assertTrue(!props.isEmpty());
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			e.printStackTrace();
+			fail("Unexpected exception.");
+		}
+
+		// throw exeption
+		try {
+			final Properties props = (Properties) super.getFieldFromGivenObject(fileManagerDetector, "props").get(fileManagerDetector);
+			assertNotNull(props);
+			assertTrue(!props.isEmpty());
+
+			final Properties spiedProps = Mockito.spy(props);
+			try {
+				doThrow(new IOException("Testing")).when(spiedProps).load(any(InputStream.class));
+			} catch (final IOException e) {
+				fail("Should not throw exception here.");
+			}
+
+			try {
+				super.invokeMethodForGivenObject(fileManagerDetector, "getProps", null);
+			} catch (final IllegalArgumentException e) {
+				assertTrue(e.getMessage().contains("could not load classpath file"));
+			}
+
+		} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+			e.printStackTrace();
+			fail("Unexpected exception " + e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
 
 	}
