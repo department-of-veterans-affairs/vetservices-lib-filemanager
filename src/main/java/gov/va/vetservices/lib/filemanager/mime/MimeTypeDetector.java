@@ -31,9 +31,9 @@ public class MimeTypeDetector {
 
 	// dev note: these two variables are candidates to externally expose in FileMangerProperties
 	/** Determines if the TikaDetector should be operational (true) or not (false) */
-	protected boolean enableTika = true;
+	private boolean enableTika = true;
 	/** Determines if the JMimeMagicDetector should be operational (true) or not (false) */
-	protected boolean enableJMimeMagic = false;
+	private boolean enableJMimeMagic = false;
 
 	/**
 	 * Determine if a file extension is supported by FileManager.

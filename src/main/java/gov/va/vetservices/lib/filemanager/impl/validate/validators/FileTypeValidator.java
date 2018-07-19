@@ -15,6 +15,7 @@ import com.itextpdf.layout.element.Image;
 
 import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.messages.MessageSeverity;
+import gov.va.ascent.framework.util.SanitizationUtil;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
@@ -195,7 +196,7 @@ public class FileTypeValidator implements Validator<ImplDto> {
 			} catch (final com.itextpdf.io.IOException e) {
 				isValid = false;
 				LOGGER.error("iText error while performing Image.getInstance(..) on bytes for file "
-						+ implDto.getOriginalFileDto().getFilename(), e);
+						+ SanitizationUtil.safeFilename(implDto.getOriginalFileDto().getFilename()), e);
 				implDto.addMessage(new Message(MessageSeverity.ERROR, MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getKey(),
 						MessageFormat.format(MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE.getMessage(),
 								implDto.getOriginalFileDto().getFilename())));

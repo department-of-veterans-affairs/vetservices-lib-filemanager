@@ -54,9 +54,9 @@ public class MimeTypeDetectorTest extends AbstractFileHandler {
 		int counter = 0;
 
 		for (final ConvertibleTypesEnum enumeration : ConvertibleTypesEnum.values()) {
-			mimeTypeDetector.enableJMimeMagic = false;
+			super.setFieldFromGivenObject(mimeTypeDetector, "enableJMimeMagic", false);
 			if (++counter == singlejMimeMagicEnabled) {
-				mimeTypeDetector.enableJMimeMagic = true;
+				super.setFieldFromGivenObject(mimeTypeDetector, "enableJMimeMagic", true);
 			}
 
 			final List<File> files = super.listFilesByMimePath(enumeration.getMimeType());
@@ -118,8 +118,8 @@ public class MimeTypeDetectorTest extends AbstractFileHandler {
 		}
 
 		// one test with both tika and jMimeMagic shut off
-		mimeTypeDetector.enableJMimeMagic = false;
-		mimeTypeDetector.enableTika = false;
+		super.setFieldFromGivenObject(mimeTypeDetector, "enableJMimeMagic", false);
+		super.setFieldFromGivenObject(mimeTypeDetector, "enableTika", false);
 		try {
 			mimeTypeDetector.detectMimeType(super.readFile(Paths.get("files/image/gif/IS_Animated.gif")),
 					FileManagerUtils.getFileParts("IS_Animated.gif"));

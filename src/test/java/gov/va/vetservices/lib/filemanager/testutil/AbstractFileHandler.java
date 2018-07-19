@@ -38,7 +38,7 @@ import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
  *
  * @author aburkholder
  */
-public abstract class AbstractFileHandler {
+public abstract class AbstractFileHandler extends AbstractReflectiveAccessManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractFileHandler.class);
 
@@ -65,7 +65,7 @@ public abstract class AbstractFileHandler {
 	 * @return byte[] the file content, or {@code null}
 	 * @throws IOException
 	 */
-	public byte[] readFile(Path path) throws IOException {
+	public byte[] readFile(final Path path) throws IOException {
 		if ((path != null) && !StringUtils.isBlank(path.toString())) {
 			return readBytes(path);
 		}
@@ -81,7 +81,7 @@ public abstract class AbstractFileHandler {
 	 * @return byte[] the file contents, or {@code null}
 	 * @throws IOException any IO issue
 	 */
-	private byte[] readBytes(Path path) throws IOException {
+	private byte[] readBytes(final Path path) throws IOException {
 		byte[] bytes = null;
 
 		bytes = readFromClasspath(path);
@@ -104,7 +104,7 @@ public abstract class AbstractFileHandler {
 	 * @return byte[] the contents of the file, or {@code null}
 	 * @throws IOException if any IO issue occurs
 	 */
-	private byte[] readFromClasspath(Path path) throws IOException {
+	private byte[] readFromClasspath(final Path path) throws IOException {
 		if (!isRelativePath(path)) {
 			return null;
 		}
@@ -128,7 +128,7 @@ public abstract class AbstractFileHandler {
 	 * @return
 	 * @throws IOException
 	 */
-	private byte[] readFromPath(Path path) throws IOException {
+	private byte[] readFromPath(final Path path) throws IOException {
 		if (!isAbsolutePath(path) || !FileManagerUtils.hasFilename(path.toFile().getName())) {
 			LOGGER.info(
 					"Path '" + path.toString() + "' is null or empty, or is not an absolute path, or does not include a filename.");
@@ -150,7 +150,7 @@ public abstract class AbstractFileHandler {
 	 * @param path
 	 * @return boolean
 	 */
-	protected boolean isAbsolutePath(Path path) {
+	protected boolean isAbsolutePath(final Path path) {
 		return (path != null) && path.toString().startsWith("/");
 	}
 
@@ -162,9 +162,9 @@ public abstract class AbstractFileHandler {
 	 * @param path the path to check
 	 * @return boolean
 	 */
-	protected boolean isRelativePath(Path path) {
-		return (path != null) && FileManagerUtils.hasFilename(path.toFile().getName())
-				&& !StringUtils.startsWithAny(path.toString(), FileManagerProperties.FILE_NAME_ILLEGAL_CHARS.stream().toArray(String[]::new));
+	protected boolean isRelativePath(final Path path) {
+		return (path != null) && FileManagerUtils.hasFilename(path.toFile().getName()) && !StringUtils.startsWithAny(path.toString(),
+				FileManagerProperties.FILE_NAME_ILLEGAL_CHARS.stream().toArray(String[]::new));
 	}
 
 	/**
@@ -174,7 +174,7 @@ public abstract class AbstractFileHandler {
 	 * @return boolean success ({@code true}) or failure ({@code false}) due to invalid path
 	 * @throws SecurityException if file system privileges do not allow creation of the directory
 	 */
-	protected boolean createOutputPath(Path path) {
+	protected boolean createOutputPath(final Path path) {
 		boolean success = (path != null) && !StringUtils.isBlank(path.toString()) && path.toString().startsWith("/");
 
 		if (success) {
@@ -217,13 +217,13 @@ public abstract class AbstractFileHandler {
 
 				Files.walkFileTree(pathObj, new SimpleFileVisitor<Path>() {
 					@Override
-					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+					public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
 						Files.delete(file);
 						return FileVisitResult.CONTINUE;
 					}
 
 					@Override
-					public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
+					public FileVisitResult postVisitDirectory(final Path dir, final IOException e) throws IOException {
 						if (e == null) {
 							if (!dir.toString().equals(pathObj.toString())) {
 								Files.delete(dir);
@@ -257,7 +257,7 @@ public abstract class AbstractFileHandler {
 	 * @return boolean success ({@code true}, or failure
 	 * @throws FileManagerException if some problem creating the output directory
 	 */
-	private File write(Path filepath, byte[] bytes) throws FileManagerException {
+	private File write(Path filepath, final byte[] bytes) throws FileManagerException {
 		File savedFile = null;
 
 		boolean success = FileManagerUtils.hasFilename(filepath.toFile().getName());
@@ -339,7 +339,7 @@ public abstract class AbstractFileHandler {
 	 * @return List&lt;File&gt; a list of files, or {@code null}
 	 * @throws IllegalArgumentException if directory does not exist, or other file access issue
 	 */
-	protected List<File> listFilesByMimePath(MimeType mimetype) {
+	protected List<File> listFilesByMimePath(final MimeType mimetype) {
 		List<File> files = null;
 		if (mimetype == null) {
 			return files;

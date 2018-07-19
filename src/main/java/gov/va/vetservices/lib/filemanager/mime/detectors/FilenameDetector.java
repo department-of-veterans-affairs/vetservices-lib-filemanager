@@ -55,19 +55,31 @@ public class FilenameDetector extends AbstractDetector {
 		try {
 			props = new Properties();
 
-			Resource resource = new PathMatchingResourcePatternResolver().getResources("classpath*:" + PROPS_CLASSPATH)[0];
+			final Resource resource = new PathMatchingResourcePatternResolver().getResources("classpath*:" + PROPS_CLASSPATH)[0];
 			if (resource == null) {
 				throw new IOException(PROPS_CLASSPATH + " does not exist on the classpath.");
 			}
-			InputStream is = resource.getInputStream(); // no need to close, InputStream.close() does nothing
-			if (is == null) {
-				throw new IOException(PROPS_CLASSPATH + " cannot be opened.");
+			InputStream is = null;
+			try {
+				is = resource.getInputStream();
+				if (is == null) {
+					throw new IOException(PROPS_CLASSPATH + " cannot be opened.");
+				}
+				props.load(is);
+			} finally {
+				if (is != null) {
+					try { // NOSONAR failure here is irrelevant
+						is.close();
+					} catch (final Exception e) { // NOSONAR failure here is irrelevant
+						// NOSONAR failure here is irrelevant
+					} // NOSONAR failure here is irrelevant
+				}
 			}
-			props.load(is);
 
-		} catch (IOException e) {
-			String message = "FATAL ERROR: " + e.getClass().getSimpleName() + " - could not load classpath file '" + PROPS_CLASSPATH
-					+ "': " + e.getMessage();
+		} catch (final IOException e) {
+			final String message =
+					"FATAL ERROR: " + e.getClass().getSimpleName() + " - could not load classpath file '" + PROPS_CLASSPATH
+							+ "': " + e.getMessage();
 			LOGGER.error(message);
 			throw new IllegalArgumentException(message, e);
 		}

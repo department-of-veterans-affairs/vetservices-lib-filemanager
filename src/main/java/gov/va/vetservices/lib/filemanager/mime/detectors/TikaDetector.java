@@ -60,14 +60,14 @@ public class TikaDetector extends AbstractDetector {
 	 * @param path the path (on the classpath) to the config file
 	 * @throws IllegalArgumentException could not locate or load the specified file
 	 */
-	protected void getTikaConfig(final String path) {
+	private void getTikaConfig(final String path) {
 		if (StringUtils.isBlank(path)) {
 			throw new IllegalArgumentException("Configuration file cannot be null or empty.");
 		}
 
 		try {
 			final Resource[] resources = new PathMatchingResourcePatternResolver().getResources("classpath*:" + path);
-			if (resources == null || resources.length < 1) {
+			if ((resources == null) || (resources.length < 1)) {
 				throw new IllegalArgumentException("Configuration file '" + path + "' not found.");
 			} else if (resources.length > 1) {
 				throw new IllegalArgumentException("Multiple configuration files found at '" + path + "'.");
@@ -209,7 +209,7 @@ public class TikaDetector extends AbstractDetector {
 		// sonar cannot be made happy here - it complains about too many arguments in the if statement,
 		// and splitting it into 2 if statements, it says to merge them into one statement again
 		// ... and it is pointless to create another method just to put the other half of the if statement
-		if (fromBytes != null && parts != null && !StringUtils.isBlank(parts.getExtension()) // NOSONAR
+		if ((fromBytes != null) && (parts != null) && !StringUtils.isBlank(parts.getExtension()) // NOSONAR
 				&& MIME_RAW_OCTECT_STREAM.equals(fromBytes.getBaseType()) // NOSONAR
 				&& StringUtils.equalsIgnoreCase(parts.getExtension(), ConvertibleTypesEnum.TXT.getExtension())) { // NOSONAR
 

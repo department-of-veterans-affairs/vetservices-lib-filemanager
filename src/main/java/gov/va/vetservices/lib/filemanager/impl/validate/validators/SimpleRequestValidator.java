@@ -34,10 +34,10 @@ public class SimpleRequestValidator implements Validator<FileManagerRequest> {
 	 * <p>
 	 */
 	@Override
-	public List<Message> validate(ImplArgDto<FileManagerRequest> toValidate) {
-		List<Message> messages = new ArrayList<>();
+	public List<Message> validate(final ImplArgDto<FileManagerRequest> toValidate) {
+		final List<Message> messages = new ArrayList<>();
 
-		if ((toValidate == null) || (toValidate.getValue() == null)) {
+		if (toValidate == null || toValidate.getValue() == null) {
 			addError(messages, MessageKeysEnum.REQUEST_NULL);
 			return messages;
 		}
@@ -49,7 +49,7 @@ public class SimpleRequestValidator implements Validator<FileManagerRequest> {
 			checkFilename(messages, toValidate.getValue().getFileDto());
 			checkFileBytes(messages, toValidate.getValue().getFileDto());
 		}
-		return (messages == null) || messages.isEmpty() ? null : messages;
+		return messages == null || messages.isEmpty() ? null : messages;
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class SimpleRequestValidator implements Validator<FileManagerRequest> {
 	 * @param messages to put messages on
 	 * @param request the object containing the metadata
 	 */
-	private void checkMetadata(List<Message> messages, FileManagerRequest request) {
+	private void checkMetadata(final List<Message> messages, final FileManagerRequest request) {
 		if (StringUtils.isBlank(request.getDocTypeId())) {
 			addError(messages, MessageKeysEnum.DOCTYPEID_NULL_OR_EMPTY);
 		}
@@ -75,8 +75,8 @@ public class SimpleRequestValidator implements Validator<FileManagerRequest> {
 	 * @param messages to put messages on
 	 * @param fileDto the object to check
 	 */
-	private void checkFilename(List<Message> messages, FileDto fileDto) {
-		if (StringUtils.isBlank(fileDto.getFilename())) {
+	private void checkFilename(final List<Message> messages, final FileDto fileDto) {
+		if (fileDto == null || StringUtils.isBlank(fileDto.getFilename())) {
 			addError(messages, MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY);
 		}
 	}
@@ -87,8 +87,8 @@ public class SimpleRequestValidator implements Validator<FileManagerRequest> {
 	 * @param messages to put messages on
 	 * @param fileDto the object to check
 	 */
-	private void checkFileBytes(List<Message> messages, FileDto fileDto) {
-		if ((fileDto.getFilebytes() == null) || (fileDto.getFilebytes().length < 1)) {
+	private void checkFileBytes(final List<Message> messages, final FileDto fileDto) {
+		if (fileDto.getFilebytes() == null || fileDto.getFilebytes().length < 1) {
 			addError(messages, MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY);
 		}
 	}
@@ -99,7 +99,7 @@ public class SimpleRequestValidator implements Validator<FileManagerRequest> {
 	 * @param implDto the ImplDto
 	 * @param messageKey the {@link MessageKeysEnum} enumeration for key and message
 	 */
-	private void addError(List<Message> messages, MessageKeysEnum messageKey) {
+	private void addError(final List<Message> messages, final MessageKeysEnum messageKey) {
 		messages.add(new Message(MessageSeverity.ERROR, messageKey.getKey(), messageKey.getMessage()));
 	}
 
