@@ -34,7 +34,7 @@ public class PdfIntegrityChecker {
 
 	/** Exception message fragments that indicate the file is password protected */
 	private static final String[] THROWABLE_PW_PROTECTED =
-			{ "BadPasswordException", "signer information does not match" };
+			{ "BadPasswordException", "signer information does not match", "not opened with owner password" };
 	/** Replacement var for Messages that indicate the file is password protected */
 	private static final String REASON_PW_PROTECTED = "password protected or restricted for edits";
 
@@ -56,7 +56,7 @@ public class PdfIntegrityChecker {
 	 * NOSONAR TODO find out how to reliably identify PDFs that are corrupt or otherwise cannot be opened in desktop software
 	 * Evidence: Test PDFs that can still be processed: IS_signed-tampered-unopenable.pdf, IS_signed-tampered.pdf
 	 */
-	public boolean isReadable(final byte[] bytes, final String filename) throws FileManagerException {
+	public void isReadable(final byte[] bytes, final String filename) throws FileManagerException {
 		LayoutAwarePdfDocument pdfDoc = null;
 		try {
 			pdfDoc = new LayoutAwarePdfDocument(bytes);
@@ -75,8 +75,6 @@ public class PdfIntegrityChecker {
 		if (isSigned(pdfDoc)) {
 			throwIfSigned(new IllegalArgumentException("Document is signed with a digital certificate."), filename);
 		}
-
-		return true;
 	}
 
 	/**

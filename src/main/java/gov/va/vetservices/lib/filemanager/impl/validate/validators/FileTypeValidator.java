@@ -84,11 +84,8 @@ public class FileTypeValidator implements Validator<ImplDto> {
 		if (convertible && detectedMimetype != null && ConvertibleTypesEnum.PDF.getMimeType().match(detectedMimetype)) {
 			// file is a PDF
 			try {
-				if (!pdfIntegrityChecker.isReadable(implDto.getOriginalFileDto().getFilebytes(),
-						implDto.getOriginalFileDto().getFilename())) {
-					implDto.addMessage(new Message(MessageSeverity.ERROR, MessageKeysEnum.PDF_UNREADABLE.getKey(), MessageFormat
-							.format(MessageKeysEnum.PDF_UNREADABLE.getMessage(), implDto.getOriginalFileDto().getFilename())));
-				}
+				pdfIntegrityChecker.isReadable(implDto.getOriginalFileDto().getFilebytes(),
+						implDto.getOriginalFileDto().getFilename());
 			} catch (final FileManagerException e) { // squid:S1166
 				LOGGER.debug(e.getMessageSeverity().toString() + " " + e.getKey() + ": " + e.getMessage());
 				implDto.addMessage(new Message(e.getMessageSeverity(), e.getKey(), e.getMessage()));
