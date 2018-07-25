@@ -10,6 +10,7 @@ import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tika.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -67,13 +68,7 @@ public class FilenameDetector extends AbstractDetector {
 				}
 				props.load(is);
 			} finally {
-				if (is != null) {
-					try { // NOSONAR failure here is irrelevant
-						is.close();
-					} catch (final Exception e) { // NOSONAR failure here is irrelevant
-						// NOSONAR failure here is irrelevant
-					} // NOSONAR failure here is irrelevant
-				}
+				IOUtils.closeQuietly(is);
 			}
 
 		} catch (final IOException e) {
