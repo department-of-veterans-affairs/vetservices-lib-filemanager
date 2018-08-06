@@ -14,8 +14,8 @@ import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.ascent.framework.util.Defense;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.impl.validate.Validator;
+import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
 
 /**
  * Determines if the file byte array contains bytes, and does not contain more than {@link FileManagerProperties#KEY_FILE_MAX_BYTES}.
@@ -31,6 +31,11 @@ public class ByteArrayValidator implements Validator<byte[]> {
 	@Autowired
 	@Qualifier(FileManagerProperties.BEAN_NAME)
 	private FileManagerProperties fileManagerProperties;
+	
+	/** Auto wire message utilities */
+	@Autowired
+	@Qualifier("messageUtils")
+	private gov.va.vetservices.lib.filemanager.util.MessageUtils messageUtils;
 
 	@PostConstruct
 	public void postConstruct() {
@@ -53,20 +58,17 @@ public class ByteArrayValidator implements Validator<byte[]> {
 		Message message = null;
 
 		if (toValidate == null) {
-			MessageKeysEnum msg = MessageKeysEnum.UNEXPECTED_ERROR;
-			message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
-			return Arrays.asList(new Message[] { message });
+			return Arrays.asList(new Message[] { 
+					messageUtils.createMessage(MessageSeverity.ERROR, LibFileManagerMessageKeys.UNEXPECTED_ERROR) });
 		}
 
 		byte[] bytes = toValidate.getValue();
 
 		if ((bytes == null) || (bytes.length < 1)) {
-			MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY;
-			message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
+			message = messageUtils.createMessage(MessageSeverity.ERROR, LibFileManagerMessageKeys.FILE_BYTES_NULL_OR_EMPTY);
 
 		} else if (bytes.length > maxFileBytes()) {
-			MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_SIZE;
-			message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
+			message = messageUtils.createMessage(MessageSeverity.ERROR, LibFileManagerMessageKeys.FILE_BYTES_SIZE);
 		}
 
 		return message == null ? null : Arrays.asList(new Message[] { message });

@@ -4,6 +4,9 @@ import java.io.ByteArrayOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import com.itextpdf.io.source.IRandomAccessSource;
 import com.itextpdf.io.source.RandomAccessSourceFactory;
@@ -14,13 +17,24 @@ import com.itextpdf.kernel.pdf.StampingProperties;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
+import gov.va.vetservices.lib.filemanager.impl.FileManagerImpl;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
+import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
+import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 
+@Component(ItextUtils.BEAN_NAME)
 public class ItextUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ItextUtils.class);
 
 	/** If ever needed, this variable can be refactored to a property to allow processing pw-protected files */
 	private static final boolean PROCESS_PROTECTED_FILES = false;
+
+	public static final String BEAN_NAME = "itextUtils";
+	
+	/** Auto wire message utilities */
+	@Autowired
+	@Qualifier("messageUtils")
+	private MessageUtils messageUtils;
 
 	/**
 	 * Do not instantiate.
@@ -36,7 +50,7 @@ public class ItextUtils {
 	 * @return PdfReader
 	 * @throws FileManagerException could not read the PDF bytes
 	 */
-	public static PdfReader getPdfReader(final byte[] pdfBytes) throws FileManagerException {
+	public PdfReader getPdfReader(final byte[] pdfBytes) throws FileManagerException {
 		PdfReader pdfReader = null;
 
 		if (pdfBytes != null && pdfBytes.length > 0) {
@@ -47,11 +61,12 @@ public class ItextUtils {
 				pdfReader.setUnethicalReading(PROCESS_PROTECTED_FILES);
 				LOGGER.debug("... pdfReader.getFileLength(): " + pdfReader.getFileLength());
 			} catch (final Exception e) {
-				final MessageKeysEnum key = MessageKeysEnum.UNEXPECTED_ERROR;
+				String key = LibFileManagerMessageKeys.UNEXPECTED_ERROR;
+				String msg = messageUtils.returnMessage(key);
 				LOGGER.error(
-						key.getKey() + ": " + key.getMessage() + " Cause is " + e.getClass().getSimpleName() + ": " + e.getMessage(),
+						key+ ": " + msg + " Cause is " + e.getClass().getSimpleName() + ": " + e.getMessage(),
 						e);
-				throw new FileManagerException(e, MessageSeverity.ERROR, key.getKey(), key.getMessage());
+				throw new FileManagerException(e, MessageSeverity.ERROR, key, msg);
 			}
 		}
 

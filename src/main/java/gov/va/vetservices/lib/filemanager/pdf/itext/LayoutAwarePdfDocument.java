@@ -4,6 +4,9 @@ import java.io.ByteArrayOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import com.itextpdf.kernel.PdfException;
 import com.itextpdf.kernel.geom.PageSize;
@@ -12,6 +15,7 @@ import com.itextpdf.layout.Document;
 
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
+import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 
 /**
  * A wrapper for {@link PdfDocument} that provides an intrinsic {@link Document} to declare and manage page layout dimensions
@@ -19,8 +23,13 @@ import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
  *
  * @author aburkholder
  */
+@Component(LayoutAwarePdfDocument.BEAN_NAME)
 public class LayoutAwarePdfDocument extends PdfDocument {
 	private static final long serialVersionUID = 4845270830809641462L;
+	
+	
+	public static final String BEAN_NAME = "layoutAwarePdfDocument";
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LayoutAwarePdfDocument.class);
 
 	/** The object that defines and manages layout characteristics of the PDF */
@@ -28,7 +37,15 @@ public class LayoutAwarePdfDocument extends PdfDocument {
 	/** Options governing behavior of the document */
 	private transient PdfDocumentOptions documentOptions;
 	/** the output bytes (only available after {@code close()} has been called) */
+	
+	/** Auto wire itext utilities */
+	@Autowired
+	@Qualifier("itextUtils")
+	private ItextUtils itextUtils;
+	
+	
 	private transient ByteArrayOutputStream destination;
+
 
 	/**
 	 * Create a new PDF.
