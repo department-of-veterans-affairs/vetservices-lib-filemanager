@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 >
 	<modelVersion>4.0.0</modelVersion>
@@ -6,7 +8,7 @@
 	<parent>
 		<groupId>gov.va.ascent</groupId>
 		<artifactId>ascent-libraries-parent</artifactId>
-		<version>0.0.4-SNAPSHOT</version>
+		<version>0.0.5</version>
 		<relativePath />  <!-- lookup parent from repository -->
 	</parent>
 
@@ -21,7 +23,7 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<!-- file type detection and conversion -->
+		<!-- 3rd party versions -->
 		<tika.version>1.17</tika.version>
 		<jmimemagic.version>0.1.5</jmimemagic.version>
 		<itext.version>7.1.2</itext.version>
@@ -33,7 +35,7 @@
 		<dependency>
 			<groupId>gov.va.ascent</groupId>
 			<artifactId>ascent-framework</artifactId>
-			<version>0.0.6-SNAPSHOT</version>
+			<version>0.0.7</version>
 		</dependency>
 
 		<!-- spring dependencies -->
@@ -59,12 +61,12 @@
 			<version>${itext.version}</version>
 			<type>pom</type>
 		</dependency>
-		<!-- ⬇ ︎license required for iText 7 prod ⬇    ⬇ scroll down for private repo ⬇ -->
+		<!-- ⬇ ︎license required for iText 7 prod ⬇ ⬇ scroll down for private repo ⬇ -->
 		<!-- dependency>
 			<groupId>com.itextpdf</groupId>
 			<artifactId>itext-licensekey</artifactId>
 			<version>${itext-licensekey.version}</version>
-		</dependency -->
+			</dependency -->
 		<!-- Apache Commons project dependencies -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -90,14 +92,14 @@
 		</dependency>
 	</dependencies>
 
-	<!-- ⬇ ︎license repo required for iText 7 prod ⬇    ⬆ scroll up for dependency ⬆︎ -->
+	<!-- ⬇ ︎license repo required for iText 7 prod ⬇ ⬆ scroll up for dependency ⬆︎ -->
 	<!-- repositories>
 		<repository>
-			<id>itext</id>
-			<name>iText Repository - releases</name>
-			<url>https://repo.itextsupport.com/releases</url>
+		<id>itext</id>
+		<name>iText Repository - releases</name>
+		<url>https://repo.itextsupport.com/releases</url>
 		</repository>
-	</repositories -->
+		</repositories -->
 
 	<build>
 		<plugins>
