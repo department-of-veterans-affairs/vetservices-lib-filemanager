@@ -1,12 +1,10 @@
 package gov.va.vetservices.lib.filemanager.pdf.itext;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
 import com.itextpdf.io.source.IRandomAccessSource;
 import com.itextpdf.io.source.RandomAccessSourceFactory;
@@ -15,14 +13,8 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.ReaderProperties;
 import com.itextpdf.kernel.pdf.StampingProperties;
 
-import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
-import gov.va.vetservices.lib.filemanager.impl.FileManagerImpl;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
-import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
-import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 
-@Component(ItextUtils.BEAN_NAME)
 public class ItextUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ItextUtils.class);
 
@@ -30,11 +22,6 @@ public class ItextUtils {
 	private static final boolean PROCESS_PROTECTED_FILES = false;
 
 	public static final String BEAN_NAME = "itextUtils";
-	
-	/** Auto wire message utilities */
-	@Autowired
-	@Qualifier("messageUtils")
-	private MessageUtils messageUtils;
 
 	/**
 	 * Do not instantiate.
@@ -48,26 +35,23 @@ public class ItextUtils {
 	 *
 	 * @param pdfBytes the PDF bytes
 	 * @return PdfReader
+	 * @throws IOException some unexpected issue getting a reader on the byte array
 	 * @throws FileManagerException could not read the PDF bytes
 	 */
-	public PdfReader getPdfReader(final byte[] pdfBytes) throws FileManagerException {
+	public static PdfReader getPdfReader(final byte[] pdfBytes) throws IOException {
 		PdfReader pdfReader = null;
 
 		if (pdfBytes != null && pdfBytes.length > 0) {
+			final RandomAccessSourceFactory factory = new RandomAccessSourceFactory();
+			final IRandomAccessSource source = factory.createSource(pdfBytes);
 			try {
-				final RandomAccessSourceFactory factory = new RandomAccessSourceFactory();
-				final IRandomAccessSource source = factory.createSource(pdfBytes);
 				pdfReader = new PdfReader(source, new ReaderProperties()); // NOSONAR reader is closed by the PdfDocument
-				pdfReader.setUnethicalReading(PROCESS_PROTECTED_FILES);
-				LOGGER.debug("... pdfReader.getFileLength(): " + pdfReader.getFileLength());
 			} catch (final Exception e) {
-				String key = LibFileManagerMessageKeys.UNEXPECTED_ERROR;
-				String msg = messageUtils.returnMessage(key);
-				LOGGER.error(
-						key+ ": " + msg + " Cause is " + e.getClass().getSimpleName() + ": " + e.getMessage(),
-						e);
-				throw new FileManagerException(e, MessageSeverity.ERROR, key, msg);
+				// iText throws *run time* com.itextpdf.io.IOException - convert it to jav.io.IOException
+				throw new IOException(e.getMessage(), e);
 			}
+			pdfReader.setUnethicalReading(PROCESS_PROTECTED_FILES);
+			LOGGER.debug("... pdfReader.getFileLength(): " + pdfReader.getFileLength());
 		}
 
 		return pdfReader;

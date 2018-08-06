@@ -32,9 +32,10 @@ public class ImageConverter extends AbstractConverter {
 	public byte[] getPdf(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
 
 		byte[] pdfBytes = null;
-		final LayoutAwarePdfDocument pdfDocument = new LayoutAwarePdfDocument();
+		LayoutAwarePdfDocument pdfDocument = null;
 
 		try {
+			pdfDocument = new LayoutAwarePdfDocument();
 			final Image image = new Image(ImageDataFactory.create(bytes));
 			final float fitWidth = Math.min(FIT_500F, image.getImageScaledWidth());
 			final float fitHeight = Math.min(FIT_500F, image.getImageScaledHeight());

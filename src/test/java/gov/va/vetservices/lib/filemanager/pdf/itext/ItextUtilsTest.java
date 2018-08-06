@@ -15,8 +15,6 @@ import org.junit.Test;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.StampingProperties;
 
-import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 
 public class ItextUtilsTest extends AbstractFileHandler {
@@ -41,7 +39,7 @@ public class ItextUtilsTest extends AbstractFileHandler {
 			final PdfReader reader = ItextUtils.getPdfReader(super.readFile(FILE_PATH));
 			assertNotNull(reader);
 			reader.close();
-		} catch (FileManagerException | IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			fail("Should not have caused exception");
 		}
@@ -70,8 +68,7 @@ public class ItextUtilsTest extends AbstractFileHandler {
 			fail("Should have thrown exception");
 		} catch (final Exception e) {
 			assertNotNull(e);
-			assertTrue(FileManagerException.class.isAssignableFrom(e.getClass()));
-			assertTrue(MessageKeysEnum.UNEXPECTED_ERROR.getKey().equals(((FileManagerException) e).getKey()));
+			assertTrue(IOException.class.isAssignableFrom(e.getClass()));
 		}
 	}
 

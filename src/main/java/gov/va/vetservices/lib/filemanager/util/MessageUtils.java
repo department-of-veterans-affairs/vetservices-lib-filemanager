@@ -27,7 +27,7 @@ public class MessageUtils {
 	private MessageSource messageSource;
 
 	/** Internal list of messages */
-	private List<Message> messages = new ArrayList<>();
+	private final List<Message> messages = new ArrayList<>();
 
 	/**
 	 * Get the full list of {@link Message} objects
@@ -52,46 +52,46 @@ public class MessageUtils {
 	public void add(final MessageSeverity severity, final String key, final String description) {
 		this.messages.add(new Message(severity, key, description));
 	}
-	
+
 	/**
 	 * Returns message based on key and severity passed
-	 * 
+	 *
 	 * @param severity
 	 * @param key
 	 * @return
 	 */
 	public Message createMessage(final MessageSeverity severity, final String key) {
-		
+
 		final String userMessage = messageSource.getMessage(key, null, Locale.getDefault());
-		Message msg = new Message(severity, key, userMessage);
+		final Message msg = new Message(severity, key, userMessage);
 
 		return msg;
 	}
 
 	/**
 	 * Returns message based on key from property file
-	 * 
+	 *
 	 * @param key
 	 * @return string
 	 */
 	public String returnMessage(final String key) {
-		
+
 		return messageSource.getMessage(key, null, Locale.getDefault());
 
 	}
-	
+
 	/**
 	 * Returns message based on key from property file
-	 * 
+	 *
 	 * @param key
 	 * @return string
 	 */
-	public static String returnMsg(final String key) {
-		
+	public String returnMsg(final String key) {
+
 		return messageSource.getMessage(key, null, Locale.getDefault());
 
 	}
-	
+
 	/**
 	 * Gets the size of the {@link Message} objects list
 	 *
