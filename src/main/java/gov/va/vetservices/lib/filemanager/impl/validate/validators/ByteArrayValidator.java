@@ -34,7 +34,7 @@ public class ByteArrayValidator implements Validator<byte[]> {
 	
 	/** Auto wire message utilities */
 	@Autowired
-	@Qualifier("messageUtils")
+	@Qualifier("libfilemanagerMessageUtils")
 	private gov.va.vetservices.lib.filemanager.util.MessageUtils messageUtils;
 
 	@PostConstruct

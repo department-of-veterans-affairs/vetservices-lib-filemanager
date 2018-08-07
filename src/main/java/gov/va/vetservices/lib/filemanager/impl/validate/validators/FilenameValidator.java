@@ -40,7 +40,7 @@ public class FilenameValidator implements Validator<ImplDto> {
 	
 	/** Auto wire message utilities */
 	@Autowired
-	@Qualifier("messageUtils")
+	@Qualifier("libfilemanagerMessageUtils")
 	private gov.va.vetservices.lib.filemanager.util.MessageUtils messageUtils;
 
 	/**

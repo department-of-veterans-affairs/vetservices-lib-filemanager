@@ -54,7 +54,7 @@ public class FileTypeValidator implements Validator<ImplDto> {
 	
 	/** Auto wire message utilities */
 	@Autowired
-	@Qualifier("messageUtils")
+	@Qualifier("libfilemanagerMessageUtils")
 	private MessageUtils messageUtils;
 
 	/**

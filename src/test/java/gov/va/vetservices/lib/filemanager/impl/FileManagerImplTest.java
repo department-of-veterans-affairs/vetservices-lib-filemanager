@@ -55,7 +55,7 @@ public class FileManagerImplTest extends AbstractFileHandler {
 	
 	/** Auto wire message utilities */
 	@Autowired
-	@Qualifier("messageUtils")
+	@Qualifier("libfilemanagerMessageUtils")
 	private MessageUtils messageUtils;
 
 	private FileManagerResponse response;

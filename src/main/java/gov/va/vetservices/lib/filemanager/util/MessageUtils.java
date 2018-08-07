@@ -20,7 +20,7 @@ import gov.va.ascent.framework.messages.MessageSeverity;
 public class MessageUtils {
 
 	/** The Constant BEAN_NAME. */
-	public static final String BEAN_NAME = "messageUtils";
+	public static final String BEAN_NAME = "libfilemanagerMessageUtils";
 
 	/** Auto wire the message source for error messages. */
 	@Autowired
