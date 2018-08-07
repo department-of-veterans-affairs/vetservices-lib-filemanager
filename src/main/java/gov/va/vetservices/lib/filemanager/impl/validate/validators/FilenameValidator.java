@@ -19,6 +19,7 @@ import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.impl.validate.Validator;
+import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
 
 /**
  * Validate file names for consistency with common operating system constraints.
@@ -36,6 +37,11 @@ public class FilenameValidator implements Validator<ImplDto> {
 	@Autowired
 	@Qualifier("fileManagerProperties")
 	FileManagerProperties fileManagerProperties;
+	
+	/** Auto wire message utilities */
+	@Autowired
+	@Qualifier("libfilemanagerMessageUtils")
+	private gov.va.vetservices.lib.filemanager.util.MessageUtils messageUtils;
 
 	/**
 	 * Make sure instantiation prerequisites are fulfilled.
@@ -60,9 +66,8 @@ public class FilenameValidator implements Validator<ImplDto> {
 	@Override
 	public List<Message> validate(final ImplArgDto<ImplDto> toValidate) {  // NOSONAR - shut up complaint about cyclomatic complexity
 		if (toValidate == null || toValidate.getValue() == null) {
-			final MessageKeysEnum msg = MessageKeysEnum.UNEXPECTED_ERROR;
-			final Message message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
-			return Arrays.asList(new Message[] { message });
+			return Arrays.asList(new Message[] { 
+					messageUtils.createMessage(MessageSeverity.ERROR, LibFileManagerMessageKeys.UNEXPECTED_ERROR) });
 		}
 
 		final ImplDto implDto = toValidate.getValue();

@@ -13,7 +13,6 @@ import com.itextpdf.io.font.constants.StandardFonts;
 
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
-import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfStamperException;
 import gov.va.vetservices.lib.filemanager.impl.dto.DocMetadataDto;
 import gov.va.vetservices.lib.filemanager.pdf.stamp.dto.StampDataDto;
@@ -74,7 +73,7 @@ public class StamperTest extends AbstractFileHandler {
 			assertNotNull(e);
 			assertTrue(e.getClass().isAssignableFrom(PdfStamperException.class));
 			assertNotNull(e.getCause());
-			assertTrue(e.getCause().getClass().isAssignableFrom(FileManagerException.class));
+			assertTrue(e.getCause().getClass().isAssignableFrom(IOException.class));
 			assertNotNull(e.getCause().getCause());
 			assertTrue(e.getCause().getCause().getClass().isAssignableFrom(com.itextpdf.io.IOException.class));
 		}

@@ -21,7 +21,9 @@ import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.impl.validate.validators.SimpleRequestValidator;
+import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
+import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 
 /**
  * Implementation of the {@link FileManager} capabilities
@@ -38,6 +40,11 @@ public class FileManagerImpl implements FileManager {
 	@Autowired
 	@Qualifier(InterrogateFile.BEAN_NAME)
 	InterrogateFile interrogateFile;
+	
+	/** Auto wire message utilities */
+	@Autowired
+	@Qualifier("libfilemanagerMessageUtils")
+	private MessageUtils messageUtils;
 
 	@PostConstruct
 	public void postConstruct() {
@@ -146,10 +153,10 @@ public class FileManagerImpl implements FileManager {
 	 */
 	protected void addFileManagerExceptionToResponse(final Throwable e, final FileManagerResponse response) {
 		if (!FileManagerException.class.isAssignableFrom(e.getClass())) {
-			final MessageKeysEnum key = MessageKeysEnum.UNEXPECTED_ERROR;
 			LOGGER.error("Unexpected " + e.getClass().getSimpleName()
 					+ " exception in vetservices-lib-filemanager. Please solve thsi issue at its source.", e);
-			response.addMessage(MessageSeverity.FATAL, key.getKey(), key.getMessage());
+			response.addMessage(MessageSeverity.FATAL, LibFileManagerMessageKeys.UNEXPECTED_ERROR, 
+					messageUtils.returnMessage(LibFileManagerMessageKeys.UNEXPECTED_ERROR));
 		} else {
 			final FileManagerException fme = (FileManagerException) e;
 			response.addMessage(fme.getMessageSeverity(), fme.getKey(), fme.getMessage());

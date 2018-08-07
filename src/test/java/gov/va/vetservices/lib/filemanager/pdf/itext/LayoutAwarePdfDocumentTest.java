@@ -10,7 +10,6 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
 
 public class LayoutAwarePdfDocumentTest extends AbstractFileHandler {
@@ -37,7 +36,7 @@ public class LayoutAwarePdfDocumentTest extends AbstractFileHandler {
 		try {
 			doc = new LayoutAwarePdfDocument(super.readFile(GOOD_PDF_PATH));
 			assertNotNull(doc);
-		} catch (FileManagerException | IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			fail("Should not have thrown exception");
 		} finally {
@@ -49,7 +48,7 @@ public class LayoutAwarePdfDocumentTest extends AbstractFileHandler {
 		try {
 			doc = new LayoutAwarePdfDocument(super.readFile(GOOD_PDF_PATH), new PdfDocumentOptions());
 			assertNotNull(doc);
-		} catch (FileManagerException | IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			fail("Should not have thrown exception");
 		} finally {
@@ -74,7 +73,7 @@ public class LayoutAwarePdfDocumentTest extends AbstractFileHandler {
 
 			assertNotNull(doc.getDocumentOptions());
 
-		} catch (FileManagerException | IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			fail("Should not have thrown exception");
 		} finally {
@@ -95,7 +94,7 @@ public class LayoutAwarePdfDocumentTest extends AbstractFileHandler {
 			final byte[] out = doc.closeAndGetOutput();
 			assertNotNull(out);
 			assertTrue(out.length > 15); // empty PDF is 15 bytes long
-		} catch (FileManagerException | IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			fail("Should not have thrown exception");
 		} finally {
@@ -112,7 +111,7 @@ public class LayoutAwarePdfDocumentTest extends AbstractFileHandler {
 			final byte[] out = doc.closeAndGetOutput();
 			assertNotNull(out);
 			assertTrue(out.length > 15); // empty PDF is 15 bytes long
-		} catch (FileManagerException | IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			fail("Should not have thrown exception");
 		} finally {

@@ -1,6 +1,7 @@
 package gov.va.vetservices.lib.filemanager.pdf.itext;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,15 +13,15 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.ReaderProperties;
 import com.itextpdf.kernel.pdf.StampingProperties;
 
-import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 
 public class ItextUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ItextUtils.class);
 
 	/** If ever needed, this variable can be refactored to a property to allow processing pw-protected files */
 	private static final boolean PROCESS_PROTECTED_FILES = false;
+
+	public static final String BEAN_NAME = "itextUtils";
 
 	/**
 	 * Do not instantiate.
@@ -34,25 +35,23 @@ public class ItextUtils {
 	 *
 	 * @param pdfBytes the PDF bytes
 	 * @return PdfReader
+	 * @throws IOException some unexpected issue getting a reader on the byte array
 	 * @throws FileManagerException could not read the PDF bytes
 	 */
-	public static PdfReader getPdfReader(final byte[] pdfBytes) throws FileManagerException {
+	public static PdfReader getPdfReader(final byte[] pdfBytes) throws IOException {
 		PdfReader pdfReader = null;
 
 		if (pdfBytes != null && pdfBytes.length > 0) {
+			final RandomAccessSourceFactory factory = new RandomAccessSourceFactory();
+			final IRandomAccessSource source = factory.createSource(pdfBytes);
 			try {
-				final RandomAccessSourceFactory factory = new RandomAccessSourceFactory();
-				final IRandomAccessSource source = factory.createSource(pdfBytes);
 				pdfReader = new PdfReader(source, new ReaderProperties()); // NOSONAR reader is closed by the PdfDocument
-				pdfReader.setUnethicalReading(PROCESS_PROTECTED_FILES);
-				LOGGER.debug("... pdfReader.getFileLength(): " + pdfReader.getFileLength());
 			} catch (final Exception e) {
-				final MessageKeysEnum key = MessageKeysEnum.UNEXPECTED_ERROR;
-				LOGGER.error(
-						key.getKey() + ": " + key.getMessage() + " Cause is " + e.getClass().getSimpleName() + ": " + e.getMessage(),
-						e);
-				throw new FileManagerException(e, MessageSeverity.ERROR, key.getKey(), key.getMessage());
+				// iText throws *run time* com.itextpdf.io.IOException - convert it to jav.io.IOException
+				throw new IOException(e.getMessage(), e);
 			}
+			pdfReader.setUnethicalReading(PROCESS_PROTECTED_FILES);
+			LOGGER.debug("... pdfReader.getFileLength(): " + pdfReader.getFileLength());
 		}
 
 		return pdfReader;

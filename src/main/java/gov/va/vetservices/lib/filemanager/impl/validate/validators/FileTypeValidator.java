@@ -8,6 +8,8 @@ import javax.activation.MimeType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.itextpdf.io.image.ImageDataFactory;
@@ -23,7 +25,9 @@ import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.impl.validate.Validator;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.mime.MimeTypeDetector;
+import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
 import gov.va.vetservices.lib.filemanager.pdf.PdfIntegrityChecker;
+import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 
 /**
  * Validate the file MIME type to ensure the file meets the criteria for conversion to PDF.
@@ -47,6 +51,11 @@ public class FileTypeValidator implements Validator<ImplDto> {
 	private final MimeTypeDetector mimeTypeDetector = new MimeTypeDetector();
 
 	private final PdfIntegrityChecker pdfIntegrityChecker = new PdfIntegrityChecker();
+	
+	/** Auto wire message utilities */
+	@Autowired
+	@Qualifier("libfilemanagerMessageUtils")
+	private MessageUtils messageUtils;
 
 	/**
 	 * <p>
@@ -67,9 +76,8 @@ public class FileTypeValidator implements Validator<ImplDto> {
 	@Override
 	public List<Message> validate(final ImplArgDto<ImplDto> toValidate) {
 		if (toValidate == null || toValidate.getValue() == null) {
-			final MessageKeysEnum msg = MessageKeysEnum.UNEXPECTED_ERROR;
-			final Message message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
-			return Arrays.asList(new Message[] { message });
+			return Arrays.asList(new Message[] { messageUtils.createMessage(
+					MessageSeverity.ERROR, LibFileManagerMessageKeys.UNEXPECTED_ERROR) });
 		}
 
 		final ImplDto implDto = toValidate.getValue();

@@ -3,6 +3,8 @@ package gov.va.vetservices.lib.filemanager.impl.validate.validators;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import gov.va.ascent.framework.messages.Message;
@@ -11,6 +13,8 @@ import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.impl.validate.Validator;
+import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
+import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 
 /**
  * Perform the necessary tests to confirm that the file can be converted to PDF.
@@ -23,6 +27,11 @@ import gov.va.vetservices.lib.filemanager.impl.validate.Validator;
 public class ConversionValidator implements Validator<ImplDto> {
 
 	public static final String BEAN_NAME = "conversionValidator";
+	
+	/** Auto wire message utilities */
+	@Autowired
+	@Qualifier("libfilemanagerMessageUtils")
+	public MessageUtils messageUtils;
 
 	/**
 	 * NOSONAR TODO if it is decided to do this ...
@@ -41,9 +50,8 @@ public class ConversionValidator implements Validator<ImplDto> {
 	@Override
 	public List<Message> validate(final ImplArgDto<ImplDto> toValidate) {
 		if (toValidate == null || toValidate.getValue() == null) {
-			final MessageKeysEnum msg = MessageKeysEnum.UNEXPECTED_ERROR;
-			final Message message = new Message(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
-			return Arrays.asList(new Message[] { message });
+			return Arrays.asList(new Message[] { 
+					messageUtils.createMessage(MessageSeverity.ERROR, LibFileManagerMessageKeys.UNEXPECTED_ERROR)  });
 		}
 
 		// NOSONAR TODO would use iText 7 "checker" class(es) as template to validate all objects in the PDF.
