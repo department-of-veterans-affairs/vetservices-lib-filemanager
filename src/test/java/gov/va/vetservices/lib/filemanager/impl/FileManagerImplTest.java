@@ -7,12 +7,14 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -30,7 +32,9 @@ import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
 //import gov.va.vetservices.lib.filemanager.api.v1.transfer.DocTypeId;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
+import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
 import gov.va.vetservices.lib.filemanager.testutil.AbstractFileHandler;
+import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles({ AscentCommonSpringProfiles.PROFILE_REMOTE_CLIENT_IMPLS,
@@ -48,6 +52,11 @@ public class FileManagerImplTest extends AbstractFileHandler {
 	@Autowired
 	@Qualifier(FileManagerImpl.BEAN_NAME)
 	private FileManagerImpl fileManagerImpl;
+	
+	/** Auto wire message utilities */
+	@Autowired
+	@Qualifier("messageUtils")
+	private MessageUtils messageUtils;
 
 	private FileManagerResponse response;
 
@@ -186,8 +195,13 @@ public class FileManagerImplTest extends AbstractFileHandler {
 	public void testAddFileManagerExceptionToResponse() {
 		final FileManagerResponse response = new FileManagerResponse();
 
-		final MessageKeysEnum mke = MessageKeysEnum.UNEXPECTED_ERROR;
-		final FileManagerException fme = new FileManagerException(MessageSeverity.ERROR, mke.getKey(), mke.getMessage());
+		//ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+		//messageSource.setBasenames("file:LibFileManagerMessages");
+		String key = LibFileManagerMessageKeys.UNEXPECTED_ERROR;
+		String msg = messageUtils.returnMessage(LibFileManagerMessageKeys.UNEXPECTED_ERROR);
+		//String msg = messageSource.getMessage(LibFileManagerMessageKeys.UNEXPECTED_ERROR, null, Locale.getDefault());
+		//final MessageKeysEnum mke = MessageKeysEnum.UNEXPECTED_ERROR;
+		final FileManagerException fme = new FileManagerException(MessageSeverity.ERROR, key, msg);
 		fileManagerImpl.addFileManagerExceptionToResponse(fme, response);
 		assertNotNull(response);
 		assertTrue(response.hasErrors());

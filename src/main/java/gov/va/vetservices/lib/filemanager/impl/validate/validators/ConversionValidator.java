@@ -14,6 +14,7 @@ import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.impl.validate.Validator;
 import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
+import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 
 /**
  * Perform the necessary tests to confirm that the file can be converted to PDF.
@@ -30,7 +31,7 @@ public class ConversionValidator implements Validator<ImplDto> {
 	/** Auto wire message utilities */
 	@Autowired
 	@Qualifier("messageUtils")
-	public gov.va.vetservices.lib.filemanager.util.MessageUtils messageUtils;
+	public MessageUtils messageUtils;
 
 	/**
 	 * NOSONAR TODO if it is decided to do this ...
