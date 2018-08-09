@@ -6,6 +6,8 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.sql.Date;
+import java.time.Instant;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +46,7 @@ public class StampFileTest extends AbstractFileHandler {
 		docMetadata.setClaimId(claimId);
 		docMetadata.setDocTypeId(docTypeId);
 		docMetadata.setProcessType(ProcessType.CLAIMS_526);
+		docMetadata.setDocDate(Date.from(Instant.now()));
 		final ImplDto implDto = new ImplDto();
 		implDto.setDocMetadataDto(docMetadata);
 		implDto.setPdfFileDto(pdfFileDto);

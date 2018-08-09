@@ -6,6 +6,8 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.sql.Date;
+import java.time.Instant;
 
 import org.junit.Test;
 
@@ -31,6 +33,7 @@ public class StamperTest extends AbstractFileHandler {
 		metadata.setClaimId(claimId);
 		metadata.setDocTypeId("123");
 		metadata.setProcessType(ProcessType.CLAIMS_526);
+		metadata.setDocDate(Date.from(Instant.now()));
 		final StampDataDto stampDataDto = new StampDataDto();
 		stampDataDto.setFontName(StandardFonts.HELVETICA);
 		stampDataDto.setFontSizeInPoints(12);
