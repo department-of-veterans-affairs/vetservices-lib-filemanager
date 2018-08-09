@@ -5,6 +5,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.time.Instant;
+import java.util.Date;
+
 import org.junit.Test;
 
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.ProcessType;
@@ -15,15 +18,15 @@ public class StampsEnumTest {
 
 	@Test
 	public final void testGetStampTextProcessTypeString() {
-		String text = StampsEnum.getStampText(ProcessType.CLAIMS_526, CLAIM_ID);
+		String text = StampsEnum.getStampText(ProcessType.CLAIMS_526, CLAIM_ID, Date.from(Instant.now()));
 		assertNotNull(text);
 		assertTrue(text.contains(CLAIM_ID));
 
-		text = StampsEnum.getStampText(ProcessType.OTHER, null);
+		text = StampsEnum.getStampText(ProcessType.OTHER, null, Date.from(Instant.now()));
 		assertNull(text);
 
 		try {
-			text = StampsEnum.getStampText(null, null);
+			text = StampsEnum.getStampText(null, null, Date.from(Instant.now()));
 			fail("Should have thrown exception");
 		} catch (IllegalArgumentException e) {
 			assertNotNull(e);

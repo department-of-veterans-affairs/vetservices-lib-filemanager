@@ -40,8 +40,9 @@ public class FileManagerUtils {
 	 * @param filename the filename to check
 	 * @return boolean
 	 */
-	public static boolean hasFilename(String filename) {
-		return !(StringUtils.isBlank(filename) || StringUtils.startsWithAny(filename, FileManagerProperties.FILE_NAME_ILLEGAL_CHARS.stream().toArray(String[]::new)));
+	public static boolean hasFilename(final String filename) {
+		return !(StringUtils.isBlank(filename)
+				|| StringUtils.startsWithAny(filename, FileManagerProperties.FILE_NAME_ILLEGAL_CHARS.stream().toArray(String[]::new)));
 	}
 
 	/**
@@ -50,7 +51,7 @@ public class FileManagerUtils {
 	 * @param bytes the byte array to check
 	 * @return boolean
 	 */
-	public static boolean hasBytes(byte[] bytes) {
+	public static boolean hasBytes(final byte[] bytes) {
 		return (bytes != null) && (bytes.length > 0);
 	}
 
@@ -61,7 +62,7 @@ public class FileManagerUtils {
 	 * @param fileDto
 	 * @return ImplDto
 	 */
-	public static final ImplDto makeImplDto(FileManagerRequest request) {
+	public static final ImplDto makeImplDto(final FileManagerRequest request) {
 		ImplDto implDto = new ImplDto();
 		if (request != null) {
 			// metadata
@@ -69,6 +70,7 @@ public class FileManagerUtils {
 			metadata.setProcessType(request.getProcessType());
 			metadata.setDocTypeId(request.getDocTypeId());
 			metadata.setClaimId(request.getClaimId());
+			metadata.setDocDate(request.getDocDate());
 			implDto.setDocMetadataDto(metadata);
 			// file Dto
 			if (request.getFileDto() != null) { // should never happen, but avoid null pointers
@@ -88,7 +90,7 @@ public class FileManagerUtils {
 	 * @param filename
 	 * @return FilePartsDto
 	 */
-	public static final FilePartsDto getFileParts(String filename) {
+	public static final FilePartsDto getFileParts(final String filename) {
 		FilePartsDto fileParts = new FilePartsDto();
 
 		if (StringUtils.isNotBlank(filename)) {
@@ -131,7 +133,7 @@ public class FileManagerUtils {
 	 * @param separator the character on which to split the string
 	 * @return String[] an array of two values
 	 */
-	public static String[] splitOnLastOf(String string, char separator) {
+	public static String[] splitOnLastOf(final String string, final char separator) {
 		String[] separated = { null, null };
 
 		if (!StringUtils.isBlank(string)) {
@@ -156,7 +158,7 @@ public class FileManagerUtils {
 	 * @return String the safe filename
 	 * @throws FileManagerException if implDto or fileDto within it are not provided
 	 */
-	public static String getSafeDatestampedFilename(ImplDto implDto) throws FileManagerException {
+	public static String getSafeDatestampedFilename(final ImplDto implDto) throws FileManagerException {
 		if ((implDto == null) || (implDto.getPdfFileDto() == null) || StringUtils.isBlank(implDto.getPdfFileDto().getFilename())) {
 			MessageKeysEnum key = MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY;
 			throw new FileManagerException(MessageSeverity.ERROR, key.getKey(), key.getMessage());
