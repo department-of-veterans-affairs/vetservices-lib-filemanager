@@ -42,7 +42,7 @@ public class FileManagerImpl implements FileManager {
 	
 	/** Auto wire message utilities */
 	@Autowired
-	@Qualifier("libfilemanagerMessageUtils")
+	@Qualifier(MessageUtils.BEAN_NAME)
 	private MessageUtils messageUtils;
 	
 	@Autowired
