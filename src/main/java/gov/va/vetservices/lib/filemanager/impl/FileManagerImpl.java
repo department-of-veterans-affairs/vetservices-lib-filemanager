@@ -19,7 +19,6 @@ import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.impl.validate.validators.SimpleRequestValidator;
 import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
@@ -45,6 +44,15 @@ public class FileManagerImpl implements FileManager {
 	@Autowired
 	@Qualifier("libfilemanagerMessageUtils")
 	private MessageUtils messageUtils;
+	
+	@Autowired
+	@Qualifier(SimpleRequestValidator.BEAN_NAME)
+	private SimpleRequestValidator simpleRequestValidator;
+	
+	
+	@Autowired
+	@Qualifier(StampFile.BEAN_NAME)
+	private StampFile stampFile;
 
 	@PostConstruct
 	public void postConstruct() {
@@ -95,7 +103,6 @@ public class FileManagerImpl implements FileManager {
 	@Override
 	public FileManagerResponse convertToPdf(final FileManagerRequest request) {
 		final ConvertFile convertFile = new ConvertFile();
-		final StampFile stampFile = new StampFile();
 		final FileManagerResponse response = new FileManagerResponse();
 		response.setDoNotCacheResponse(true);
 
@@ -138,7 +145,7 @@ public class FileManagerImpl implements FileManager {
 	 */
 	private void simpleInputValidation(final FileManagerRequest request, final FileManagerResponse response) {
 		final ImplArgDto<FileManagerRequest> arg = new ImplArgDto<>(request);
-		final List<Message> messages = new SimpleRequestValidator().validate(arg);
+		final List<Message> messages = simpleRequestValidator.validate(arg);
 
 		if (messages != null && !messages.isEmpty()) {
 			response.addMessages(messages);

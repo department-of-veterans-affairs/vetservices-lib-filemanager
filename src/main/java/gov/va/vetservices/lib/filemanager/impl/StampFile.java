@@ -1,17 +1,23 @@
 package gov.va.vetservices.lib.filemanager.impl;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import gov.va.vetservices.lib.filemanager.exception.PdfStamperException;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
+import gov.va.vetservices.lib.filemanager.mime.detectors.JMimeMagicDetector;
 import gov.va.vetservices.lib.filemanager.pdf.stamp.Stamper;
 import gov.va.vetservices.lib.filemanager.pdf.stamp.dto.StampDataDto;
+import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 
 /**
  * Adds a stamp to the file bytes.
  *
  * @author aburkholder
  */
+@Component(StampFile.BEAN_NAME)
 public class StampFile {
 	/*
 	 * Design notes:
@@ -19,7 +25,12 @@ public class StampFile {
 	 * add a method in this class to call the appropriate
 	 * stamper (presumably in a new package).
 	 */
+    public static final String BEAN_NAME = "stampFile";
 
+	@Autowired
+	@Qualifier(Stamper.BEAN_NAME)
+	Stamper stamper;
+	
 	/**
 	 * Stamps the header area of a PDF file with derived text.<br/>
 	 * <b>The file to be stamped must be in implDto.getPdfFileDto()</b>.
@@ -36,7 +47,6 @@ public class StampFile {
 			throw new IllegalArgumentException("ImplDto is not an optional parameter.");
 		}
 
-		Stamper stamper = new Stamper();
 		StampDataDto stampData = new StampDataDto();
 
 		if (StringUtils.isNotBlank(implDto.getDocMetadataDto().getClaimId())) {

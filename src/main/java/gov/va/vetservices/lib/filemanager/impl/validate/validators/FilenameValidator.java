@@ -17,9 +17,9 @@ import gov.va.ascent.framework.util.SanitizationUtil;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplArgDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.impl.validate.Validator;
 import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
+import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 
 /**
  * Validate file names for consistency with common operating system constraints.
@@ -40,7 +40,7 @@ public class FilenameValidator implements Validator<ImplDto> {
 	
 	/** Auto wire message utilities */
 	@Autowired
-	@Qualifier("libfilemanagerMessageUtils")
+	@Qualifier(MessageUtils.BEAN_NAME)
 	private gov.va.vetservices.lib.filemanager.util.MessageUtils messageUtils;
 
 	/**
@@ -74,30 +74,30 @@ public class FilenameValidator implements Validator<ImplDto> {
 
 		if (implDto.getOriginalFileDto() == null) {
 
-			addError(implDto, MessageKeysEnum.FILE_DTO_NULL);
+			addError(implDto, LibFileManagerMessageKeys.FILE_DTO_NULL);
 
 		} else if (StringUtils.isBlank(implDto.getOriginalFileDto().getFilename())
 				|| StringUtils.isBlank(implDto.getFileParts().getName())
 				|| StringUtils.isBlank(implDto.getFileParts().getExtension())) {
 
-			addError(implDto, MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY);
+			addError(implDto, LibFileManagerMessageKeys.FILE_NAME_NULL_OR_EMPTY);
 
 		} else if (StringUtils.isBlank(implDto.getOriginalFileDto().getFilename())
 				|| implDto.getOriginalFileDto().getFilename().length() > fileManagerProperties.getMaxFilenameLen()) {
 
-			addError(implDto, MessageKeysEnum.FILE_NAME_TOO_LONG);
+			addError(implDto, LibFileManagerMessageKeys.FILE_NAME_TOO_LONG);
 
 		} else if (StringUtils.containsAny(implDto.getFileParts().getName(),
 				FileManagerProperties.FILE_NAME_ILLEGAL_CHARS.stream().toArray(String[]::new))
 				|| StringUtils.containsAny(implDto.getFileParts().getExtension(),
 						FileManagerProperties.FILE_NAME_ILLEGAL_CHARS.stream().toArray(String[]::new))) {
 
-			addError(implDto, MessageKeysEnum.FILE_NAME_MALFORMED);
+			addError(implDto, LibFileManagerMessageKeys.FILE_NAME_MALFORMED);
 
 		} else if (!implDto.getOriginalFileDto().getFilename()
 				.equals(SanitizationUtil.safeFilename(implDto.getOriginalFileDto().getFilename()))) {
 
-			addError(implDto, MessageKeysEnum.FILE_NAME_ILLEGAL);
+			addError(implDto, LibFileManagerMessageKeys.FILE_NAME_ILLEGAL);
 
 		}
 
@@ -108,10 +108,10 @@ public class FilenameValidator implements Validator<ImplDto> {
 	 * Adds a {@link MessageSeverity#ERROR} message to the {@link ImplDto}.
 	 *
 	 * @param implDto the ImplDto
-	 * @param messageKey the {@link MessageKeysEnum} enumeration for key and message
+	 * @param messageKey the {@link LibFileManagerMessageKeys} enumeration for key and message
 	 */
-	private void addError(final ImplDto implDto, final MessageKeysEnum messageKey) {
-		implDto.addMessage(new Message(MessageSeverity.ERROR, messageKey.getKey(), messageKey.getMessage()));
+	private void addError(final ImplDto implDto, final String key) {
+		implDto.addMessage(new Message(MessageSeverity.ERROR, key, messageUtils.returnMessage(key)));
 	}
 
 }

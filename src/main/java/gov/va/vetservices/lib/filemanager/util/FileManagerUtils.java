@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
@@ -13,7 +14,7 @@ import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.DocMetadataDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
+import gov.va.vetservices.lib.filemanager.mime.detectors.JMimeMagicDetector;
 
 /**
  * Static utilities to help with file processing
@@ -156,10 +157,12 @@ public class FileManagerUtils {
 	 * @return String the safe filename
 	 * @throws FileManagerException if implDto or fileDto within it are not provided
 	 */
+	// TODO need to remove the hard coding of the message
 	public static String getSafeDatestampedFilename(ImplDto implDto) throws FileManagerException {
 		if ((implDto == null) || (implDto.getPdfFileDto() == null) || StringUtils.isBlank(implDto.getPdfFileDto().getFilename())) {
-			MessageKeysEnum key = MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY;
-			throw new FileManagerException(MessageSeverity.ERROR, key.getKey(), key.getMessage());
+			String key = "filemanager.file.name.null.or.empty";
+			String message = "File name cannot be null or empty.";
+			throw new FileManagerException(MessageSeverity.ERROR, key, message);
 		}
 
 		String filename = implDto.getPdfFileDto().getFilename();

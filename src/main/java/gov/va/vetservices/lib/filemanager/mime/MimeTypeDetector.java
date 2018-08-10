@@ -6,28 +6,48 @@ import javax.activation.MimeType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.detectors.AbstractDetector;
 import gov.va.vetservices.lib.filemanager.mime.detectors.FilenameDetector;
 import gov.va.vetservices.lib.filemanager.mime.detectors.JMimeMagicDetector;
 import gov.va.vetservices.lib.filemanager.mime.detectors.TikaDetector;
+import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
+import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 
 /**
  * Uses jMimeMagic to attempt detection of the MIME type of a byte array.
  *
  * @author aburkholder
  */
+@Component(MimeTypeDetector.BEAN_NAME)
 public class MimeTypeDetector {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MimeTypeDetector.class);
+	
+    public static final String BEAN_NAME = "mimeTypeDetector";
 
-	private final FilenameDetector filenameDetector = new FilenameDetector();
-	private final TikaDetector tikaDetector = new TikaDetector();
-	private final JMimeMagicDetector jmimemagicDetector = new JMimeMagicDetector();
+	@Autowired
+	@Qualifier(FilenameDetector.BEAN_NAME)
+	private FilenameDetector filenameDetector;
+	
+	@Autowired
+	@Qualifier(TikaDetector.BEAN_NAME)
+	private  TikaDetector tikaDetector;
+	
+	@Autowired
+	@Qualifier(JMimeMagicDetector.BEAN_NAME)
+	private  JMimeMagicDetector jmimemagicDetector;
+	
+	
+	@Autowired
+	@Qualifier(MessageUtils.BEAN_NAME)
+	private  MessageUtils messageUtils;
 
 	// dev note: these two variables are candidates to externally expose in FileMangerProperties
 	/** Determines if the TikaDetector should be operational (true) or not (false) */
@@ -82,8 +102,9 @@ public class MimeTypeDetector {
 		bestGuess = AbstractDetector.selfCheck(tikaDetected, jmimeDetected);
 		if (bestGuess == null) {
 			// both tika and jmimemagic are turned off
-			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.FILE_TYPE_UNVERIFIABLE.getKey(),
-					MessageFormat.format(MessageKeysEnum.FILE_TYPE_UNVERIFIABLE.getMessage(), parts, parts.getExtension()));
+			throw new FileManagerException(MessageSeverity.ERROR, LibFileManagerMessageKeys.FILE_TYPE_UNVERIFIABLE,
+					MessageFormat.format(messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_TYPE_UNVERIFIABLE), 
+							parts, parts.getExtension()));
 		}
 
 		// throw exception if filename extension is different than the detected type
@@ -110,8 +131,8 @@ public class MimeTypeDetector {
 			final String filename = parts.getName() + AbstractDetector.SEPARATOR + parts.getExtension();
 			LOGGER.error("MIME type detection mismatch. File: " + filename + "; Type by filename extension: " + derivedtype
 					+ "; Type by magic byte detection: " + detectedType);
-			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.FILE_EXTENSION_CONTENT_MISMATCH.getKey(),
-					MessageKeysEnum.FILE_EXTENSION_CONTENT_MISMATCH.getMessage(), filename, detectedType.getBaseType(),
+			throw new FileManagerException(MessageSeverity.ERROR, LibFileManagerMessageKeys.FILE_EXTENSION_CONTENT_MISMATCH,
+			messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_EXTENSION_CONTENT_MISMATCH), filename, detectedType.getBaseType(),
 					derivedtype.getBaseType());
 		}
 	}
@@ -126,8 +147,8 @@ public class MimeTypeDetector {
 		if (!ConvertibleTypesEnum.hasMimeType(mimetype)) {
 			final String filename = parts.getName() + AbstractDetector.SEPARATOR + parts.getExtension();
 			LOGGER.error("Files of type " + mimetype + " are not supported. ");
-			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE.getKey(),
-					MessageKeysEnum.FILE_EXTENSION_NOT_CONVERTIBLE.getMessage(), filename);
+			throw new FileManagerException(MessageSeverity.ERROR, LibFileManagerMessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE,
+					messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE), filename);
 		}
 	}
 

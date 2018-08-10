@@ -5,14 +5,11 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import com.itextpdf.kernel.PdfException;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.layout.Document;
 
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 
 /**
  * A wrapper for {@link PdfDocument} that provides an intrinsic {@link Document} to declare and manage page layout dimensions
@@ -20,7 +17,6 @@ import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
  *
  * @author aburkholder
  */
-@Component(LayoutAwarePdfDocument.BEAN_NAME)
 public class LayoutAwarePdfDocument extends PdfDocument {
 	private static final long serialVersionUID = 4845270830809641462L;
 
@@ -163,9 +159,11 @@ public class LayoutAwarePdfDocument extends PdfDocument {
 		try {
 			super.close();
 		} catch (final Exception e) { // NOSONAR catch everything
-			final MessageKeysEnum messageKeys = MessageKeysEnum.PDF_ISSUE;
+			
+			//TODO remove hard coding of messages
+			//final MessageKeysEnum messageKeys = MessageKeysEnum.PDF_ISSUE;
 
-			LOGGER.error(messageKeys.getKey() + ": " + messageKeys.getMessage(), e);
+			LOGGER.error("filemanager.pdf.internal.issue" + ": " + "Internal PDF processing issue occurred.", e);
 			throw e;
 		}
 
