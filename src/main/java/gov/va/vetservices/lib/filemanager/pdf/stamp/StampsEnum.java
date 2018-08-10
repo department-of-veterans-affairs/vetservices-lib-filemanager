@@ -40,7 +40,7 @@ public enum StampsEnum {
 	 *
 	 * @param stampText
 	 */
-	private StampsEnum(String stampText, ProcessType[] processTypes) {
+	private StampsEnum(final String stampText, final ProcessType[] processTypes) {
 		this.stampText = stampText;
 		this.processTypes = processTypes;
 	}
@@ -57,22 +57,23 @@ public enum StampsEnum {
 	 *
 	 * @param processType provided by consumer in the FileManager request
 	 * @param claimId provided by consumer in the FileManager request
+	 * @param docDate date of submission of document from the veteran's point of view
 	 * @return String the formatted stamp text
 	 * @throws IllegalArgument exception if the processType or claimId are null or empty
 	 */
-	public static String getStampText(ProcessType processType, String claimId) {
+	public static String getStampText(final ProcessType processType, final String claimId, final Date docDate) {
 		if (processType == null) {
 			throw new IllegalArgumentException("PDF header stamp requires a ProcessType.");
 		}
 		for (StampsEnum value : StampsEnum.values()) {
 			for (ProcessType process : value.getProcessTypes()) {
 				if (process.equals(processType)) {
-					return value.getFormattedText(claimId);
+					return value.getFormattedText(claimId, docDate);
 				}
 			}
 		}
 		if (!ProcessType.OTHER.equals(processType) && !StringUtils.isEmpty(claimId)) {
-			return CLAIM_TIMEDATE.getFormattedText(claimId);
+			return CLAIM_TIMEDATE.getFormattedText(claimId, docDate);
 		}
 		return null;
 	}
@@ -95,14 +96,15 @@ public enum StampsEnum {
 	 * Get the formatted text to be used for the header stamp. The {@code claimId} is required.
 	 *
 	 * @param claimId the claim ID for the document
+	 * @param docDate date of submission of document from the veteran's point of view
 	 * @return String the formatted stamp text
 	 * @throws IllegalArgumentException if claimId parameter is null or empty
 	 */
-	private String getFormattedText(String claimId) {
+	private String getFormattedText(final String claimId, final Date docDate) {
 		if (StringUtils.isBlank(claimId)) {
 			throw new IllegalArgumentException("PDF header stamp requires a Claim ID.");
 		}
-		String formattedTimeDate = (new SimpleDateFormat(TIMEDATE_FORMAT)).format(new Date());
+		String formattedTimeDate = (new SimpleDateFormat(TIMEDATE_FORMAT)).format(docDate);
 		return MessageFormat.format(this.getStampText(), claimId, formattedTimeDate);
 	}
 

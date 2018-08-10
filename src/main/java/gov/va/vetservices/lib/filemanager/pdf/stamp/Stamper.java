@@ -60,7 +60,7 @@ public class Stamper {
 
 		byte[] stampedPdf = null;
 
-		if (metadata == null || stampDataDto == null || fileDto == null) {
+		if ((metadata == null) || (stampDataDto == null) || (fileDto == null)) {
 			LOGGER.error("Arguments cannot be null.");
 			throw new IllegalArgumentException(
 					"Arguments to " + this.getClass().getSimpleName() + ".stamp(..) cannot be null or empty.");
@@ -70,7 +70,8 @@ public class Stamper {
 		try { // NOSONAR - try-with-resource does not work if you have to use the var in the finally block
 			pdfDoc = new LayoutAwarePdfDocument(fileDto.getFilebytes());
 
-			final String stampText = StampsEnum.getStampText(stampDataDto.getProcessType(), metadata.getClaimId());
+			final String stampText =
+					StampsEnum.getStampText(stampDataDto.getProcessType(), metadata.getClaimId(), metadata.getDocDate());
 
 			Rectangle rect = null;
 			PdfCanvas canvas = null;
@@ -86,10 +87,7 @@ public class Stamper {
 				// position the text and place it on the page
 				final double xCoord = Double.parseDouble("5.0");
 				final double yCoord = rect.getHeight() - stampDataDto.getFontSizeInPoints();
-				canvas.moveText(xCoord, yCoord)
-						.showText(stampText).endText()
-						.endText()
-						.release();
+				canvas.moveText(xCoord, yCoord).showText(stampText).endText().endText().release();
 			}
 
 			stampedPdf = pdfDoc.closeAndGetOutput();
