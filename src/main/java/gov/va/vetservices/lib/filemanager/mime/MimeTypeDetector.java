@@ -23,7 +23,7 @@ import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 /**
  * Uses jMimeMagic to attempt detection of the MIME type of a byte array.
  *
- * @author aburkholder
+ * @author aburkholder 
  */
 @Component(MimeTypeDetector.BEAN_NAME)
 public class MimeTypeDetector {
