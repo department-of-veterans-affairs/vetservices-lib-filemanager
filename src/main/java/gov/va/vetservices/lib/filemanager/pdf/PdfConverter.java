@@ -4,6 +4,8 @@ import javax.activation.MimeType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
@@ -25,7 +27,10 @@ public class PdfConverter {
 	private static final String IMAGE = "image";
 	private static final String TEXT = "text";
 
-	private final MimeTypeDetector mimeDetector = new MimeTypeDetector();
+	@Autowired
+	@Qualifier(MimeTypeDetector.BEAN_NAME)
+	private MimeTypeDetector mimeTypeDetector;
+
 	private final ImageConverter imageConverter = new ImageConverter();
 	private final TextConverter textConverter = new TextConverter();
 
@@ -39,7 +44,7 @@ public class PdfConverter {
 	 * @throws FileManagerException
 	 */
 	public final byte[] convert(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
-		final MimeType mimetype = mimeDetector.detectMimeType(bytes, parts);
+		final MimeType mimetype = mimeTypeDetector.detectMimeType(bytes, parts);
 		byte[] returnBytes = null;
 
 		if (mimetype.match(ConvertibleTypesEnum.PDF.getMimeType())) {

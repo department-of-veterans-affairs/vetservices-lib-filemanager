@@ -18,27 +18,34 @@ import org.apache.tika.mime.MediaType;
 import org.apache.tika.mime.MimeTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.ascent.framework.util.SanitizationUtil;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
+import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
 import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
+import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 
 /**
  * Use Apache Tika detection capabilities to attempt mime type detection.
  *
  * @author aburkholder
  */
+@Component(TikaDetector.BEAN_NAME)
 public class TikaDetector extends AbstractDetector {
 
 	/* Logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger(TikaDetector.class);
+	
+	public static final String BEAN_NAME = "tikaDetector";
 
 	/** Classpath to the Tika Config file */
 	protected static final String TIKA_CONFIG = "/tika-config.xml";
@@ -46,6 +53,11 @@ public class TikaDetector extends AbstractDetector {
 	protected static final String MIME_RAW_OCTECT_STREAM = "application/octet-stream";
 	/** Tika Config, contains the detector resources */
 	private TikaConfig tikaConfig;
+	
+	/** Auto wire message utilities */
+	@Autowired
+	@Qualifier(MessageUtils.BEAN_NAME)
+	private MessageUtils messageUtils;
 
 	/**
 	 * Instantiate the Tika with {@value #TIKA_CONFIG}.
@@ -92,12 +104,12 @@ public class TikaDetector extends AbstractDetector {
 		MimeType mimetype = null;
 
 		if (bytes == null) {
-			final MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_NULL_OR_EMPTY;
-			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
+			final String key = LibFileManagerMessageKeys.FILE_BYTES_NULL_OR_EMPTY;
+			throw new FileManagerException(MessageSeverity.ERROR, key, messageUtils.returnMessage(key));
 		}
 		if (parts == null) {
-			final MessageKeysEnum msg = MessageKeysEnum.FILE_NAME_NULL_OR_EMPTY;
-			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage());
+			final String key = LibFileManagerMessageKeys.FILE_NAME_NULL_OR_EMPTY;
+			throw new FileManagerException(MessageSeverity.ERROR, key, messageUtils.returnMessage(key));
 		}
 
 		final String filename = parts.getName() + SEPARATOR + parts.getExtension();
@@ -110,17 +122,17 @@ public class TikaDetector extends AbstractDetector {
 
 		} catch (final IOException e) { // NOSONAR - sonar doesn't see the exception being thrown
 			LOGGER.debug("File " + filename + " is unreadable.");
-			final MessageKeysEnum msg = MessageKeysEnum.FILE_BYTES_UNREADABLE;
+			final String key = LibFileManagerMessageKeys.FILE_BYTES_UNREADABLE;
 			final String safeName = SanitizationUtil.safeFilename(filename);
-			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), safeName));
-			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), safeName);
+			LOGGER.error(key + ": " + MessageFormat.format(messageUtils.returnMessage(key), safeName));
+			throw new FileManagerException(MessageSeverity.ERROR, key, messageUtils.returnMessage(key), safeName);
 
 		} catch (final MimeTypeParseException e) { // NOSONAR - sonar doesn't see the exception being thrown
 			LOGGER.debug("MIME type '" + mimetype + "' cannot be converted to PDF.");
-			final MessageKeysEnum msg = MessageKeysEnum.FILE_CONTENT_NOT_CONVERTIBLE;
+			final String key = LibFileManagerMessageKeys.FILE_CONTENT_NOT_CONVERTIBLE;
 			final String safeName = SanitizationUtil.safeFilename(filename);
-			LOGGER.error(msg.getKey() + ": " + MessageFormat.format(msg.getMessage(), safeName));
-			throw new FileManagerException(MessageSeverity.ERROR, msg.getKey(), msg.getMessage(), safeName);
+			LOGGER.error(key + ": " + MessageFormat.format(messageUtils.returnMessage(key), safeName));
+			throw new FileManagerException(MessageSeverity.ERROR, key, messageUtils.returnMessage(key), safeName);
 		}
 
 		return mimetype;

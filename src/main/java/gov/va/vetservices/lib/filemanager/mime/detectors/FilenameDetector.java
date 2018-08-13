@@ -13,27 +13,38 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.stereotype.Component;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
-import gov.va.vetservices.lib.filemanager.impl.validate.MessageKeysEnum;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
+import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
+import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 
 /**
  * Detect MIME type based on the file name (specifically, the extension).
  *
  * @author aburkholder
  */
+@Component(FilenameDetector.BEAN_NAME)
 public class FilenameDetector extends AbstractDetector {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilenameDetector.class);
+	
+	public static final String BEAN_NAME = "filenameDetector";
 
 	private static final String PROPS_CLASSPATH = "mimetypes-by-extension.properties";
 
 	private static Properties props;
+	
+	@Autowired
+	@Qualifier(MessageUtils.BEAN_NAME)
+	private MessageUtils messageUtils;
 
 	/**
 	 * Instantiate the detector. This constructor retrieves a full list of MIME types from {@value #PROPS_CLASSPATH}.
@@ -92,8 +103,9 @@ public class FilenameDetector extends AbstractDetector {
 
 		mimetype = detectWithExtension(parts);
 		if (mimetype == null) {
-			throw new FileManagerException(MessageSeverity.ERROR, MessageKeysEnum.FILE_TYPE_UNVERIFIABLE.getKey(),
-					MessageFormat.format(MessageKeysEnum.FILE_TYPE_UNVERIFIABLE.getMessage(), parts, "UNKNOWN"));
+			throw new FileManagerException(MessageSeverity.ERROR, LibFileManagerMessageKeys.FILE_TYPE_UNVERIFIABLE,
+					MessageFormat.format(messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_TYPE_UNVERIFIABLE), 
+							parts, "UNKNOWN"));
 		}
 
 		return mimetype;

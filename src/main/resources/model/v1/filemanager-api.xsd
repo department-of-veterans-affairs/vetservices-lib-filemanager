@@ -50,6 +50,13 @@
 						<xs:annotation>
 							<xs:documentation>The original filename as provided by the source uploader. Required.</xs:documentation>
 						</xs:annotation>
+						</xs:element>
+					<xs:element name="docDate" type="xs:dateTime" minOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Date of submission of the document from the
+								veterans' point of view.
+							</xs:documentation>
+						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
 			</xs:extension>
