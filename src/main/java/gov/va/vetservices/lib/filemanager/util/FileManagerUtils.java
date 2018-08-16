@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
@@ -14,7 +13,6 @@ import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.DocMetadataDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
-import gov.va.vetservices.lib.filemanager.mime.detectors.JMimeMagicDetector;
 
 /**
  * Static utilities to help with file processing
@@ -53,7 +51,7 @@ public class FileManagerUtils {
 	 * @return boolean
 	 */
 	public static boolean hasBytes(final byte[] bytes) {
-		return (bytes != null) && (bytes.length > 0);
+		return bytes != null && bytes.length > 0;
 	}
 
 	/**
@@ -148,6 +146,7 @@ public class FileManagerUtils {
 
 		return separated;
 	}
+
 	/**
 	 * <b>Based on the implDto.getPdfFileDto()</b> filename provided in the implDto parameter,
 	 * gets a filename that is limited to a total of {@value #SAFE_FILENAME_MAX_LEN} characters,
@@ -160,7 +159,7 @@ public class FileManagerUtils {
 	 */
 	// TODO need to remove the hard coding of the message
 	public static String getSafeDatestampedFilename(ImplDto implDto) throws FileManagerException {
-		if ((implDto == null) || (implDto.getPdfFileDto() == null) || StringUtils.isBlank(implDto.getPdfFileDto().getFilename())) {
+		if (implDto == null || implDto.getPdfFileDto() == null || StringUtils.isBlank(implDto.getPdfFileDto().getFilename())) {
 			String key = "filemanager.file.name.null.or.empty";
 			String message = "File name cannot be null or empty.";
 			throw new FileManagerException(MessageSeverity.ERROR, key, message);

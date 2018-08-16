@@ -1,5 +1,6 @@
 package gov.va.vetservices.lib.filemanager.util;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -49,46 +50,45 @@ public class MessageUtils {
 	 * @param description
 	 *            the message description as a String
 	 */
-	public void add(final MessageSeverity severity, final String key, final String description) {
+	public void add(final MessageSeverity severity, final String key, final String description, Object... args) {
+		if (args != null && args.length > 0) {
+			MessageFormat.format(description, args);
+		}
 		this.messages.add(new Message(severity, key, description));
 	}
 
 	/**
-	 * Returns message based on key and severity passed
+	 * Returns message based on key and severity passed.
+	 * <p>
+	 * The created message is NOT added to the messages list used by {@link #add(MessageSeverity, String, String)},
+	 * {@link #getMessages()}, or {@link #size()}.
 	 *
 	 * @param severity
 	 * @param key
 	 * @return
 	 */
-	public Message createMessage(final MessageSeverity severity, final String key) {
+	public Message createMessage(final MessageSeverity severity, final String key, Object... args) {
 
-		final String userMessage = messageSource.getMessage(key, null, Locale.getDefault());
-		final Message msg = new Message(severity, key, userMessage);
-
-		return msg;
+		final String userMessage = messageSource.getMessage(key, args, Locale.getDefault());
+		return new Message(severity, key, userMessage);
 	}
 
 	/**
-	 * Returns message based on key from property file
+	 * Returns message based on key from property file.
+	 * <p>
+	 * The returned message is NOT referenced from the internal messages list used by {@link #add(MessageSeverity, String, String)},
+	 * {@link #getMessages()}, or {@link #size()}.
 	 *
 	 * @param key
 	 * @return string
 	 */
-	public String returnMessage(final String key) {
+	public String returnMessage(final String key, Object... args) {
 
-		return messageSource.getMessage(key, null, Locale.getDefault());
+		if (args == null || args.length == 0) {
+			return messageSource.getMessage(key, null, Locale.getDefault());
+		}
 
-	}
-
-	/**
-	 * Returns message based on key from property file
-	 *
-	 * @param key
-	 * @return string
-	 */
-	public String returnMsg(final String key) {
-
-		return messageSource.getMessage(key, null, Locale.getDefault());
+		return MessageFormat.format(messageSource.getMessage(key, null, Locale.getDefault()), args);
 
 	}
 

@@ -5,11 +5,11 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.itextpdf.kernel.PdfException;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.layout.Document;
-
 
 /**
  * A wrapper for {@link PdfDocument} that provides an intrinsic {@link Document} to declare and manage page layout dimensions
@@ -159,10 +159,8 @@ public class LayoutAwarePdfDocument extends PdfDocument {
 		try {
 			super.close();
 		} catch (final Exception e) { // NOSONAR catch everything
-			
-			//TODO remove hard coding of messages
-			//final MessageKeysEnum messageKeys = MessageKeysEnum.PDF_ISSUE;
 
+			// TODO remove hard coding of messages
 			LOGGER.error("filemanager.pdf.internal.issue" + ": " + "Internal PDF processing issue occurred.", e);
 			throw e;
 		}

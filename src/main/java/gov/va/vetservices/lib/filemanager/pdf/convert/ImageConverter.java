@@ -34,7 +34,7 @@ public class ImageConverter extends AbstractConverter {
 		byte[] pdfBytes = null;
 		LayoutAwarePdfDocument pdfDocument = null;
 
-		try {
+		try { // NOSONAR cannot use "try-with-resources" due to finally
 			pdfDocument = new LayoutAwarePdfDocument();
 			final Image image = new Image(ImageDataFactory.create(bytes));
 			final float fitWidth = Math.min(FIT_500F, image.getImageScaledWidth());

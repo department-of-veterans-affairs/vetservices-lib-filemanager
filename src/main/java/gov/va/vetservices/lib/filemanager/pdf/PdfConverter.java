@@ -2,10 +2,9 @@ package gov.va.vetservices.lib.filemanager.pdf;
 
 import javax.activation.MimeType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
@@ -21,8 +20,9 @@ import gov.va.vetservices.lib.filemanager.pdf.convert.TextConverter;
  *
  * @author aburkholder
  */
+@Component(PdfConverter.BEAN_NAME)
 public class PdfConverter {
-	private static final Logger LOGGER = LoggerFactory.getLogger(PdfConverter.class);
+	public static final String BEAN_NAME = "pdfConverter";
 
 	private static final String IMAGE = "image";
 	private static final String TEXT = "text";

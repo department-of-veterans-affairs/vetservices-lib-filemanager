@@ -1,16 +1,24 @@
 package gov.va.vetservices.lib.filemanager.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
 import gov.va.ascent.framework.messages.Message;
+import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
+import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
 import gov.va.vetservices.lib.filemanager.pdf.PdfConverter;
+import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 
 /**
  * Attempt to convert a provided file byte array to another format. Current implementation assumes conversion to PDF.
  *
  * @author aburkholder
  */
+@Component(ConvertFile.BEAN_NAME)
 public class ConvertFile {
 	/*
 	 * Design notes:
@@ -19,7 +27,14 @@ public class ConvertFile {
 	 * converter (presumably in a new package).
 	 */
 
-	PdfConverter pdfConverter = new PdfConverter();
+	public static final String BEAN_NAME = "convertFile";
+
+	@Autowired
+	@Qualifier(MessageUtils.BEAN_NAME)
+	MessageUtils messageUtils;
+
+	@Autowired
+	PdfConverter pdfConverter;
 
 	/**
 	 * Convert a file from one type to another. Current implementation assumes conversion to PDF.<br/>
@@ -31,11 +46,23 @@ public class ConvertFile {
 	 *
 	 * @param implDto the transfer object
 	 * @return FileManagerResponse the response
+	 * @throws FileManagerException
 	 */
-	public void convertToPdf(ImplDto implDto) {
+	public void convertToPdf(ImplDto implDto) throws FileManagerException {
 
 		byte[] pdfBytes = null;
+
+		if (implDto == null) {
+			throw new FileManagerException(MessageSeverity.ERROR, LibFileManagerMessageKeys.FILEMANAGER_ISSUE,
+					messageUtils.returnMessage(LibFileManagerMessageKeys.FILEMANAGER_ISSUE));
+		}
+
 		try {
+			if (implDto.getOriginalFileDto() == null) {
+				throw new FileManagerException(MessageSeverity.ERROR, LibFileManagerMessageKeys.FILE_DTO_NULL,
+						messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_DTO_NULL));
+			}
+
 			pdfBytes = pdfConverter.convert(implDto.getOriginalFileDto().getFilebytes(), implDto.getFileParts());
 
 			FileDto fdto = new FileDto();

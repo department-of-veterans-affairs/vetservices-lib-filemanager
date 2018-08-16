@@ -39,20 +39,23 @@ public class FileManagerImpl implements FileManager {
 	@Autowired
 	@Qualifier(InterrogateFile.BEAN_NAME)
 	InterrogateFile interrogateFile;
-	
+
 	/** Auto wire message utilities */
 	@Autowired
 	@Qualifier(MessageUtils.BEAN_NAME)
 	private MessageUtils messageUtils;
-	
+
 	@Autowired
 	@Qualifier(SimpleRequestValidator.BEAN_NAME)
 	private SimpleRequestValidator simpleRequestValidator;
-	
-	
+
 	@Autowired
 	@Qualifier(StampFile.BEAN_NAME)
 	private StampFile stampFile;
+
+	@Autowired
+	@Qualifier(ConvertFile.BEAN_NAME)
+	private ConvertFile convertFile;
 
 	@PostConstruct
 	public void postConstruct() {
@@ -102,7 +105,6 @@ public class FileManagerImpl implements FileManager {
 	 */
 	@Override
 	public FileManagerResponse convertToPdf(final FileManagerRequest request) {
-		final ConvertFile convertFile = new ConvertFile();
 		final FileManagerResponse response = new FileManagerResponse();
 		response.setDoNotCacheResponse(true);
 
@@ -162,7 +164,7 @@ public class FileManagerImpl implements FileManager {
 		if (!FileManagerException.class.isAssignableFrom(e.getClass())) {
 			LOGGER.error("Unexpected " + e.getClass().getSimpleName()
 					+ " exception in vetservices-lib-filemanager. Please solve thsi issue at its source.", e);
-			response.addMessage(MessageSeverity.FATAL, LibFileManagerMessageKeys.UNEXPECTED_ERROR, 
+			response.addMessage(MessageSeverity.FATAL, LibFileManagerMessageKeys.UNEXPECTED_ERROR,
 					messageUtils.returnMessage(LibFileManagerMessageKeys.UNEXPECTED_ERROR));
 		} else {
 			final FileManagerException fme = (FileManagerException) e;

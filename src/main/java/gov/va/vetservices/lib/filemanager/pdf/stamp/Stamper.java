@@ -1,14 +1,11 @@
 package gov.va.vetservices.lib.filemanager.pdf.stamp;
 
-import java.text.MessageFormat;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.yaml.snakeyaml.DumperOptions.LineBreak;
 
 import com.itextpdf.kernel.colors.DeviceCmyk;
 import com.itextpdf.kernel.font.PdfFontFactory;
@@ -21,7 +18,6 @@ import gov.va.ascent.framework.util.SanitizationUtil;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
 import gov.va.vetservices.lib.filemanager.exception.PdfStamperException;
 import gov.va.vetservices.lib.filemanager.impl.dto.DocMetadataDto;
-import gov.va.vetservices.lib.filemanager.mime.detectors.JMimeMagicDetector;
 import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
 import gov.va.vetservices.lib.filemanager.pdf.itext.LayoutAwarePdfDocument;
 import gov.va.vetservices.lib.filemanager.pdf.stamp.dto.StampDataDto;
@@ -34,11 +30,11 @@ import gov.va.vetservices.lib.filemanager.util.MessageUtils;
  */
 @Component(Stamper.BEAN_NAME)
 public class Stamper {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(Stamper.class);
-	
+
 	public static final String BEAN_NAME = "stamper";
-	
+
 	@Autowired
 	@Qualifier(MessageUtils.BEAN_NAME)
 	private MessageUtils messageUtils;
@@ -60,7 +56,7 @@ public class Stamper {
 
 		byte[] stampedPdf = null;
 
-		if ((metadata == null) || (stampDataDto == null) || (fileDto == null)) {
+		if (metadata == null || stampDataDto == null || fileDto == null) {
 			LOGGER.error("Arguments cannot be null.");
 			throw new IllegalArgumentException(
 					"Arguments to " + this.getClass().getSimpleName() + ".stamp(..) cannot be null or empty.");
@@ -94,8 +90,8 @@ public class Stamper {
 
 		} catch (final Throwable e) { // NOSONAR intentionally catching everything
 			final String mke = LibFileManagerMessageKeys.PDF_STAMPING;
-			final String msg = MessageFormat.format(messageUtils.returnMessage(mke), SanitizationUtil.safeFilename(fileDto.getFilename()),
-					e.getClass().getSimpleName() + " - " + StringUtils.substringBefore(e.getMessage(), "\n"));
+			final String msg = messageUtils.returnMessage(mke, SanitizationUtil.safeFilename(fileDto.getFilename()),
+					e.getClass().getSimpleName() + " - " + StringUtils.substringBefore(e.getMessage(), "\\n"));
 			LOGGER.error(mke + ": " + msg, e);
 			throw new PdfStamperException(e, MessageSeverity.ERROR, mke, msg);
 		} finally {

@@ -1,7 +1,5 @@
 package gov.va.vetservices.lib.filemanager.mime;
 
-import java.text.MessageFormat;
-
 import javax.activation.MimeType;
 
 import org.slf4j.Logger;
@@ -23,31 +21,30 @@ import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 /**
  * Uses jMimeMagic to attempt detection of the MIME type of a byte array.
  *
- * @author aburkholder 
+ * @author aburkholder
  */
 @Component(MimeTypeDetector.BEAN_NAME)
 public class MimeTypeDetector {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MimeTypeDetector.class);
-	
-    public static final String BEAN_NAME = "mimeTypeDetector";
+
+	public static final String BEAN_NAME = "mimeTypeDetector";
 
 	@Autowired
 	@Qualifier(FilenameDetector.BEAN_NAME)
 	private FilenameDetector filenameDetector;
-	
+
 	@Autowired
 	@Qualifier(TikaDetector.BEAN_NAME)
-	private  TikaDetector tikaDetector;
-	
+	private TikaDetector tikaDetector;
+
 	@Autowired
 	@Qualifier(JMimeMagicDetector.BEAN_NAME)
-	private  JMimeMagicDetector jmimemagicDetector;
-	
-	
+	private JMimeMagicDetector jmimemagicDetector;
+
 	@Autowired
 	@Qualifier(MessageUtils.BEAN_NAME)
-	private  MessageUtils messageUtils;
+	private MessageUtils messageUtils;
 
 	// dev note: these two variables are candidates to externally expose in FileMangerProperties
 	/** Determines if the TikaDetector should be operational (true) or not (false) */
@@ -103,8 +100,8 @@ public class MimeTypeDetector {
 		if (bestGuess == null) {
 			// both tika and jmimemagic are turned off
 			throw new FileManagerException(MessageSeverity.ERROR, LibFileManagerMessageKeys.FILE_TYPE_UNVERIFIABLE,
-					MessageFormat.format(messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_TYPE_UNVERIFIABLE), 
-							parts, parts.getExtension()));
+					messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_TYPE_UNVERIFIABLE,
+							parts.getName(), parts.getExtension()));
 		}
 
 		// throw exception if filename extension is different than the detected type
@@ -132,7 +129,8 @@ public class MimeTypeDetector {
 			LOGGER.error("MIME type detection mismatch. File: " + filename + "; Type by filename extension: " + derivedtype
 					+ "; Type by magic byte detection: " + detectedType);
 			throw new FileManagerException(MessageSeverity.ERROR, LibFileManagerMessageKeys.FILE_EXTENSION_CONTENT_MISMATCH,
-			messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_EXTENSION_CONTENT_MISMATCH), filename, detectedType.getBaseType(),
+					messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_EXTENSION_CONTENT_MISMATCH), filename,
+					detectedType.getBaseType(),
 					derivedtype.getBaseType());
 		}
 	}

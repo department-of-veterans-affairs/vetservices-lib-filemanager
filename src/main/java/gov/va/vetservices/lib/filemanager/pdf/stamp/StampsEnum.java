@@ -53,12 +53,12 @@ public enum StampsEnum {
 	 * it invokes the default stamp. The method will return {@code null} for OTHER processType, or if the processType is not
 	 * associated with any StampsEnum and claimId is null/empty.
 	 * <p>
-	 * This method throws a runtime exception if either of the parameters are null or empty.
+	 * This method throws a runtime exception if any of the parameters are null or empty.
 	 *
 	 * @param processType provided by consumer in the FileManager request
 	 * @param claimId provided by consumer in the FileManager request
 	 * @param docDate date of submission of document from the veteran's point of view
-	 * @return String the formatted stamp text
+	 * @return String the formatted stamp text, or null if the processType is not found
 	 * @throws IllegalArgument exception if the processType or claimId are null or empty
 	 */
 	public static String getStampText(final ProcessType processType, final String claimId, final Date docDate) {
@@ -71,9 +71,6 @@ public enum StampsEnum {
 					return value.getFormattedText(claimId, docDate);
 				}
 			}
-		}
-		if (!ProcessType.OTHER.equals(processType) && !StringUtils.isEmpty(claimId)) {
-			return CLAIM_TIMEDATE.getFormattedText(claimId, docDate);
 		}
 		return null;
 	}
@@ -104,8 +101,8 @@ public enum StampsEnum {
 		if (StringUtils.isBlank(claimId)) {
 			throw new IllegalArgumentException("PDF header stamp requires a Claim ID.");
 		}
-		String formattedTimeDate = (new SimpleDateFormat(TIMEDATE_FORMAT)).format(docDate);
-		return MessageFormat.format(this.getStampText(), claimId, formattedTimeDate);
+		String formattedTimeDate = docDate == null ? "" : new SimpleDateFormat(TIMEDATE_FORMAT).format(docDate);
+		return MessageFormat.format(this.stampText, claimId, formattedTimeDate);
 	}
 
 }

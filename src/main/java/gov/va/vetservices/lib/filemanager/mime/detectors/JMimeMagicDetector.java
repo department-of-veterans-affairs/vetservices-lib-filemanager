@@ -1,7 +1,6 @@
 package gov.va.vetservices.lib.filemanager.mime.detectors;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
@@ -12,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.yaml.snakeyaml.DumperOptions.LineBreak;
 
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.ascent.framework.util.SanitizationUtil;
@@ -39,12 +37,12 @@ public class JMimeMagicDetector extends AbstractDetector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JMimeMagicDetector.class);
 
 	public static final String BEAN_NAME = "jMimeMagicDetector";
-	
+
 	/** Auto wire message utilities */
 	@Autowired
 	@Qualifier(MessageUtils.BEAN_NAME)
 	private MessageUtils messageUtils;
-	
+
 	@Override
 	public MimeType detect(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
 		MimeType mimetype = null;
@@ -65,14 +63,14 @@ public class JMimeMagicDetector extends AbstractDetector {
 		} catch (final IOException e) { // NOSONAR - sonar doesn't see the exception being thrown
 			final String key = LibFileManagerMessageKeys.FILE_BYTES_UNREADABLE;
 			final String filename = SanitizationUtil.safeFilename(parts.getName() + SEPARATOR + parts.getExtension());
-			LOGGER.error(key + ": " + MessageFormat.format(messageUtils.returnMessage(key), filename));
+			LOGGER.error(key + ": " + messageUtils.returnMessage(key, filename));
 			throw new FileManagerException(MessageSeverity.ERROR, key, messageUtils.returnMessage(key), filename);
 
 		} catch (final MimeTypeParseException e) { // NOSONAR - sonar doesn't see the exception being thrown
 			final String filename = SanitizationUtil.safeFilename(parts.getName() + SEPARATOR + parts.getExtension());
 			final String key = LibFileManagerMessageKeys.FILE_CONTENT_NOT_CONVERTIBLE;
-			LOGGER.error(key + ": " + MessageFormat.format(messageUtils.returnMessage(key), filename));
-			throw new FileManagerException(MessageSeverity.ERROR,key, messageUtils.returnMessage(key), filename);
+			LOGGER.error(key + ": " + messageUtils.returnMessage(key, filename));
+			throw new FileManagerException(MessageSeverity.ERROR, key, messageUtils.returnMessage(key), filename);
 		}
 
 		return mimetype;

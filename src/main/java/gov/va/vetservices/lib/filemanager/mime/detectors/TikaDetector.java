@@ -2,7 +2,6 @@ package gov.va.vetservices.lib.filemanager.mime.detectors;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.MessageFormat;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
@@ -44,7 +43,7 @@ public class TikaDetector extends AbstractDetector {
 
 	/* Logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger(TikaDetector.class);
-	
+
 	public static final String BEAN_NAME = "tikaDetector";
 
 	/** Classpath to the Tika Config file */
@@ -53,7 +52,7 @@ public class TikaDetector extends AbstractDetector {
 	protected static final String MIME_RAW_OCTECT_STREAM = "application/octet-stream";
 	/** Tika Config, contains the detector resources */
 	private TikaConfig tikaConfig;
-	
+
 	/** Auto wire message utilities */
 	@Autowired
 	@Qualifier(MessageUtils.BEAN_NAME)
@@ -124,14 +123,14 @@ public class TikaDetector extends AbstractDetector {
 			LOGGER.debug("File " + filename + " is unreadable.");
 			final String key = LibFileManagerMessageKeys.FILE_BYTES_UNREADABLE;
 			final String safeName = SanitizationUtil.safeFilename(filename);
-			LOGGER.error(key + ": " + MessageFormat.format(messageUtils.returnMessage(key), safeName));
-			throw new FileManagerException(MessageSeverity.ERROR, key, messageUtils.returnMessage(key), safeName);
+			LOGGER.error(key + ": " + messageUtils.returnMessage(key, safeName));
+			throw new FileManagerException(MessageSeverity.ERROR, key, messageUtils.returnMessage(key, safeName));
 
 		} catch (final MimeTypeParseException e) { // NOSONAR - sonar doesn't see the exception being thrown
 			LOGGER.debug("MIME type '" + mimetype + "' cannot be converted to PDF.");
 			final String key = LibFileManagerMessageKeys.FILE_CONTENT_NOT_CONVERTIBLE;
 			final String safeName = SanitizationUtil.safeFilename(filename);
-			LOGGER.error(key + ": " + MessageFormat.format(messageUtils.returnMessage(key), safeName));
+			LOGGER.error(key + ": " + messageUtils.returnMessage(key, safeName));
 			throw new FileManagerException(MessageSeverity.ERROR, key, messageUtils.returnMessage(key), safeName);
 		}
 

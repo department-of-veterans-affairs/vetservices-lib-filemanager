@@ -24,7 +24,6 @@ import gov.va.vetservices.lib.filemanager.impl.dto.ImplDto;
 import gov.va.vetservices.lib.filemanager.impl.validate.Validator;
 import gov.va.vetservices.lib.filemanager.mime.ConvertibleTypesEnum;
 import gov.va.vetservices.lib.filemanager.mime.MimeTypeDetector;
-import gov.va.vetservices.lib.filemanager.mime.detectors.FilenameDetector;
 import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
 import gov.va.vetservices.lib.filemanager.pdf.PdfIntegrityChecker;
 import gov.va.vetservices.lib.filemanager.util.MessageUtils;
@@ -47,7 +46,7 @@ public class FileTypeValidator implements Validator<ImplDto> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileTypeValidator.class);
 
 	private static final String IMAGE = "image";
-	
+
 	@Autowired
 	@Qualifier(MimeTypeDetector.BEAN_NAME)
 	private MimeTypeDetector mimeTypeDetector;
@@ -55,7 +54,7 @@ public class FileTypeValidator implements Validator<ImplDto> {
 	@Autowired
 	@Qualifier(PdfIntegrityChecker.BEAN_NAME)
 	private PdfIntegrityChecker pdfIntegrityChecker;
-	
+
 	/** Auto wire message utilities */
 	@Autowired
 	@Qualifier(MessageUtils.BEAN_NAME)

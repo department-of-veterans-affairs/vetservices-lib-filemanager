@@ -13,6 +13,7 @@ import gov.va.ascent.framework.util.SanitizationUtil;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.exception.PdfConverterException;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
+import gov.va.vetservices.lib.filemanager.modelvalidators.keys.LibFileManagerMessageKeys;
 import gov.va.vetservices.lib.filemanager.pdf.itext.LayoutAwarePdfDocument;
 
 /**
@@ -78,8 +79,8 @@ public abstract class AbstractConverter {
 	 */
 	// TODO need to remove hard coding below
 	protected void doThrowException(final Throwable e, final String filename) throws PdfConverterException {
-		final String key = "filemanager.pdf.conversion.processing";
-        final String message = "The file cannot be converted to PDF due to internal processing issue.";
+		final String key = LibFileManagerMessageKeys.PDF_CONVERSION_PROCESSING;
+		final String message = "The file cannot be converted to PDF due to internal processing issue.";
 		LOGGER.error(key + ": " + message, e);
 		throw new PdfConverterException(e, MessageSeverity.ERROR, key, message,
 				SanitizationUtil.safeFilename(filename), e.getMessage());

@@ -3,7 +3,6 @@ package gov.va.vetservices.lib.filemanager.mime.detectors;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
-import java.text.MessageFormat;
 import java.util.Properties;
 
 import javax.activation.MimeType;
@@ -35,13 +34,13 @@ import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 public class FilenameDetector extends AbstractDetector {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilenameDetector.class);
-	
+
 	public static final String BEAN_NAME = "filenameDetector";
 
 	private static final String PROPS_CLASSPATH = "mimetypes-by-extension.properties";
 
 	private static Properties props;
-	
+
 	@Autowired
 	@Qualifier(MessageUtils.BEAN_NAME)
 	private MessageUtils messageUtils;
@@ -104,7 +103,7 @@ public class FilenameDetector extends AbstractDetector {
 		mimetype = detectWithExtension(parts);
 		if (mimetype == null) {
 			throw new FileManagerException(MessageSeverity.ERROR, LibFileManagerMessageKeys.FILE_TYPE_UNVERIFIABLE,
-					MessageFormat.format(messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_TYPE_UNVERIFIABLE), 
+					messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_TYPE_UNVERIFIABLE,
 							parts, "UNKNOWN"));
 		}
 
