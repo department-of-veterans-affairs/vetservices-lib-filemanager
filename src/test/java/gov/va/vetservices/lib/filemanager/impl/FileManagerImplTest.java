@@ -93,8 +93,9 @@ public class FileManagerImplTest extends AbstractFileHandler {
 		assertTrue(response.isDoNotCacheResponse());
 		// NOSONAR TODO changes when ConversionValidator is completed
 
-		// sad
+		/* sad */
 
+		// null request
 		try {
 			response = fileManagerImpl.validateFileForPDFConversion(null);
 		} catch (final Exception e) {
@@ -106,18 +107,7 @@ public class FileManagerImplTest extends AbstractFileHandler {
 		assertTrue(!response.getMessages().isEmpty());
 		assertNull(response.getFileDto());
 
-		fileDto.setFilebytes(STRING_BYTES);
-		fileDto.setFilename(STRING_FILENAME);
-		try {
-			response = fileManagerImpl.validateFileForPDFConversion(request);
-		} catch (final Exception e) {
-			e.printStackTrace();
-			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
-		}
-		assertNotNull(response);
-		assertNotNull(response.getMessages());
-		assertTrue(response.getMessages().isEmpty());
-
+		// null file bytes
 		fileDto.setFilebytes(null);
 		fileDto.setFilename(STRING_FILENAME);
 		try {
@@ -130,6 +120,7 @@ public class FileManagerImplTest extends AbstractFileHandler {
 		assertNotNull(response.getMessages());
 		assertTrue(!response.getMessages().isEmpty());
 
+		// null file name
 		fileDto.setFilebytes(STRING_BYTES);
 		fileDto.setFilename(null);
 		try {
@@ -141,6 +132,38 @@ public class FileManagerImplTest extends AbstractFileHandler {
 		assertNotNull(response);
 		assertNotNull(response.getMessages());
 		assertTrue(!response.getMessages().isEmpty());
+	}
+
+	@Test
+	public void testConvertToPdf_Oversized() {
+		FileDto fileDto = null;
+		final FileManagerRequest request = new FileManagerRequest();
+		request.setClaimId(claimId);
+		request.setDocTypeId(docTypeId);
+		request.setProcessType(ProcessType.CLAIMS_526);
+		// oversized file
+		byte[] bytes = null;
+		try {
+			bytes = super.readFile(Paths.get("files/image/tiff/IS_NOT_DeltaE_16bit_gamma1.0.tif"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
+		fileDto = new FileDto();
+		fileDto.setFilebytes(bytes);
+		fileDto.setFilename("IS_LzwType_24Bit.tif");
+		request.setFileDto(fileDto);
+
+		try {
+			response = fileManagerImpl.validateFileForPDFConversion(request);
+		} catch (final Exception e) {
+			e.printStackTrace();
+			fail("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
+		assertNotNull(response);
+		assertNotNull(response.getMessages());
+		assertTrue(!response.getMessages().isEmpty());
+		assertTrue(LibFileManagerMessageKeys.FILE_BYTES_SIZE.equals(response.getMessages().get(0).getKey()));
 	}
 
 	@Test
