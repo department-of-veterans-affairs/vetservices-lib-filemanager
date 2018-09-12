@@ -6,13 +6,13 @@
 	<parent>
 		<groupId>gov.va.ascent</groupId>
 		<artifactId>ascent-libraries-parent</artifactId>
-		<version>0.0.6-SNAPSHOT</version>
+		<version>0.0.6</version>
 		<relativePath />  <!-- lookup parent from repository -->
 	</parent>
 
 	<groupId>gov.va.vetservices.lib</groupId>
 	<artifactId>vetservices-lib-filemanager</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2</version>
 	<name>vetservices-lib-filemanager</name>
 	<description>A library that provides common file management utilities for 
 		image type detection, character encoding detection, 
@@ -33,7 +33,7 @@
 		<dependency>
 			<groupId>gov.va.ascent</groupId>
 			<artifactId>ascent-framework</artifactId>
-			<version>0.0.8-SNAPSHOT</version>
+			<version>0.0.8</version>
 		</dependency>
 
 		<!-- spring dependencies -->
