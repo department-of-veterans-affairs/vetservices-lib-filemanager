@@ -4,12 +4,12 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.va.ascent.framework.log.AscentLogger;
+import gov.va.ascent.framework.log.AscentLoggerFactory;
 import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.ascent.framework.util.Defense;
@@ -32,7 +32,7 @@ import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 @Component(FileManagerImpl.BEAN_NAME)
 public class FileManagerImpl implements FileManager {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FileManagerImpl.class);
+	private static final AscentLogger LOGGER = AscentLoggerFactory.getLogger(FileManagerImpl.class);
 
 	public static final String BEAN_NAME = "fileManagerImpl";
 

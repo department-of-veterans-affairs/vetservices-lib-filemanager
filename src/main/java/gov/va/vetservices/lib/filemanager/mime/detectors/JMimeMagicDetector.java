@@ -6,12 +6,12 @@ import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.va.ascent.framework.log.AscentLogger;
+import gov.va.ascent.framework.log.AscentLoggerFactory;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.ascent.framework.util.SanitizationUtil;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
@@ -34,7 +34,7 @@ import net.sf.jmimemagic.MagicParseException;
 public class JMimeMagicDetector extends AbstractDetector {
 
 	/* Logger */
-	private static final Logger LOGGER = LoggerFactory.getLogger(JMimeMagicDetector.class);
+	private static final AscentLogger LOGGER = AscentLoggerFactory.getLogger(JMimeMagicDetector.class);
 
 	public static final String BEAN_NAME = "jMimeMagicDetector";
 

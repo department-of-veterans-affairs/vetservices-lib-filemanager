@@ -3,13 +3,13 @@ package gov.va.vetservices.lib.filemanager.pdf.itext;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.itextpdf.kernel.PdfException;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.layout.Document;
+
+import gov.va.ascent.framework.log.AscentLogger;
+import gov.va.ascent.framework.log.AscentLoggerFactory;
 
 /**
  * A wrapper for {@link PdfDocument} that provides an intrinsic {@link Document} to declare and manage page layout dimensions
@@ -22,7 +22,7 @@ public class LayoutAwarePdfDocument extends PdfDocument {
 
 	public static final String BEAN_NAME = "layoutAwarePdfDocument";
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(LayoutAwarePdfDocument.class);
+	private static final AscentLogger LOGGER = AscentLoggerFactory.getLogger(LayoutAwarePdfDocument.class);
 
 	/** The object that defines and manages layout characteristics of the PDF */
 	private transient Document document;

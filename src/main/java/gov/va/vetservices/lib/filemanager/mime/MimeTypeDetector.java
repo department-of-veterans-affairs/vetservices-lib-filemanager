@@ -2,12 +2,12 @@ package gov.va.vetservices.lib.filemanager.mime;
 
 import javax.activation.MimeType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.va.ascent.framework.log.AscentLogger;
+import gov.va.ascent.framework.log.AscentLoggerFactory;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
@@ -26,7 +26,7 @@ import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 @Component(MimeTypeDetector.BEAN_NAME)
 public class MimeTypeDetector {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MimeTypeDetector.class);
+	private static final AscentLogger LOGGER = AscentLoggerFactory.getLogger(MimeTypeDetector.class);
 
 	public static final String BEAN_NAME = "mimeTypeDetector";
 

@@ -3,14 +3,14 @@ package gov.va.vetservices.lib.filemanager.pdf;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.itextpdf.signatures.SignatureUtil;
 
+import gov.va.ascent.framework.log.AscentLogger;
+import gov.va.ascent.framework.log.AscentLoggerFactory;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.ascent.framework.util.SanitizationUtil;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
@@ -30,9 +30,9 @@ import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 @Component(PdfIntegrityChecker.BEAN_NAME)
 public class PdfIntegrityChecker {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PdfIntegrityChecker.class);
-	
-    public static final String BEAN_NAME = "pdfIntegrityChecker";
+	private static final AscentLogger LOGGER = AscentLoggerFactory.getLogger(PdfIntegrityChecker.class);
+
+	public static final String BEAN_NAME = "pdfIntegrityChecker";
 
 	/** Exception message fragments that indicate the file is corrupt */
 	private static final String[] THROWABLE_CORRUPT = { "Rebuild failed", "cannot be read", "Trailer not found", "Header not found" };
@@ -63,7 +63,7 @@ public class PdfIntegrityChecker {
 	@Autowired
 	@Qualifier(MessageUtils.BEAN_NAME)
 	private MessageUtils messageUtils;
-	
+
 	/*
 	 * NOSONAR TODO find out how to reliably identify PDFs that are corrupt or otherwise cannot be opened in desktop software
 	 * Evidence: Test PDFs that can still be processed: IS_signed-tampered-unopenable.pdf, IS_signed-tampered.pdf

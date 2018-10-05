@@ -10,14 +10,14 @@ import javax.activation.MimeTypeParseException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
+import gov.va.ascent.framework.log.AscentLogger;
+import gov.va.ascent.framework.log.AscentLoggerFactory;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 import gov.va.vetservices.lib.filemanager.impl.dto.FilePartsDto;
@@ -33,7 +33,7 @@ import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 @Component(FilenameDetector.BEAN_NAME)
 public class FilenameDetector extends AbstractDetector {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FilenameDetector.class);
+	private static final AscentLogger LOGGER = AscentLoggerFactory.getLogger(FilenameDetector.class);
 
 	public static final String BEAN_NAME = "filenameDetector";
 

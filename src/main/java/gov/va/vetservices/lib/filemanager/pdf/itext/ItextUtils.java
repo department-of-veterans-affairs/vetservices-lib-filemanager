@@ -3,9 +3,6 @@ package gov.va.vetservices.lib.filemanager.pdf.itext;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.itextpdf.io.source.IRandomAccessSource;
 import com.itextpdf.io.source.RandomAccessSourceFactory;
 import com.itextpdf.kernel.pdf.PdfReader;
@@ -13,10 +10,12 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.ReaderProperties;
 import com.itextpdf.kernel.pdf.StampingProperties;
 
+import gov.va.ascent.framework.log.AscentLogger;
+import gov.va.ascent.framework.log.AscentLoggerFactory;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
 
 public class ItextUtils {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ItextUtils.class);
+	private static final AscentLogger LOGGER = AscentLoggerFactory.getLogger(ItextUtils.class);
 
 	/** If ever needed, this variable can be refactored to a property to allow processing pw-protected files */
 	private static final boolean PROCESS_PROTECTED_FILES = false;

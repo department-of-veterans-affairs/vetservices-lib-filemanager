@@ -8,8 +8,9 @@ import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import gov.va.ascent.framework.log.AscentLogger;
+import gov.va.ascent.framework.log.AscentLoggerFactory;
 
 /**
  * Enumeration of MimeTypes, and their associated file extensions, that can be converted to PDF.
@@ -39,7 +40,7 @@ public enum ConvertibleTypesEnum {
 	/** Type for extension "txt": text/plain */
 	TXT("txt", "text/plain");
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ConvertibleTypesEnum.class);
+	private static final AscentLogger LOGGER = AscentLoggerFactory.getLogger(ConvertibleTypesEnum.class);
 
 	private static SortedSet<String> primaryTypes;
 
