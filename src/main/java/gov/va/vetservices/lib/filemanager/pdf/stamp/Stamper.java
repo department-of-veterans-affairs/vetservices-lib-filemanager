@@ -1,8 +1,6 @@
 package gov.va.vetservices.lib.filemanager.pdf.stamp;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -13,6 +11,8 @@ import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 
+import gov.va.ascent.framework.log.AscentLogger;
+import gov.va.ascent.framework.log.AscentLoggerFactory;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.ascent.framework.util.SanitizationUtil;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileDto;
@@ -31,7 +31,7 @@ import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 @Component(Stamper.BEAN_NAME)
 public class Stamper {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Stamper.class);
+	private static final AscentLogger LOGGER = AscentLoggerFactory.getLogger(Stamper.class);
 
 	public static final String BEAN_NAME = "stamper";
 

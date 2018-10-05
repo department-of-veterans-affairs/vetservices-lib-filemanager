@@ -5,9 +5,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import gov.va.ascent.framework.log.AscentLogger;
+import gov.va.ascent.framework.log.AscentLoggerFactory;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.ascent.framework.util.SanitizationUtil;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
@@ -23,7 +22,7 @@ import gov.va.vetservices.lib.filemanager.pdf.itext.LayoutAwarePdfDocument;
  * @author aburkholder
  */
 public abstract class AbstractConverter {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConverter.class);
+	private static final AscentLogger LOGGER = AscentLoggerFactory.getLogger(AbstractConverter.class);
 
 	/** NEW_LINE Constant */
 	protected static final String NEW_LINE = "\n";

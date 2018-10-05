@@ -22,13 +22,13 @@ import javax.activation.MimeType;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
+import gov.va.ascent.framework.log.AscentLogger;
+import gov.va.ascent.framework.log.AscentLoggerFactory;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.vetservices.lib.filemanager.api.FileManagerProperties;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
@@ -43,7 +43,7 @@ import gov.va.vetservices.lib.filemanager.util.MessageUtils;
  */
 public abstract class AbstractFileHandler extends AbstractReflectiveAccessManager {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractFileHandler.class);
+	private static final AscentLogger LOGGER = AscentLoggerFactory.getLogger(AbstractFileHandler.class);
 
 	/** Auto wire message utilities */
 	@Autowired

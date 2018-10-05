@@ -15,8 +15,6 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.mime.MimeTypes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
@@ -24,6 +22,8 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
+import gov.va.ascent.framework.log.AscentLogger;
+import gov.va.ascent.framework.log.AscentLoggerFactory;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.ascent.framework.util.SanitizationUtil;
 import gov.va.vetservices.lib.filemanager.exception.FileManagerException;
@@ -42,7 +42,7 @@ import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 public class TikaDetector extends AbstractDetector {
 
 	/* Logger */
-	private static final Logger LOGGER = LoggerFactory.getLogger(TikaDetector.class);
+	private static final AscentLogger LOGGER = AscentLoggerFactory.getLogger(TikaDetector.class);
 
 	public static final String BEAN_NAME = "tikaDetector";
 

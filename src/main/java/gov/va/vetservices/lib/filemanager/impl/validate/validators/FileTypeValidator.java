@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.activation.MimeType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -15,6 +13,8 @@ import org.springframework.stereotype.Component;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.layout.element.Image;
 
+import gov.va.ascent.framework.log.AscentLogger;
+import gov.va.ascent.framework.log.AscentLoggerFactory;
 import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.messages.MessageSeverity;
 import gov.va.ascent.framework.util.SanitizationUtil;
@@ -43,7 +43,7 @@ import gov.va.vetservices.lib.filemanager.util.MessageUtils;
 public class FileTypeValidator implements Validator<ImplDto> {
 
 	public static final String BEAN_NAME = "fileTypeValidator";
-	private static final Logger LOGGER = LoggerFactory.getLogger(FileTypeValidator.class);
+	private static final AscentLogger LOGGER = AscentLoggerFactory.getLogger(FileTypeValidator.class);
 
 	private static final String IMAGE = "image";
 
