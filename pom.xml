@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>gov.va.ascent</groupId>
 		<artifactId>ascent-libraries-parent</artifactId>
-		<version>0.0.8</version>
+		<version>0.0.9-SNAPSHOT</version>
 		<relativePath />  <!-- lookup parent from repository -->
 	</parent>
 
@@ -148,7 +148,7 @@
 			<plugin>
 				<groupId>org.jvnet.jaxb2.maven2</groupId>
 				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>${maven.jaxb2.plugin.version}</version>
+				<version>${maven-jaxb2-plugin-jvnet.version}</version>
 				<configuration>
 					<schemaIncludes>
 						<schemaInclude>**/*.xsd</schemaInclude>
@@ -175,7 +175,7 @@
 						<plugin>
 							<groupId>com.github.krasa</groupId>
 							<artifactId>krasa-jaxb-tools</artifactId>
-							<version>${krasa.jaxb.tools.version}</version>
+							<version>${krasa-jaxb-tools.version}</version>
 						</plugin>
 					</plugins>
 				</configuration>
