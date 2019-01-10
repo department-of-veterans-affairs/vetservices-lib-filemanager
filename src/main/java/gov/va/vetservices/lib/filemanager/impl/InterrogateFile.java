@@ -116,10 +116,7 @@ public class InterrogateFile {
 	 */
 	private void validateFileType(ImplDto implDto) {
 		ImplArgDto<ImplDto> arg = new ImplArgDto<>(implDto);
-		List<Message> messages = filetypeValidator.validate(arg);
-		if (messages != null) {
-			implDto.addMessages(messages);
-		}
+		filetypeValidator.validate(arg);
 	}
 
 	/**
@@ -131,9 +128,7 @@ public class InterrogateFile {
 	 */
 	private void validateConversion(ImplDto implDto) {
 		ImplArgDto<ImplDto> arg = new ImplArgDto<>(implDto);
-		List<Message> messages = conversionValidator.validate(arg);
-		if (messages != null) {
-			implDto.addMessages(messages);
-		}
+		conversionValidator.validate(arg);
+
 	}
 }
