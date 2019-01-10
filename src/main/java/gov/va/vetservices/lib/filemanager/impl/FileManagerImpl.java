@@ -105,7 +105,7 @@ public class FileManagerImpl implements FileManager {
 	 */
 	@Override
 	public FileManagerResponse convertToPdf(final FileManagerRequest request) {
-		final FileManagerResponse response = new FileManagerResponse();
+	    FileManagerResponse response = new FileManagerResponse();
 		response.setDoNotCacheResponse(true);
 
 		try {
