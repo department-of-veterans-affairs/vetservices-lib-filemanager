@@ -1,5 +1,7 @@
 package gov.va.vetservices.lib.filemanager.api;
 
+import javax.validation.ConstraintValidatorContext;
+
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerRequest;
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerResponse;
 
@@ -21,6 +23,19 @@ public interface FileManager {
 	 * @return FileManagerResponse the response with any messages
 	 */
 	public FileManagerResponse validateFileForPDFConversion(FileManagerRequest request);
+	
+	/**
+	 * Evaluate the suitability of a file for conversion to PDF.
+	 * Supported file types may change over time, with added (or removed) capabilities.
+	 * <p>
+	 * The only field that may be populated in the response is the messages.
+	 * If the messages list is empty, the file can be converted.
+	 *
+	 * @param request the {@code FileManagerRequest} to validate
+	 * @param request the {@code ConstraintValidatorContext} to validate
+	 * @return FileManagerResponse
+	 */
+	public FileManagerResponse validateFileForPDFConversion(FileManagerRequest request, ConstraintValidatorContext context);
 
 	/**
 	 * Convert a file to PDF, and stamp its header area. Note that the file should have been previously validated by the

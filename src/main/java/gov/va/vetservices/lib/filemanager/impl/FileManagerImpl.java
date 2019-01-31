@@ -3,6 +3,7 @@ package gov.va.vetservices.lib.filemanager.impl;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.validation.ConstraintValidatorContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -95,6 +96,24 @@ public class FileManagerImpl implements FileManager {
 		return response;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see gov.va.vetservices.lib.filemanager.api.FileManager#validateFileForPDFConversion(gov.va.vetservices.lib.filemanager.api.
+	 * FileManager.FileDto)
+	 */
+	@Override
+	public FileManagerResponse validateFileForPDFConversion(FileManagerRequest request, ConstraintValidatorContext context) {
+		final FileManagerResponse response = validateFileForPDFConversion(request);
+		for (final Message msg : response.getMessages()) {
+			final ConstraintValidatorContext.ConstraintViolationBuilder builder =
+					context.buildConstraintViolationWithTemplate("{" + msg.getKey() + "}");
+			builder.addConstraintViolation();
+		}
+		
+		return response;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 *

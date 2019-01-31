@@ -2,6 +2,8 @@ package gov.va.vetservices.lib.filemanager.api;
 
 import static org.junit.Assert.assertNotNull;
 
+import javax.validation.ConstraintValidatorContext;
+
 import org.junit.Test;
 
 import gov.va.vetservices.lib.filemanager.api.v1.transfer.FileManagerRequest;
@@ -21,6 +23,13 @@ public class FileManagerTest {
 			return new FileManagerResponse();
 		}
 
+		@Override
+		public FileManagerResponse validateFileForPDFConversion(FileManagerRequest request,
+				ConstraintValidatorContext context) {
+			// TODO Auto-generated method stub
+			return new FileManagerResponse();
+		}
+
 	}
 
 	@Test
@@ -28,6 +37,7 @@ public class FileManagerTest {
 		TestFileManager test = new TestFileManager();
 		assertNotNull(test);
 		assertNotNull(test.validateFileForPDFConversion(null));
+		assertNotNull(test.validateFileForPDFConversion(null,null));
 		assertNotNull(test.convertToPdf(null));
 	}
 
