@@ -56,7 +56,7 @@ public interface LibFileManagerMessageKeys { // NOSONAR
 	/** The PDF has been tampered with. <b>Args:</b> {@code filename} */
 	public static final String PDF_TAMPERED = "filemanager.pdf.tampered";
 	/** PDF is unreadable. <b>Args:</b> {@code filename, reason (corrupt, tampered with, etc)} */
-	public static final String PDF_UNREADABLE = "The file {0} cannot be read. The file is {1}.";
+	public static final String PDF_UNREADABLE = "filemanager.pdf.unreadable";
 
 	/** The image is not convertible for PDF. <b>Args:</b> {@code filename, itextErrorMessage} */
 	public static final String IMAGE_ITEXT_NOT_CONVERTIBLE = "filemanager.pdf.image.not.consumable";
