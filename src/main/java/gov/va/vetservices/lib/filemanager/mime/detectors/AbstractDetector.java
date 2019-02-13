@@ -46,6 +46,6 @@ public abstract class AbstractDetector {
 	 * @param filename the original name of the file
 	 * @return MimeType the MIME type
 	 */
-	public abstract MimeType detect(final byte[] bytes, final FilePartsDto parts) throws FileManagerException;
+	public abstract MimeType detect(final byte[] bytes, final FilePartsDto parts) ;
 
 }

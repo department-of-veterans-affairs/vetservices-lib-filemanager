@@ -38,7 +38,7 @@ public abstract class AbstractConverter {
 	 * @return byte[] the PDF
 	 * @throws FileManagerException some problem processing the bytes
 	 */
-	public abstract byte[] getPdf(byte[] bytes, FilePartsDto parts) throws FileManagerException;
+	public abstract byte[] getPdf(byte[] bytes, FilePartsDto parts) ;
 
 	/**
 	 * Get an input stream reader that can be used to read a text file byte stream one line at a time.
@@ -57,7 +57,7 @@ public abstract class AbstractConverter {
 	 * @param parts the file name parts associated with the document
 	 * @throws PdfConverterException any exception caused by the attempt to close the document
 	 */
-	protected void closeDocument(final LayoutAwarePdfDocument pdfDocument, final FilePartsDto parts) throws PdfConverterException {
+	protected void closeDocument(final LayoutAwarePdfDocument pdfDocument, final FilePartsDto parts)  {
 		if (pdfDocument != null && !pdfDocument.isClosed()) {
 			try {
 				pdfDocument.close();
@@ -77,7 +77,7 @@ public abstract class AbstractConverter {
 	 * @throws PdfConverterException the PDF Conversion Processing exception
 	 */
 	// TODO need to remove hard coding below
-	protected void doThrowException(final Throwable e, final String filename) throws PdfConverterException {
+	protected void doThrowException(final Throwable e, final String filename)  {
 		final String key = LibFileManagerMessageKeys.PDF_CONVERSION_PROCESSING;
 		final String message = "The file cannot be converted to PDF due to internal processing issue.";
 		LOGGER.error(key + ": " + message, e);

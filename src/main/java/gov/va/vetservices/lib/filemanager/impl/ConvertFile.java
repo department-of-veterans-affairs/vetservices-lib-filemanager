@@ -48,7 +48,7 @@ public class ConvertFile {
 	 * @return FileManagerResponse the response
 	 * @throws FileManagerException
 	 */
-	public void convertToPdf(ImplDto implDto) throws FileManagerException {
+	public void convertToPdf(ImplDto implDto)  {
 
 		byte[] pdfBytes = null;
 
@@ -72,7 +72,8 @@ public class ConvertFile {
 			implDto.setPdfFileDto(fdto);
 
 		} catch (FileManagerException e) { // NOSONAR - error is reported, shut up sonar
-			implDto.addMessage(new Message(e.getMessageSeverity(), e.getKey(), e.getMessage()));
+			implDto.addMessage(new Message(e.getMessageSeverity(), e.getKey(), e.getMessage(),
+					e.getParamCount(), e.getParamNames(), e.getParamValues()));
 		}
 	}
 }

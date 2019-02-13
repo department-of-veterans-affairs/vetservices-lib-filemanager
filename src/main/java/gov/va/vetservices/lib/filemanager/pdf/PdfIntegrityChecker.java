@@ -68,7 +68,7 @@ public class PdfIntegrityChecker {
 	 * NOSONAR TODO find out how to reliably identify PDFs that are corrupt or otherwise cannot be opened in desktop software
 	 * Evidence: Test PDFs that can still be processed: IS_signed-tampered-unopenable.pdf, IS_signed-tampered.pdf
 	 */
-	public void isReadable(final byte[] bytes, final String filename) throws FileManagerException {
+	public void isReadable(final byte[] bytes, final String filename)  {
 		LayoutAwarePdfDocument pdfDoc = null;
 		try {
 			pdfDoc = new LayoutAwarePdfDocument(bytes);
@@ -112,7 +112,7 @@ public class PdfIntegrityChecker {
 	 * @param filename the filename associated with file
 	 * @throws FileManagerException exception with PDF_UNREADABLE message
 	 */
-	protected void throwIfCorrupt(final Throwable e, final String filename) throws FileManagerException {
+	protected void throwIfCorrupt(final Throwable e, final String filename)  {
 		if (e.getMessage() != null && StringUtils.containsAny(e.getMessage(), THROWABLE_CORRUPT)) {
 			LOGGER.info(MSG_PDF_FILE + filename + MSG_IS_UNREADABLE, e);
 			throw new FileManagerException(MessageSeverity.ERROR, LibFileManagerMessageKeys.PDF_UNREADABLE,
@@ -127,7 +127,7 @@ public class PdfIntegrityChecker {
 	 * @param filename the filename associated with file
 	 * @throws FileManagerException exception with PDF_UNREADABLE message
 	 */
-	protected void throwIfPasswordProtected(final Throwable e, final String filename) throws FileManagerException {
+	protected void throwIfPasswordProtected(final Throwable e, final String filename)  {
 		if (e.getMessage() != null && StringUtils.containsAny(e.getMessage(), THROWABLE_PW_PROTECTED)) {
 			final String safename = SanitizationUtil.safeFilename(filename);
 			LOGGER.info(MSG_PDF_FILE + safename + THROWABLE_PW_PROTECTED, e);
@@ -144,7 +144,7 @@ public class PdfIntegrityChecker {
 	 * @param filename the filename associated with file
 	 * @throws FileManagerException exception with PDF_UNREADABLE message
 	 */
-	protected void throwIfSigned(final Throwable e, final String filename) throws FileManagerException {
+	protected void throwIfSigned(final Throwable e, final String filename)  {
 		if (e.getMessage() != null && StringUtils.containsAny(e.getMessage(), THROWABLE_SIGNED)) {
 			final String safename = SanitizationUtil.safeFilename(filename);
 			LOGGER.info(MSG_PDF_FILE + safename + THROWABLE_SIGNED, e);
@@ -160,7 +160,7 @@ public class PdfIntegrityChecker {
 	 * @param filename the filename associated with file
 	 * @throws FileManagerException exception with PDF_UNREADABLE message
 	 */
-	protected void throwIfEncrypted(final Throwable e, final String filename) throws FileManagerException {
+	protected void throwIfEncrypted(final Throwable e, final String filename)  {
 		if (e.getMessage() != null && StringUtils.containsAny(e.getMessage(), THROWABLE_ENCRYPTED)) {
 			final String safename = SanitizationUtil.safeFilename(filename);
 			LOGGER.info(MSG_PDF_FILE + safename + MSG_IS_UNREADABLE, e);

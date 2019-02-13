@@ -43,7 +43,7 @@ public class PdfConverter {
 	 * @return byte[] the PDF file byte array
 	 * @throws FileManagerException
 	 */
-	public final byte[] convert(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
+	public final byte[] convert(final byte[] bytes, final FilePartsDto parts)  {
 		final MimeType mimetype = mimeTypeDetector.detectMimeType(bytes, parts);
 		byte[] returnBytes = null;
 

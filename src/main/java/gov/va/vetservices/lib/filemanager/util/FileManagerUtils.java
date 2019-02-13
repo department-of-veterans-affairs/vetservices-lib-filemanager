@@ -158,7 +158,7 @@ public class FileManagerUtils {
 	 * @throws FileManagerException if implDto or fileDto within it are not provided
 	 */
 	// TODO need to remove the hard coding of the message
-	public static String getSafeDatestampedFilename(ImplDto implDto) throws FileManagerException {
+	public static String getSafeDatestampedFilename(ImplDto implDto)  {
 		if (implDto == null || implDto.getPdfFileDto() == null || StringUtils.isBlank(implDto.getPdfFileDto().getFilename())) {
 			String key = "filemanager.file.name.null.or.empty";
 			String message = "File name cannot be null or empty.";

@@ -97,7 +97,7 @@ public class FilenameDetector extends AbstractDetector {
 	 * @throws FileManagerException if MIME type cannot be derived
 	 */
 	@Override
-	public MimeType detect(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
+	public MimeType detect(final byte[] bytes, final FilePartsDto parts)  {
 		MimeType mimetype = null;
 
 		mimetype = detectWithExtension(parts);

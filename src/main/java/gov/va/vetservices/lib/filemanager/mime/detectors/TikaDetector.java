@@ -99,7 +99,7 @@ public class TikaDetector extends AbstractDetector {
 	}
 
 	@Override
-	public MimeType detect(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
+	public MimeType detect(final byte[] bytes, final FilePartsDto parts) {
 		MimeType mimetype = null;
 
 		if (bytes == null) {

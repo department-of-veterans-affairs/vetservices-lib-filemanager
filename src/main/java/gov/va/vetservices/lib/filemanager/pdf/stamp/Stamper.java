@@ -52,7 +52,7 @@ public class Stamper {
 	 * @throws PdfStamperException if the PDF cannot be stamped
 	 */
 	public final byte[] stamp(final DocMetadataDto metadata, final StampDataDto stampDataDto, final FileDto fileDto)
-			throws PdfStamperException {
+			 {
 
 		byte[] stampedPdf = null;
 

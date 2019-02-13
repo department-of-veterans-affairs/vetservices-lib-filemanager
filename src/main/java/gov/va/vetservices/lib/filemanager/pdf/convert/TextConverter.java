@@ -35,7 +35,7 @@ public class TextConverter extends AbstractConverter {
 	 * @throws PdfConverterException some problem processing the bytes
 	 */
 	@Override
-	public byte[] getPdf(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
+	public byte[] getPdf(final byte[] bytes, final FilePartsDto parts)  {
 
 		byte[] pdfBytes = null;
 		LayoutAwarePdfDocument pdfDocument = null;

@@ -75,7 +75,7 @@ public class MimeTypeDetector {
 	 * @return MimeType null, uninitialized MimeType, or the detected MimeType
 	 * @throws FileManagerException mismatch between detected file bytes and the filename extension
 	 */
-	public MimeType detectMimeType(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
+	public MimeType detectMimeType(final byte[] bytes, final FilePartsDto parts)  {
 
 		MimeType bestGuess = null;
 
@@ -123,7 +123,7 @@ public class MimeTypeDetector {
 	 * @throws FileManagerException mismatch between detected and derived types
 	 */
 	private void checkContentVsExtension(final MimeType detectedType, final MimeType derivedtype, final FilePartsDto parts)
-			throws FileManagerException {
+			 {
 		if (!derivedtype.match(detectedType)) {
 			final String filename = parts.getName() + AbstractDetector.SEPARATOR + parts.getExtension();
 			LOGGER.error("MIME type detection mismatch. File: " + filename + "; Type by filename extension: " + derivedtype
@@ -141,7 +141,7 @@ public class MimeTypeDetector {
 	 * @param mimetype the detected MimeType
 	 * @throws FileManagerException unsupported type
 	 */
-	private void checkUnsupportedType(final MimeType mimetype, final FilePartsDto parts) throws FileManagerException {
+	private void checkUnsupportedType(final MimeType mimetype, final FilePartsDto parts)  {
 		if (!ConvertibleTypesEnum.hasMimeType(mimetype)) {
 			final String filename = parts.getName() + AbstractDetector.SEPARATOR + parts.getExtension();
 			LOGGER.error("Files of type " + mimetype + " are not supported. ");
