@@ -65,4 +65,20 @@ public class FileManagerExceptionTest {
 				fme.getMessage());
 		assertTrue(iae.getClass().equals(fme.getCause().getClass()));
 	}
+	
+	@Test
+	public final void testFileManagerExceptionAbstractTest() {
+		fme = new FileManagerException("Test Message", new Throwable());
+		assertNotNull(fme);
+
+		fme.setParamCount(0);
+		fme.setParamNames(new String [] {"0"});
+		fme.setParamValues(new String [] {"0"});
+		
+		assertNotNull(fme.getParamCount());
+		assertNotNull(fme.getParamNames());
+		assertNotNull(fme.getParamValues());
+		
+	}
+
 }

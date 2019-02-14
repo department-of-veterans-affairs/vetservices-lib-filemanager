@@ -44,7 +44,7 @@ public class JMimeMagicDetector extends AbstractDetector {
 	private MessageUtils messageUtils;
 
 	@Override
-	public MimeType detect(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
+	public MimeType detect(final byte[] bytes, final FilePartsDto parts)  {
 		MimeType mimetype = null;
 
 		if (bytes == null) {

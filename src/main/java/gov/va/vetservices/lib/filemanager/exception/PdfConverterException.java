@@ -13,7 +13,8 @@ import gov.va.ascent.framework.messages.MessageSeverity;
  *
  * @author aburkholder
  */
-public class PdfConverterException extends FileManagerException {
+// NOSONAR
+public class PdfConverterException extends FileManagerException {  // NOSONAR
 	private static final long serialVersionUID = -7747475590693993558L;
 
 	/**
@@ -43,6 +44,13 @@ public class PdfConverterException extends FileManagerException {
 		super(MessageFormat.format(message, (Object[]) replaceableArgs), cause);
 		super.key = key;
 		super.messageSeverity = severity;
+		this.setParamValues((String[])replaceableArgs);
+		this.setParamCount(replaceableArgs.length);
+		String[] params = new String[replaceableArgs.length];
+		for(int i=0; i < replaceableArgs.length; i++) {
+			params[i] = String.valueOf(i);
+		}
+		this.setParamNames(params);
 	}
 
 }

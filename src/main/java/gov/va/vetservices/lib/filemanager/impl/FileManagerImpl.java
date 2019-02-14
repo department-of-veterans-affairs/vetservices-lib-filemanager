@@ -168,7 +168,9 @@ public class FileManagerImpl implements FileManager {
 					messageUtils.returnMessage(LibFileManagerMessageKeys.UNEXPECTED_ERROR));
 		} else {
 			final FileManagerException fme = (FileManagerException) e;
-			response.addMessage(fme.getMessageSeverity(), fme.getKey(), fme.getMessage());
+			response.addMessage(fme.getMessageSeverity(), fme.getKey(), fme.getMessage(),
+					fme.getParamCount(), fme.getParamNames(), 
+					fme.getParamValues());
 		}
 	}
 }

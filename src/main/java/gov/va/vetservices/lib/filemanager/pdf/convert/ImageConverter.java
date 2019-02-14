@@ -1,3 +1,4 @@
+
 package gov.va.vetservices.lib.filemanager.pdf.convert;
 
 import com.itextpdf.io.image.ImageDataFactory;
@@ -29,7 +30,7 @@ public class ImageConverter extends AbstractConverter {
 	 * @throws PdfConverterException some problem processing the bytes
 	 */
 	@Override
-	public byte[] getPdf(final byte[] bytes, final FilePartsDto parts) throws FileManagerException {
+	public byte[] getPdf(final byte[] bytes, final FilePartsDto parts)  {
 
 		byte[] pdfBytes = null;
 		LayoutAwarePdfDocument pdfDocument = null;

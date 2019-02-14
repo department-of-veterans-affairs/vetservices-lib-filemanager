@@ -4,7 +4,7 @@
 package gov.va.vetservices.lib.filemanager.exception;
 
 import java.text.MessageFormat;
-
+import gov.va.ascent.framework.exception.AbstractParamsException;
 import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.messages.MessageSeverity;
 
@@ -14,7 +14,7 @@ import gov.va.ascent.framework.messages.MessageSeverity;
  *
  * @author aburkholder
  */
-public class FileManagerException extends Exception {
+public class FileManagerException extends AbstractParamsException {
 	private static final long serialVersionUID = -7522183183501249719L;
 
 	protected String key = null; // NOSONAR
@@ -47,6 +47,13 @@ public class FileManagerException extends Exception {
 		this(MessageFormat.format(message, (Object[]) replaceableArgs), cause);
 		this.key = key;
 		this.messageSeverity = severity;
+		this.setParamValues((String[])replaceableArgs);
+		this.setParamCount(replaceableArgs.length);
+		String[] params = new String[replaceableArgs.length];
+		for(int i=0; i < replaceableArgs.length; i++) {
+			params[i] = String.valueOf(i);
+		}
+		this.setParamNames(params);
 	}
 
 	/**

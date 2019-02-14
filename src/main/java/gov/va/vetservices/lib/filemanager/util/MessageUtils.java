@@ -52,9 +52,10 @@ public class MessageUtils {
 	 */
 	public void add(final MessageSeverity severity, final String key, final String description, Object... args) {
 		if (args != null && args.length > 0) {
-			MessageFormat.format(description, args);
+			this.messages.add(new Message(severity, key, this.returnMessage(key, args)));
+		} else {
+			this.messages.add(new Message(severity, key, description));
 		}
-		this.messages.add(new Message(severity, key, description));
 	}
 
 	/**

@@ -55,10 +55,27 @@ public class MessageUtilsTest {
 	}
 
 	@Test
+	public final void testAddMessage() {
+		messageUtils.getMessages().clear();
+		messageUtils.add(MessageSeverity.TRACE, LibFileManagerMessageKeys.FILE_BYTES_UNREADABLE,
+				"Content of {0} cannot be read due to corrupted file or an unexpected issue.", "one");
+		assertTrue(messageUtils.getMessages().size() == 1);
+		assertTrue(messageUtils.getMessages().get(0).getText().startsWith("Content of one"));
+
+		messageUtils.add(MessageSeverity.TRACE, LibFileManagerMessageKeys.FILEMANAGER_ISSUE,
+				"Internal issue occurred. Please check the application logs.");
+		assertTrue(messageUtils.getMessages().size() == 2);
+		assertTrue(messageUtils.getMessages().get(1).getText().startsWith("Internal issue occurred."));
+	}
+
+	@Test
 	public final void testReturnMessage() {
 		String msg = messageUtils.returnMessage(LibFileManagerMessageKeys.FILEMANAGER_ISSUE);
 		assertNotNull(msg);
 		assertTrue(msg.startsWith("Internal issue occurred."));
+
+		msg = messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_BYTES_UNREADABLE, "one");
+		assertTrue(msg.startsWith("Content of one"));
 	}
 
 }

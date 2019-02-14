@@ -99,7 +99,8 @@ public class FileTypeValidator implements Validator<ImplDto> {
 						implDto.getOriginalFileDto().getFilename());
 			} catch (final FileManagerException e) { // squid:S1166
 				LOGGER.debug(e.getMessageSeverity().toString() + " " + e.getKey() + ": " + e.getMessage());
-				implDto.addMessage(new Message(e.getMessageSeverity(), e.getKey(), e.getMessage()));
+				implDto.addMessage(new Message(e.getMessageSeverity(), e.getKey(), e.getMessage(),
+						e.getParamCount(), e.getParamNames(), e.getParamValues()));
 			}
 		}
 
@@ -122,7 +123,7 @@ public class FileTypeValidator implements Validator<ImplDto> {
 		boolean isValid = false;
 
 		if (implDto == null) {
-			implDto = new ImplDto();
+			implDto = new ImplDto(); // NOSONAR
 			implDto.addMessage(new Message(MessageSeverity.ERROR, LibFileManagerMessageKeys.UNEXPECTED_ERROR,
 					messageUtils.returnMessage(LibFileManagerMessageKeys.UNEXPECTED_ERROR)));
 		} else {
@@ -176,7 +177,8 @@ public class FileTypeValidator implements Validator<ImplDto> {
 						mimeTypeDetector.detectMimeType(implDto.getOriginalFileDto().getFilebytes(), implDto.getFileParts());
 			} catch (final FileManagerException e) { // squid:S1166
 				LOGGER.debug(e.getMessageSeverity().toString() + " " + e.getKey() + ": " + e.getMessage());
-				implDto.addMessage(new Message(e.getMessageSeverity(), e.getKey(), e.getMessage()));
+				implDto.addMessage(new Message(e.getMessageSeverity(), e.getKey(), e.getMessage(),
+						e.getParamCount(), e.getParamNames(), e.getParamValues()));
 			}
 		}
 

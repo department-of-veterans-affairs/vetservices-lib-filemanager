@@ -40,7 +40,7 @@ public class StampFile {
 	 * @param response any messages
 	 * @throws PdfStamperException caught exceptions during stamping
 	 */
-	public void stampPdf(ImplDto implDto) throws PdfStamperException {
+	public void stampPdf(ImplDto implDto)  {
 		if (implDto == null) {
 			throw new IllegalArgumentException("ImplDto is not an optional parameter.");
 		}
