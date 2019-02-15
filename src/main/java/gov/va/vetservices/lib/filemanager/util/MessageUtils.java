@@ -1,6 +1,5 @@
 package gov.va.vetservices.lib.filemanager.util;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -70,7 +69,7 @@ public class MessageUtils {
 	 */
 	public Message createMessage(final MessageSeverity severity, final String key, Object... args) {
 
-		final String userMessage = messageSource.getMessage(key, args, Locale.getDefault());
+		final String userMessage = "";
 		return new Message(severity, key, userMessage);
 	}
 
@@ -89,7 +88,7 @@ public class MessageUtils {
 			return messageSource.getMessage(key, null, Locale.getDefault());
 		}
 
-		return MessageFormat.format(messageSource.getMessage(key, null, Locale.getDefault()), args);
+		return "";
 
 	}
 

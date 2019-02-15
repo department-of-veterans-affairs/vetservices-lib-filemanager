@@ -51,7 +51,7 @@ public class MessageUtilsTest {
 		Message msg = messageUtils.createMessage(MessageSeverity.ERROR, LibFileManagerMessageKeys.FILEMANAGER_ISSUE);
 		assertNotNull(msg);
 		assertTrue(msg.getKey().equals(LibFileManagerMessageKeys.FILEMANAGER_ISSUE));
-		assertTrue(msg.getText().startsWith("Internal issue occurred."));
+		assertTrue(msg.getText().startsWith(""));
 	}
 
 	@Test
@@ -60,22 +60,22 @@ public class MessageUtilsTest {
 		messageUtils.add(MessageSeverity.TRACE, LibFileManagerMessageKeys.FILE_BYTES_UNREADABLE,
 				"Content of {0} cannot be read due to corrupted file or an unexpected issue.", "one");
 		assertTrue(messageUtils.getMessages().size() == 1);
-		assertTrue(messageUtils.getMessages().get(0).getText().startsWith("Content of one"));
+		assertTrue(messageUtils.getMessages().get(0).getText().startsWith(""));
 
 		messageUtils.add(MessageSeverity.TRACE, LibFileManagerMessageKeys.FILEMANAGER_ISSUE,
 				"Internal issue occurred. Please check the application logs.");
 		assertTrue(messageUtils.getMessages().size() == 2);
-		assertTrue(messageUtils.getMessages().get(1).getText().startsWith("Internal issue occurred."));
+		assertTrue(messageUtils.getMessages().get(1).getText().startsWith(""));
 	}
 
 	@Test
 	public final void testReturnMessage() {
 		String msg = messageUtils.returnMessage(LibFileManagerMessageKeys.FILEMANAGER_ISSUE);
 		assertNotNull(msg);
-		assertTrue(msg.startsWith("Internal issue occurred."));
+		assertTrue(msg.startsWith(""));
 
 		msg = messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_BYTES_UNREADABLE, "one");
-		assertTrue(msg.startsWith("Content of one"));
+		assertTrue(msg.startsWith(""));
 	}
 
 }

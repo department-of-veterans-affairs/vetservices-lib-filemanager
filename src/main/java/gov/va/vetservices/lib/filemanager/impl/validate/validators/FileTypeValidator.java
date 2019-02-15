@@ -1,6 +1,5 @@
 package gov.va.vetservices.lib.filemanager.impl.validate.validators;
 
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -133,7 +132,7 @@ public class FileTypeValidator implements Validator<ImplDto> {
 			}
 			if (!isValid) {
 				implDto.addMessage(new Message(MessageSeverity.ERROR, LibFileManagerMessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE,
-						MessageFormat.format(messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE),
+						messageUtils.returnMessage(messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_EXTENSION_NOT_CONVERTIBLE),
 								implDto.getOriginalFileDto().getFilename())));
 			}
 		}
@@ -212,7 +211,7 @@ public class FileTypeValidator implements Validator<ImplDto> {
 				LOGGER.error("iText error while performing Image.getInstance(..) on bytes for file "
 						+ SanitizationUtil.safeFilename(implDto.getOriginalFileDto().getFilename()), e);
 				implDto.addMessage(new Message(MessageSeverity.ERROR, LibFileManagerMessageKeys.FILE_CONTENT_NOT_CONVERTIBLE,
-						MessageFormat.format(messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_CONTENT_NOT_CONVERTIBLE),
+						messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_CONTENT_NOT_CONVERTIBLE,
 								implDto.getOriginalFileDto().getFilename())));
 			} catch (final Throwable e) { // NOSONAR - intent is to catch everything // squid:S1166
 				isValid = false;
@@ -221,7 +220,7 @@ public class FileTypeValidator implements Validator<ImplDto> {
 								+ messageUtils.returnMessage(LibFileManagerMessageKeys.IMAGE_ITEXT_NOT_CONVERTIBLE),
 						implDto.getOriginalFileDto().getFilename(), e.getMessage());
 				implDto.addMessage(new Message(MessageSeverity.ERROR, LibFileManagerMessageKeys.IMAGE_ITEXT_NOT_CONVERTIBLE,
-						MessageFormat.format(messageUtils.returnMessage(LibFileManagerMessageKeys.IMAGE_ITEXT_NOT_CONVERTIBLE),
+						messageUtils.returnMessage(LibFileManagerMessageKeys.IMAGE_ITEXT_NOT_CONVERTIBLE,
 								implDto.getOriginalFileDto().getFilename(), e.getMessage())));
 			}
 		}

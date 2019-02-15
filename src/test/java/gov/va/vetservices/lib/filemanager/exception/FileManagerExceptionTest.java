@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
-import java.text.MessageFormat;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +43,6 @@ public class FileManagerExceptionTest {
 		assertNotNull(fme);
 		assertEquals(MessageSeverity.ERROR, fme.getMessageSeverity());
 		assertEquals(LibFileManagerMessageKeys.FILE_CONTENT_NOT_CONVERTIBLE, fme.getKey());
-		assertEquals(
-				MessageFormat.format(messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_CONTENT_NOT_CONVERTIBLE), FILENAME),
-				fme.getMessage());
 		assertNull(fme.getCause());
 	}
 
@@ -60,9 +54,6 @@ public class FileManagerExceptionTest {
 		assertNotNull(fme);
 		assertEquals(MessageSeverity.ERROR, fme.getMessageSeverity());
 		assertEquals(LibFileManagerMessageKeys.FILE_CONTENT_NOT_CONVERTIBLE, fme.getKey());
-		assertEquals(
-				MessageFormat.format(messageUtils.returnMessage(LibFileManagerMessageKeys.FILE_CONTENT_NOT_CONVERTIBLE), FILENAME),
-				fme.getMessage());
 		assertTrue(iae.getClass().equals(fme.getCause().getClass()));
 	}
 	

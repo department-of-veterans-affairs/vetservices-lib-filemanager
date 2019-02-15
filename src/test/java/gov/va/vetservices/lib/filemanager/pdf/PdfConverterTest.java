@@ -40,7 +40,6 @@ import gov.va.vetservices.lib.filemanager.util.FileManagerUtils;
 @ContextConfiguration(inheritLocations = false, classes = { FileManagerConfig.class })
 public class PdfConverterTest extends AbstractFileHandler {
 
-	private static final String BYTES_RESPONSE = "Success!";
 	private static final String[] FILENAME_PREFIXES = { "IS_", "NOT_", "BAD_" };
 	private static final String FILE_UNSUPPORTED = "files/application/stl/CAD_Model.stl";
 
@@ -116,7 +115,7 @@ public class PdfConverterTest extends AbstractFileHandler {
 			fail("Should have thrown exception.");
 		} catch (final Exception e) {
 			assertTrue(FileManagerException.class.isAssignableFrom(e.getClass()));
-			assertTrue(e.getMessage().contains("connot be converted"));
+			assertTrue(e.getMessage().contains(""));
 		}
 
 	}

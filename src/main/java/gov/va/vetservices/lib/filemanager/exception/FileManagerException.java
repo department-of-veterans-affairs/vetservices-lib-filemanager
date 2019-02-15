@@ -3,7 +3,6 @@
  */
 package gov.va.vetservices.lib.filemanager.exception;
 
-import java.text.MessageFormat;
 import gov.va.ascent.framework.exception.AbstractParamsException;
 import gov.va.ascent.framework.messages.Message;
 import gov.va.ascent.framework.messages.MessageSeverity;
@@ -44,14 +43,14 @@ public class FileManagerException extends AbstractParamsException {
 	 */
 	public FileManagerException(final Throwable cause, final MessageSeverity severity, final String key, final String message,
 			final String... replaceableArgs) {
-		this(MessageFormat.format(message, (Object[]) replaceableArgs), cause);
+		this("", cause);
 		this.key = key;
 		this.messageSeverity = severity;
 		this.setParamValues((String[])replaceableArgs);
 		this.setParamCount(replaceableArgs.length);
 		String[] params = new String[replaceableArgs.length];
 		for(int i=0; i < replaceableArgs.length; i++) {
-			params[i] = String.valueOf(i);
+			params[i] = "arg" + String.valueOf(i);
 		}
 		this.setParamNames(params);
 	}

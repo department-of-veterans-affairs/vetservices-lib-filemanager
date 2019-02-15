@@ -3,8 +3,6 @@
  */
 package gov.va.vetservices.lib.filemanager.exception;
 
-import java.text.MessageFormat;
-
 import gov.va.ascent.framework.messages.MessageSeverity;
 
 /**
@@ -41,7 +39,7 @@ public class PdfConverterException extends FileManagerException {  // NOSONAR
 	 */
 	public PdfConverterException(final Throwable cause, final MessageSeverity severity, final String key, final String message,
 			final String... replaceableArgs) {
-		super(MessageFormat.format(message, (Object[]) replaceableArgs), cause);
+		super("", cause);
 		super.key = key;
 		super.messageSeverity = severity;
 		this.setParamValues((String[])replaceableArgs);

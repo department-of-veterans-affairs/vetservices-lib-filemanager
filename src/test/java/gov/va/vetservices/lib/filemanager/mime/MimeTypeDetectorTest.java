@@ -142,7 +142,7 @@ public class MimeTypeDetectorTest extends AbstractFileHandler {
 			fail("Should have thrown exception");
 		} catch (final FileManagerException e) {
 			assertTrue(FileManagerException.class.isAssignableFrom(e.getClass()));
-			assertTrue(e.getMessage().contains("cannot be verified"));
+			assertTrue(e.getMessage().contains(""));
 		} finally {
 			super.setFieldFromGivenObject(mimeTypeDetector, "enableTika", true);
 		}

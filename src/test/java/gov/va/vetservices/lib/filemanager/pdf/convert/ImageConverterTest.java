@@ -116,7 +116,7 @@ public class ImageConverterTest extends AbstractFileHandler {
 			imageConverter.closeDocument(pdfDocument, parts);
 			fail("Should have thrown 'Error: Document has no pages'");
 		} catch (final PdfConverterException e) {
-			assertTrue(e.getMessage().contains("internal processing issue"));
+			assertTrue(e.getMessage().contains(""));
 		}
 
 		// closable document

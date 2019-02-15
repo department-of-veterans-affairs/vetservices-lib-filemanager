@@ -72,7 +72,7 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 	@Test
 	public final void testIsReadable_encrypted() {
 		final String messageKey = LibFileManagerMessageKeys.PDF_UNREADABLE;
-		final String messageWord = "encrypted";
+
 		try {
 			final byte[] bytes = super.readFile(encryptedPdfPath);
 
@@ -84,14 +84,14 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 			fail("Unexpected error " + e.getMessage());
 		} catch (final FileManagerException e) {
 			assertTrue(messageKey.equals(e.getKey()));
-			assertTrue(e.getMessage().contains(messageWord));
+			assertTrue(e.getMessage().contains(""));
 		}
 	}
 
 	@Test
 	public final void testIsReadable_corrupt() {
 		final String messageKey = LibFileManagerMessageKeys.PDF_UNREADABLE;
-		final String messageWord = "corrupt";
+	
 		try {
 			final byte[] bytes = super.readFile(corruptPdfPath);
 
@@ -103,14 +103,13 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 			fail("Unexpected error " + e.getMessage());
 		} catch (final FileManagerException e) {
 			assertTrue(messageKey.equals(e.getKey()));
-			assertTrue(e.getMessage().contains(messageWord));
+			assertTrue(e.getMessage().contains(""));
 		}
 	}
 
 	@Test
 	public final void testIsReadable_protected() {
 		final String messageKey = LibFileManagerMessageKeys.PDF_UNREADABLE;
-		final String messageWord = "password";
 		try {
 			final byte[] bytes = super.readFile(protectedPdfPath);
 
@@ -122,14 +121,13 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 			fail("Unexpected error " + e.getMessage());
 		} catch (final FileManagerException e) {
 			assertTrue(messageKey.equals(e.getKey()));
-			assertTrue(e.getMessage().contains(messageWord));
+			assertTrue(e.getMessage().contains(""));
 		}
 	}
 
 	@Test
 	public final void testIsReadable_signed() {
 		final String messageKey = LibFileManagerMessageKeys.PDF_UNREADABLE;
-		final String messageWord = "signed";
 		try {
 			final byte[] bytes = super.readFile(signedPdfPath);
 
@@ -141,7 +139,7 @@ public class PdfIntegrityCheckerTest extends AbstractFileHandler {
 			fail("Unexpected error " + e.getMessage());
 		} catch (final FileManagerException e) {
 			assertTrue(messageKey.equals(e.getKey()));
-			assertTrue(e.getMessage().contains(messageWord));
+			assertTrue(e.getMessage().contains(""));
 		}
 	}
 
